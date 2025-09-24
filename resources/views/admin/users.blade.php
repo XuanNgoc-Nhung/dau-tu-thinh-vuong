@@ -101,11 +101,15 @@
                                             <div class="fw-semibold">{{ $user->name ?? '—' }}</div>
                                             <div class="small text-muted">Email: {{ $user->email ?? '—' }}</div>
                                             <div class="small text-muted">SĐT: {{ $user->phone ?? '—' }}</div>
-                                            <div class="small">
+                                            <div class="small d-flex align-items-center gap-2">
                                                 <span class="badge {{ $user->role== '1' ? 'text-bg-success' : 'text-bg-secondary' }} me-1">Vai trò:
                                                     {{ (string)($user->role== '1' ? 'Quản trị viên' : 'Thành viên') }}</span>
-                                                <span
-                                                    class="badge {{ (int)($user->status ?? 0) === 1 ? 'text-bg-success' : 'text-bg-secondary' }}">Trạng
+                                                <button type="button" class="{{ (int)($user->status ?? 0) === 1 ? 'btn btn-sm btn-outline-success px-2 py-0' : 'btn btn-sm btn-outline-secondary px-2 py-0' }}"
+                                                    title="Đổi trạng thái nhanh"
+                                                    onclick="toggleUserStatus({{ $user->id }}, {{ (int)($user->status ?? 0) }})">
+                                                    <i class="bi bi-power"></i>
+                                                </button>
+                                                <span class="badge {{ (int)($user->status ?? 0) === 1 ? 'text-bg-success' : 'text-bg-secondary' }}">Trạng
                                                     thái:
                                                     {{ (int)($user->status ?? 0) === 1 ? 'Hoạt động' : 'Không hoạt động' }}</span>
                                             </div>
@@ -382,6 +386,20 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        window.toggleUserStatus = async function(id, current){
+            try{
+                const url = "{{ route('admin.users.update') }}";
+                const next = Number(current) === 1 ? 0 : 1;
+                const res = await axios.post(url, { id: Number(id), status: next });
+                const ok = !!res?.data?.success;
+                const msg = res?.data?.message || (ok ? 'Đã cập nhật trạng thái' : 'Cập nhật thất bại');
+                if(window.showToast) window.showToast(ok ? 'success' : 'error', msg);
+                if(ok){ setTimeout(function(){ window.location.reload(); }, 400); }
+            } catch(err){
+                const msg = err?.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại';
+                if(window.showToast) window.showToast('error', msg);
+            }
+        }
         console.groupCollapsed('[UsersAdmin] DOMContentLoaded');
         console.info('[UsersAdmin] Init scripts for admin users page');
         let bsModal = null;

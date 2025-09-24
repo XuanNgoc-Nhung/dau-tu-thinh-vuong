@@ -8,9 +8,15 @@ use App\Http\Controllers\UserDashboardController;
 
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+    // Người dùng
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
     Route::post('/users/update', [AdminController::class, 'updateUser'])->name('admin.users.update');
     Route::post('/delete-user', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+    // Sản phẩm đầu tư
+    Route::get('/san-pham-dau-tu', [AdminController::class, 'sanPhamDauTu'])->name('admin.san-pham-dau-tu');
+    Route::post('/san-pham-dau-tu', [AdminController::class, 'storeSanPhamDauTu'])->name('admin.san-pham-dau-tu.store');
+    Route::post('/san-pham-dau-tu/update', [AdminController::class, 'updateSanPhamDauTu'])->name('admin.san-pham-dau-tu.update');
+    Route::post('/delete-san-pham-dau-tu', [AdminController::class, 'destroySanPhamDauTu'])->name('admin.san-pham-dau-tu.destroy');
 });
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/login', [UserController::class, 'login'])->name('login');

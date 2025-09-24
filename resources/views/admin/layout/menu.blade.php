@@ -6,6 +6,9 @@
     <a class="nav-link @yield('nav.users_active')" href="{{ route('admin.users') }}" title="Người dùng" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-people"></i> <span class="label">Người dùng</span>
     </a>
+    <a class="nav-link @yield('nav.san-pham-dau-tu_active')" href="{{ route('admin.san-pham-dau-tu') }}" title="Sản phẩm đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
+      <i class="bi bi-cash-coin"></i> <span class="label">Sản phẩm đầu tư</span>
+    </a>
     <a class="nav-link @yield('nav.transactions_active')" href="#" title="Giao dịch" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-cash-coin"></i> <span class="label">Giao dịch</span>
     </a>

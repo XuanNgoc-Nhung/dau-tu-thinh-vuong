@@ -8,6 +8,9 @@ use Illuminate\Validation\Rule;
 use App\Models\Profile;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\SanPhamDauTu;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Throwable;
 
 class AdminController extends Controller
@@ -144,6 +147,240 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Không thể xoá người dùng. Vui lòng thử lại sau.'
+            ], 500);
+        }
+    }
+    public function sanPhamDauTu(Request $request)
+    {
+        $keyword = trim((string) $request->input('q', ''));
+        $sanPhamDauTu = SanPhamDauTu::orderByDesc('id')
+            ->when($keyword !== '', function ($query) use ($keyword) {
+                $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $keyword) . '%';
+                $query->where(function ($q) use ($like) {
+                    $q->where('ten', 'like', $like);
+                });
+            })
+            ->paginate(10);
+        return view('admin.san-pham-dau-tu', compact('sanPhamDauTu'));
+    }
+    public function updateSanPhamDauTu(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'id' => ['required','integer','exists:san_pham_dau_tu,id'],
+                'ten' => ['nullable','string','max:255'],
+                'slug' => ['nullable','string','max:255'],
+                // allow optional image upload on update, including webp
+                'hinh_anh' => ['nullable','file','image','mimes:jpeg,jpg,png,webp','max:5120'],
+                'von_toi_thieu' => ['nullable','numeric'],
+                'von_toi_da' => ['nullable','numeric'],
+                'so_luong_chu_ky' => ['nullable','integer'],
+                'thoi_gian_mot_chu_ky' => ['nullable','integer'],
+                'nhan_dan' => ['nullable','string','max:255'],
+                'mo_ta' => ['nullable','string','max:255'],
+                'trang_thai' => ['nullable','boolean'],
+            ]);
+            $sanPhamDauTu = SanPhamDauTu::findOrFail($validated['id']);
+            if (array_key_exists('ten', $validated)) {
+                $sanPhamDauTu->ten = $validated['ten'];
+            }
+            if (array_key_exists('slug', $validated)) {
+                $newSlug = trim((string) $validated['slug']);
+                if ($newSlug !== '') {
+                    $newSlug = Str::slug($newSlug);
+                    // uniqueness check, if conflicts then append random suffix
+                    if (SanPhamDauTu::where('slug', $newSlug)->where('id', '!=', $sanPhamDauTu->id)->exists()) {
+                        $base = $newSlug;
+                        $attempt = 0;
+                        do {
+                            $attempt++;
+                            $candidate = $base . '-' . Str::lower(Str::random(6));
+                        } while (SanPhamDauTu::where('slug', $candidate)->where('id', '!=', $sanPhamDauTu->id)->exists() && $attempt < 60);
+                        $newSlug = $candidate;
+                    }
+                    $sanPhamDauTu->slug = $newSlug;
+                } else {
+                    $sanPhamDauTu->slug = null;
+                }
+            }
+            // Handle optional image upload
+            if ($request->hasFile('hinh_anh')) {
+                $file = $request->file('hinh_anh');
+                $destinationPath = public_path('uploads/products');
+                if (!is_dir($destinationPath)) {
+                    @mkdir($destinationPath, 0755, true);
+                }
+                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $file->move($destinationPath, $filename);
+                $sanPhamDauTu->hinh_anh = 'uploads/products/' . $filename;
+            }
+            if (array_key_exists('von_toi_thieu', $validated)) {
+                $sanPhamDauTu->von_toi_thieu = $validated['von_toi_thieu'];
+            }
+            if (array_key_exists('von_toi_da', $validated)) {
+                $sanPhamDauTu->von_toi_da = $validated['von_toi_da'];
+            }
+            if (array_key_exists('so_luong_chu_ky', $validated)) {
+                $sanPhamDauTu->so_luong_chu_ky = $validated['so_luong_chu_ky'];
+            }
+            if (array_key_exists('thoi_gian_mot_chu_ky', $validated)) {
+                $sanPhamDauTu->thoi_gian_mot_chu_ky = $validated['thoi_gian_mot_chu_ky'];
+            }
+            if (array_key_exists('nhan_dan', $validated)) {
+                $sanPhamDauTu->nhan_dan = $validated['nhan_dan'];
+            }
+            if (array_key_exists('mo_ta', $validated)) {
+                $sanPhamDauTu->mo_ta = $validated['mo_ta'];
+            }
+            if (array_key_exists('trang_thai', $validated)) {
+                $sanPhamDauTu->trang_thai = (int) $validated['trang_thai'];
+            }
+            $sanPhamDauTu->save();
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật sản phẩm đầu tư thành công'
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors(),
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy sản phẩm đầu tư'
+            ], 404);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể cập nhật sản phẩm đầu tư. Vui lòng thử lại sau.'
+            ], 500);
+        }
+    }
+
+    public function storeSanPhamDauTu(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'ten' => ['required','string','max:255'],
+                'slug' => ['nullable','string','max:255'],
+                // accept webp as well
+                'hinh_anh' => ['required','file','image','mimes:jpeg,jpg,png,webp','max:5120'],
+                'von_toi_thieu' => ['required','numeric'],
+                'von_toi_da' => ['required','numeric'],
+                'so_luong_chu_ky' => ['required','integer','min:0'],
+                'thoi_gian_mot_chu_ky' => ['required','integer','min:0'],
+                'lai_suat' => ['required','numeric'],
+                'nhan_dan' => ['nullable','string','max:255'],
+                'mo_ta' => ['required','string'],
+                'trang_thai' => ['required','boolean'],
+            ]);
+
+            // Build slug; ensure uniqueness by appending random suffix if needed
+            $baseSlug = Str::slug($validated['ten']);
+            $providedSlug = isset($validated['slug']) && trim($validated['slug']) !== '' ? Str::slug($validated['slug']) : null;
+            $slug = $providedSlug ?: $baseSlug;
+            if ($slug === '') {
+                $slug = Str::random(8);
+            }
+            // Ensure unique slug
+            $original = $slug;
+            $i = 0;
+            while (SanPhamDauTu::where('slug', $slug)->exists()) {
+                $i++;
+                $slug = $original . '-' . Str::lower(Str::random(6));
+                if ($i > 50) { // safety guard
+                    $slug = $original . '-' . time() . '-' . Str::lower(Str::random(4));
+                }
+                if ($i > 60) break;
+            }
+
+            $payload = [
+                'ten' => $validated['ten'],
+                'slug' => $slug,
+                'von_toi_thieu' => $validated['von_toi_thieu'],
+                'von_toi_da' => $validated['von_toi_da'],
+                'lai_suat' => $validated['lai_suat'],
+                'so_luong_chu_ky' => $validated['so_luong_chu_ky'],
+                'thoi_gian_mot_chu_ky' => $validated['thoi_gian_mot_chu_ky'],
+                'nhan_dan' => $validated['nhan_dan'] ?? null,
+                'mo_ta' => $validated['mo_ta'],
+                'trang_thai' => (int) $validated['trang_thai'],
+            ];
+
+            if ($request->hasFile('hinh_anh')) {
+                $file = $request->file('hinh_anh');
+                $destinationPath = public_path('uploads/products');
+                if (!is_dir($destinationPath)) {
+                    @mkdir($destinationPath, 0755, true);
+                }
+                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $file->move($destinationPath, $filename);
+                // Lưu đường dẫn tương đối tính từ public để dùng với asset()
+                $payload['hinh_anh'] = 'uploads/products/' . $filename;
+            }
+
+            $created = SanPhamDauTu::create($payload);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Tạo sản phẩm đầu tư thành công',
+                'data' => $created,
+            ], 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể tạo sản phẩm đầu tư. Vui lòng thử lại sau.',
+            ], 500);
+        }
+    }
+
+    public function destroySanPhamDauTu(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'id' => ['required','integer','exists:san_pham_dau_tu,id']
+            ]);
+
+            $item = SanPhamDauTu::findOrFail((int) $validated['id']);
+
+            // Remove associated image file if exists
+            $relativePath = (string) ($item->hinh_anh ?? '');
+            if ($relativePath !== '') {
+                $fullPath = public_path($relativePath);
+                if (is_string($fullPath) && $fullPath !== '' && file_exists($fullPath) && is_file($fullPath)) {
+                    @unlink($fullPath);
+                }
+            }
+
+            $item->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Xoá sản phẩm đầu tư thành công'
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy sản phẩm đầu tư'
+            ], 404);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể xoá sản phẩm đầu tư. Vui lòng thử lại sau.'
             ], 500);
         }
     }
