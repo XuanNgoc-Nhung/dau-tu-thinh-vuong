@@ -35,6 +35,29 @@
         /* Back to top */
         #backToTop{position:fixed;right:16px;bottom:16px;z-index:1050;opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s ease}
         #backToTop.show{opacity:1;visibility:visible}
+        
+        /* Back to top button styling */
+        #backToTop {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        /* Mobile responsive for back to top button */
+        @media (max-width: 576px) {
+            #backToTop {
+                right: 12px;
+                bottom: 12px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.1rem;
+            }
+        }
         /* Full-width banner with background image */
         .banner-cover{position:relative;color:#fff;background-position:center;background-size:cover;background-repeat:no-repeat;min-height:520px;display:flex;align-items:center}
         .banner-cover::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.35)}
@@ -182,6 +205,136 @@
                 width: 100%;
             }
         }
+
+        /* Dashboard Sidebar Menu Styles */
+        .sidebar-menu {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .menu-section {
+            margin-bottom: 2rem;
+        }
+
+        .menu-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .menu-title {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #6c757d;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .menu-item:hover {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: var(--bs-primary);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(22, 163, 74, 0.05));
+            color: var(--bs-primary);
+            font-weight: 500;
+        }
+
+        .menu-item i {
+            width: 16px;
+            font-size: 1rem;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: none;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            border-left: 4px solid var(--bs-primary);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--bs-primary);
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* User Avatar */
+        .user-avatar-large {
+            text-align: center;
+        }
+        
+        .avatar-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bs-primary), #20c997);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            font-size: 3rem;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(22, 163, 74, 0.3);
+        }
     </style>
 </head>
 <body data-bs-spy="scroll" data-bs-target="#navbarNav" data-bs-offset="80" tabindex="0">
@@ -202,7 +355,7 @@
                     <li class="nav-item"><a class="nav-link text-white" href="#dau-tu">Đầu tư</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="#tiet-kiem">Tiết kiệm</a></li>
                     @if(auth()->check())    
-                    <li class="nav-item"><a class="nav-link text-white" href="{{ route('dashboard') }}">Tài khoản</a></li>
+                    <li class="nav-item"><a class="btn btn-warning btn-sm px-3" href="{{ route('dashboard') }}">Tài khoản</a></li>
                     @else
                     <li class="nav-item">
                         <a class="btn btn-warning btn-sm px-3" href="{{ route('register') }}">

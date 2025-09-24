@@ -298,8 +298,9 @@
                     setTimeout(() => {
                         window.location.href = '{{ route("login") }}';
                     }, 2000);
+                }else{
+                    showToast('error', response.data.message);
                 }
-                
             } catch (error) {
                 console.error('Registration error:', error);
                 
@@ -308,7 +309,7 @@
                     const errors = error.response.data.errors;
                     showValidationErrors(errors);
                 } else {
-                    showToast('error', 'Có lỗi xảy ra. Vui lòng thử lại.');
+                    showToast('error', error.response.data.message);
                 }
             } finally {
                 // Reset button state
