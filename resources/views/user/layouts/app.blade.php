@@ -149,44 +149,33 @@
         }
         
         .toast-header.success {
-            background: linear-gradient(135deg, rgba(25, 135, 84, 0.25) 0%, rgba(25, 135, 84, 0.15) 100%);
-            border-bottom-color: rgba(25, 135, 84, 0.3);
+            background-color: #198754;
+            border-bottom-color: #198754;
+            color: #fff;
         }
         
         .toast-header.error {
-            background: linear-gradient(135deg, rgba(152, 0, 25, 0.6) 0%, rgba(139, 69, 19, 0.8) 100%);
-            border-bottom-color: rgba(139, 69, 19, 0.4);
+            background-color: #dc3545;
+            border-bottom-color: #dc3545;
+            color: #fff;
         }
         
         .toast-header.warning {
-            background: linear-gradient(135deg, rgba(253, 126, 20, 0.25) 0%, rgba(253, 126, 20, 0.15) 100%);
-            border-bottom-color: rgba(253, 126, 20, 0.3);
+            background-color: #ffc107;
+            border-bottom-color: #ffc107;
+            color: #212529;
         }
         
         .toast-header.info {
-            background: linear-gradient(135deg, rgba(13, 202, 240, 0.25) 0%, rgba(13, 202, 240, 0.15) 100%);
-            border-bottom-color: rgba(13, 202, 240, 0.3);
+            background-color: #0dcaf0;
+            border-bottom-color: #0dcaf0;
+            color: #fff;
         }
         
-        .toast-header .toast-title {
-            font-weight: 600;
-        }
-        
-        .toast-header .toast-title.success {
-            color: #198754;
-        }
-        
-        .toast-header .toast-title.error {
-            color: #ffffff;
-        }
-        
-        .toast-header .toast-title.warning {
-            color: #fd7e14;
-        }
-        
-        .toast-header .toast-title.info {
-            color: #0dcaf0;
-        }
+        .toast-header .toast-title { font-weight: 600; color: inherit; }
+        .toast-header.success .btn-close,
+        .toast-header.error .btn-close,
+        .toast-header.info .btn-close { filter: invert(1) grayscale(100%); opacity: .9; }
         
         .toast-body {
             background-color: #fff;

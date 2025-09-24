@@ -7,7 +7,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserDashboardController;
 
 Route::group(['prefix' => 'admin'], function () {
-    Route::get('/', [AdminController::class, 'index']);
+    Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::post('/users/update', [AdminController::class, 'updateUser'])->name('admin.users.update');
+    Route::post('/delete-user', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
 });
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/login', [UserController::class, 'login'])->name('login');

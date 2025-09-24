@@ -21,35 +21,12 @@
                                     Thông tin cơ bản
                                 </h5>
                                 
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold">Họ và tên:</label>
-                                    <input type="text" class="form-control" value="{{ $user->name }}" readonly>
-                                </div>
-                                
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold">Email:</label>
-                                    <input type="email" class="form-control" value="{{ $user->email }}" readonly>
-                                </div>
-                                
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold">Số điện thoại:</label>
-                                    <input type="text" class="form-control" value="{{ $user->phone ?? 'Chưa cập nhật' }}" readonly>
-                                </div>
-                                
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold">Ngày sinh:</label>
-                                    <input type="text" class="form-control" value="{{ $profile->ngay_sinh ? $profile->ngay_sinh->format('d/m/Y') : 'Chưa cập nhật' }}" readonly>
-                                </div>
-                                
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold">Giới tính:</label>
-                                    <input type="text" class="form-control" value="{{ $profile->gioi_tinh == 1 ? 'Nam' : ($profile->gioi_tinh == 2 ? 'Nữ' : 'Chưa cập nhật') }}" readonly>
-                                </div>
-                                
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold">Địa chỉ:</label>
-                                    <textarea class="form-control" rows="2" readonly>{{ $profile->dia_chi ?? 'Chưa cập nhật' }}</textarea>
-                                </div>
+                                <p class="mb-2"><strong>Họ và tên:</strong> {{ $user->name }}</p>
+                                <p class="mb-2"><strong>Email:</strong> {{ $user->email }}</p>
+                                <p class="mb-2"><strong>Số điện thoại:</strong> {{ $user->phone ?? 'Chưa cập nhật' }}</p>
+                                <p class="mb-2"><strong>Ngày sinh:</strong> {{ $profile->ngay_sinh ? $profile->ngay_sinh->format('d/m/Y') : 'Chưa cập nhật' }}</p>
+                                <p class="mb-2"><strong>Giới tính:</strong> {{ $profile->gioi_tinh == 1 ? 'Nam' : ($profile->gioi_tinh == 2 ? 'Nữ' : 'Chưa cập nhật') }}</p>
+                                <p class="mb-2"><strong>Địa chỉ:</strong> <span style="white-space: pre-line;">{{ $profile->dia_chi ?? 'Chưa cập nhật' }}</span></p>
                             </div>
 
                             <!-- Thông tin tài khoản ngân hàng -->
@@ -59,30 +36,11 @@
                                     Thông tin tài khoản ngân hàng
                                 </h5>
                                 
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold">Ngân hàng:</label>
-                                    <input type="text" class="form-control" value="{{ $profile->ngan_hang ?? 'Chưa cập nhật' }}" readonly>
-                                </div>
-                                
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold">Số tài khoản:</label>
-                                    <input type="text" class="form-control" value="{{ $profile->so_tai_khoan ?? 'Chưa cập nhật' }}" readonly>
-                                </div>
-                                
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold">Chủ tài khoản:</label>
-                                    <input type="text" class="form-control" value="{{ $profile->chu_tai_khoan ?? 'Chưa cập nhật' }}" readonly>
-                                </div>
-                                
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold">Số dư:</label>
-                                    <input type="text" class="form-control text-success font-weight-bold" value="{{ $profile->so_du ? number_format($profile->so_du, 0, ',', '.') . ' VNĐ' : '0 VNĐ' }}" readonly>
-                                </div>
-                                
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold">Trạng thái tài khoản:</label>
-                                    <input type="text" class="form-control" value="{{ $user->status == 1 ? 'Hoạt động' : 'Tạm khóa' }}" readonly>
-                                </div>
+                                <p class="mb-2"><strong>Ngân hàng:</strong> {{ $profile->ngan_hang ?? 'Chưa cập nhật' }}</p>
+                                <p class="mb-2"><strong>Số tài khoản:</strong> {{ $profile->so_tai_khoan ?? 'Chưa cập nhật' }}</p>
+                                <p class="mb-2"><strong>Chủ tài khoản:</strong> {{ $profile->chu_tai_khoan ?? 'Chưa cập nhật' }}</p>
+                                <p class="mb-2"><strong>Số dư:</strong> <span class="text-success font-weight-bold">{{ $profile->so_du ? number_format($profile->so_du, 0, ',', '.') . ' VNĐ' : '0 VNĐ' }}</span></p>
+                                <p class="mb-2"><strong>Trạng thái tài khoản:</strong> {{ $user->status == 1 ? 'Hoạt động' : 'Tạm khóa' }}</p>
                             </div>
                         </div>
 
