@@ -4,7 +4,7 @@
         <h6 class="menu-title">Tài khoản</h6>
         <ul class="menu-list">
             <li class="{{ request()->routeIs('dashboard.profile') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.profile') }}" class="menu-item"><i class="bi bi-person me-2"></i>Hồ sơ cá nhân</a></li>
-            <li><a href="#" class="menu-item"><i class="bi bi-shield-check me-2"></i>Bảo mật</a></li>
+            <li class="{{ request()->routeIs('dashboard.bao-mat') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.bao-mat') }}" class="menu-item"><i class="bi bi-shield-check me-2"></i>Bảo mật</a></li>
             <li><a href="#" class="menu-item"><i class="bi bi-bell me-2"></i>Thông báo</a></li>
         </ul>
     </div>

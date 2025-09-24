@@ -19,4 +19,7 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
     Route::get('/', [UserDashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/profile', [UserDashboardController::class, 'profile'])->name('dashboard.profile');
+    Route::get('/bao-mat', [UserDashboardController::class, 'baoMat'])->name('dashboard.bao-mat');
+    Route::post('/change-password', [UserDashboardController::class, 'changePassword'])->name('user.change-password');
+    Route::post('/change-withdrawal-password', [UserDashboardController::class, 'changeWithdrawalPassword'])->name('user.change-withdrawal-password');
 });
