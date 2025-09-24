@@ -378,6 +378,27 @@
         <div id="toastContainer"></div>
     </div>
 
+    <!-- Global Confirm Modal -->
+    <div class="modal fade" id="globalConfirmModal" tabindex="-1" aria-labelledby="globalConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="globalConfirmModalLabel">Xác nhận</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="globalConfirmModalBody">
+                    Bạn có chắc chắn muốn thực hiện hành động này?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" id="globalConfirmModalBtn">
+                        <i class="fas fa-check me-1"></i> Xác nhận
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content -->
     @yield('content')
 
@@ -398,6 +419,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
     <script src="{{ asset('js/toast.js') }}"></script>
+    <script src="{{ asset('js/password-toggle.js') }}"></script>
+    <!-- Confirm helper is defined in public/js/toast.js -->
     @stack('scripts')
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();

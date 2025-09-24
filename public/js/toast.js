@@ -139,6 +139,82 @@ function clearAllToasts() {
     }
 }
 
+/**
+ * Hiển thị modal xác nhận dùng chung (dựa trên modal global trong layout)
+ * @param {Object} opts
+ * @param {string} opts.title - Tiêu đề modal
+ * @param {string} opts.message - Nội dung xác nhận
+ * @param {string} [opts.confirmText='Xác nhận'] - Text nút xác nhận
+ * @param {Function} [opts.onConfirm] - Hàm gọi khi người dùng xác nhận
+ */
+function showConfirm(opts) {
+    const options = opts || {};
+    const title = options.title || 'Xác nhận';
+    const message = options.message || 'Bạn có chắc chắn muốn thực hiện hành động này?';
+    const confirmText = options.confirmText || 'Xác nhận';
+    const onConfirm = typeof options.onConfirm === 'function' ? options.onConfirm : null;
+
+    const modalEl = document.getElementById('globalConfirmModal');
+    const titleEl = document.getElementById('globalConfirmModalLabel');
+    const bodyEl = document.getElementById('globalConfirmModalBody');
+    const confirmBtn = document.getElementById('globalConfirmModalBtn');
+
+    if (modalEl && window.bootstrap) {
+        // Set content
+        if (titleEl) titleEl.textContent = title;
+        if (bodyEl) bodyEl.textContent = message;
+        if (confirmBtn) confirmBtn.innerHTML = '<i class="fas fa-check me-1"></i> ' + confirmText;
+
+        // Reset previous listeners by cloning the node
+        const newBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+        newBtn.addEventListener('click', function() {
+            if (onConfirm) onConfirm();
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.hide();
+        });
+
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    } else {
+        // Fallback native confirm
+        if (window.confirm(title + '\n' + message)) {
+            if (onConfirm) onConfirm();
+        }
+    }
+}
+
+// Lưu lại confirm gốc của trình duyệt (nếu tồn tại) để dùng fallback
+const __nativeConfirm = typeof window !== 'undefined' && typeof window.confirm === 'function'
+    ? window.confirm.bind(window)
+    : null;
+
+/**
+ * API confirm mới: có thể gọi với object để mở modal đẹp,
+ * hoặc truyền string để dùng confirm gốc.
+ * Ví dụ:
+ * confirm({ title: 'Xác nhận', message: 'Bạn chắc chắn?', onConfirm: fn })
+ * confirm('Bạn chắc chắn?') // fallback confirm gốc
+ */
+function confirm(opts) {
+    // Object -> sử dụng modal confirm tuỳ biến
+    if (opts && typeof opts === 'object') {
+        return showConfirm(opts);
+    }
+    // String/primitive -> dùng confirm gốc
+    if (__nativeConfirm) {
+        return __nativeConfirm(String(opts || ''));
+    }
+    // Fallback cuối cùng
+    return true;
+}
+
+// Gán ra global để dùng trực tiếp trong view
+if (typeof window !== 'undefined') {
+    window.showConfirm = showConfirm;
+    window.confirm = confirm; // ghi đè confirm để hỗ trợ gọi với object
+}
+
 // Export functions for module usage (if needed)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
@@ -147,6 +223,8 @@ if (typeof module !== 'undefined' && module.exports) {
         showErrorToast,
         showWarningToast,
         showInfoToast,
-        clearAllToasts
+        clearAllToasts,
+        showConfirm,
+        confirm
     };
 }

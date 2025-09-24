@@ -13,7 +13,7 @@
         <h6 class="menu-title">Tài chính</h6>
         <ul class="menu-list">
             <li><a href="#" class="menu-item"><i class="bi bi-wallet2 me-2"></i>Ví điện tử</a></li>
-            <li><a href="#" class="menu-item"><i class="bi bi-credit-card me-2"></i>Thẻ ngân hàng</a></li>
+            <li class="{{ request()->routeIs('dashboard.ngan-hang') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.ngan-hang') }}" class="menu-item"><i class="bi bi-credit-card me-2"></i>Thẻ ngân hàng</a></li>
             <li><a href="#" class="menu-item"><i class="bi bi-arrow-repeat me-2"></i>Chuyển khoản</a></li>
         </ul>
     </div>

@@ -19,7 +19,13 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
     Route::get('/', [UserDashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/profile', [UserDashboardController::class, 'profile'])->name('dashboard.profile');
+    // bao mat
     Route::get('/bao-mat', [UserDashboardController::class, 'baoMat'])->name('dashboard.bao-mat');
     Route::post('/change-password', [UserDashboardController::class, 'changePassword'])->name('user.change-password');
     Route::post('/change-withdrawal-password', [UserDashboardController::class, 'changeWithdrawalPassword'])->name('user.change-withdrawal-password');
+    // end bao mat
+    // Ngân hàng
+    Route::get('/ngan-hang', [UserDashboardController::class, 'nganHang'])->name('dashboard.ngan-hang');
+    Route::put('/ngan-hang/update', [UserDashboardController::class, 'updateBankInfo'])->name('user.bank.update');
+    // end Ngân hàng
 });

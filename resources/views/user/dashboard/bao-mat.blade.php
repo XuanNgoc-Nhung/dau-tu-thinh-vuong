@@ -4,12 +4,12 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <div class="card dashboard-card">
+            <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="bi bi-shield-lock me-2"></i>
+                    <h3 class="card-title">
+                        <i class="fas fa-shield-alt mr-2"></i>
                         Bảo mật tài khoản
-                    </h5>
+                    </h3>
                 </div>
                 <div class="card-body">
                     @if(session('success'))
@@ -50,51 +50,36 @@
                                             <label for="current_password" class="form-label">
                                                 Mật khẩu hiện tại <span class="text-danger">*</span>
                                             </label>
-                                            <div class="input-group">
                                             <input type="password" 
                                                    class="form-control" 
                                                    id="current_password" 
                                                    name="current_password" 
                                                    placeholder="Nhập mật khẩu hiện tại"
                                                    required>
-                                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('current_password')">
-                                                    <i class="bi bi-eye" id="current_password_icon"></i>
-                                                </button>
-                                            </div>
                                         </div>
 
                                         <div class="mb-3">
                                             <label for="new_password" class="form-label">
                                                 Mật khẩu mới <span class="text-danger">*</span>
                                             </label>
-                                            <div class="input-group">
                                             <input type="password" 
                                                    class="form-control" 
                                                    id="new_password" 
                                                    name="new_password" 
                                                    placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)"
                                                    required>
-                                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('new_password')">
-                                                    <i class="bi bi-eye" id="new_password_icon"></i>
-                                                </button>
-                                            </div>
                                         </div>
 
                                         <div class="mb-3">
                                             <label for="new_password_confirmation" class="form-label">
                                                 Xác nhận mật khẩu mới <span class="text-danger">*</span>
                                             </label>
-                                            <div class="input-group">
                                             <input type="password" 
                                                    class="form-control" 
                                                    id="new_password_confirmation" 
                                                    name="new_password_confirmation" 
                                                    placeholder="Nhập lại mật khẩu mới"
                                                    required>
-                                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('new_password_confirmation')">
-                                                    <i class="bi bi-eye" id="new_password_confirmation_icon"></i>
-                                                </button>
-                                            </div>
                                         </div>
 
                                         <div class="d-grid">
@@ -124,51 +109,36 @@
                                             <label for="login_password" class="form-label">
                                                 Mật khẩu đăng nhập <span class="text-danger">*</span>
                                             </label>
-                                            <div class="input-group">
                                             <input type="password" 
                                                    class="form-control" 
                                                    id="login_password" 
                                                    name="login_password" 
                                                    placeholder="Nhập mật khẩu đăng nhập để xác thực"
                                                    required>
-                                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('login_password')">
-                                                    <i class="bi bi-eye" id="login_password_icon"></i>
-                                                </button>
-                                            </div>
                                         </div>
 
                                         <div class="mb-3">
                                             <label for="new_withdrawal_password" class="form-label">
                                                 Mật khẩu rút tiền mới <span class="text-danger">*</span>
                                             </label>
-                                            <div class="input-group">
                                             <input type="password" 
                                                    class="form-control" 
                                                    id="new_withdrawal_password" 
                                                    name="new_withdrawal_password" 
                                                    placeholder="Nhập mật khẩu rút tiền mới (tối thiểu 4 ký tự)"
                                                    required>
-                                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('new_withdrawal_password')">
-                                                    <i class="bi bi-eye" id="new_withdrawal_password_icon"></i>
-                                                </button>
-                                            </div>
                                         </div>
 
                                         <div class="mb-3">
                                             <label for="new_withdrawal_password_confirmation" class="form-label">
                                                 Xác nhận mật khẩu rút tiền <span class="text-danger">*</span>
                                             </label>
-                                            <div class="input-group">
                                             <input type="password" 
                                                    class="form-control" 
                                                    id="new_withdrawal_password_confirmation" 
                                                    name="new_withdrawal_password_confirmation" 
                                                    placeholder="Nhập lại mật khẩu rút tiền"
                                                    required>
-                                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('new_withdrawal_password_confirmation')">
-                                                    <i class="bi bi-eye" id="new_withdrawal_password_confirmation_icon"></i>
-                                                </button>
-                                            </div>
                                         </div>
 
                                         <div class="d-grid">
@@ -208,64 +178,6 @@
 @endsection
 
 @push('styles')
-<style>
-    .card {
-        transition: all 0.3s ease;
-    }
-    
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
-    
-    .form-label {
-        font-weight: 600;
-        color: #495057;
-    }
-    
-    .input-group .btn {
-        border-color: #ced4da;
-    }
-    
-    .input-group .btn:hover {
-        background-color: #e9ecef;
-        border-color: #ced4da;
-    }
-    
-    .alert-info {
-        border-left: 4px solid #17a2b8;
-    }
-    
-    .alert-heading {
-        color: #0c5460;
-    }
-    
-    .text-danger {
-        color: #dc3545 !important;
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #007bff, #0056b3);
-        border: none;
-    }
-    
-    .btn-warning {
-        background: linear-gradient(135deg, #ffc107, #e0a800);
-        border: none;
-        color: #212529;
-    }
-    
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #0056b3, #004085);
-        transform: translateY(-1px);
-    }
-    
-    .btn-warning:hover {
-        background: linear-gradient(135deg, #e0a800, #d39e00);
-        transform: translateY(-1px);
-        color: #212529;
-    }
-</style>
 @endpush
 
 @push('scripts')
@@ -275,29 +187,6 @@
     console.log('[LOG] Page Init: User ID:', '{{ Auth::id() }}');
     console.log('[LOG] Page Init: User Email:', '{{ Auth::user()->email ?? "N/A" }}');
     console.log('[LOG] Page Init: Timestamp:', new Date().toISOString());
-
-    function togglePassword(fieldId) {
-        console.log(`[LOG] togglePassword: Bắt đầu toggle password cho field: ${fieldId}`);
-        
-        const field = document.getElementById(fieldId);
-        const icon = document.getElementById(fieldId + '_icon');
-        
-        if (!field || !icon) {
-            console.error(`[LOG] togglePassword: Không tìm thấy field hoặc icon với ID: ${fieldId}`);
-            return;
-        }
-        
-        if (field.type === 'password') {
-            field.type = 'text';
-            icon.className = 'bi bi-eye-slash';
-            console.log(`[LOG] togglePassword: Hiển thị mật khẩu cho field: ${fieldId}`);
-        } else {
-            field.type = 'password';
-            icon.className = 'bi bi-eye';
-            console.log(`[LOG] togglePassword: Ẩn mật khẩu cho field: ${fieldId}`);
-        }
-    }
-
 
     function setButtonLoading(button, loading = true) {
         console.log(`[LOG] setButtonLoading: Bắt đầu set loading cho button: ${button.id}, loading: ${loading}`);
@@ -368,48 +257,56 @@
             return;
         }
         
-        console.log('[LOG] changePasswordForm: Client-side validation thành công, bắt đầu gửi request');
-        setButtonLoading(button, true);
-        
-        try {
-            console.log('[LOG] changePasswordForm: Gửi POST request đến server');
-            const response = await axios.post('{{ route("user.change-password") }}', {
-                current_password: currentPassword,
-                new_password: newPassword,
-                new_password_confirmation: confirmPassword
-            });
-            
-            console.log('[LOG] changePasswordForm: Nhận response từ server:', response.data);
-            
-            if (response.data.success) {
-                console.log('[LOG] changePasswordForm: Thay đổi mật khẩu thành công');
-                showSuccessToast(response.data.message || 'Mật khẩu đã được cập nhật thành công!');
-                form.reset();
-                console.log('[LOG] changePasswordForm: Đã reset form');
-            }
-        } catch (error) {
-            console.error('[LOG] changePasswordForm: Có lỗi xảy ra:', error);
-            
-            if (error.response && error.response.data) {
-                console.log('[LOG] changePasswordForm: Lỗi từ server:', error.response.data);
-                const errors = error.response.data.errors;
-                if (errors) {
-                    console.log('[LOG] changePasswordForm: Hiển thị lỗi validation từ server');
-                    Object.keys(errors).forEach(field => {
-                        showErrorToast(errors[field][0]);
+        console.log('[LOG] changePasswordForm: Client-side validation thành công, yêu cầu xác nhận người dùng');
+
+        confirm({
+            title: 'Xác nhận thay đổi',
+            message: 'Bạn có chắc chắn muốn thay đổi mật khẩu đăng nhập?',
+            confirmText: 'Xác nhận',
+            onConfirm: async () => {
+                console.log('[LOG] changePasswordForm: Người dùng đã xác nhận, bắt đầu gửi request');
+                setButtonLoading(button, true);
+                try {
+                    console.log('[LOG] changePasswordForm: Gửi POST request đến server');
+                    const response = await axios.post('{{ route("user.change-password") }}', {
+                        current_password: currentPassword,
+                        new_password: newPassword,
+                        new_password_confirmation: confirmPassword
                     });
-                } else {
-                    console.log('[LOG] changePasswordForm: Hiển thị lỗi chung từ server');
-                    showErrorToast(error.response.data.message || 'Có lỗi xảy ra khi cập nhật mật khẩu');
+                    
+                    console.log('[LOG] changePasswordForm: Nhận response từ server:', response.data);
+                    
+                    if (response.data.success) {
+                        console.log('[LOG] changePasswordForm: Thay đổi mật khẩu thành công');
+                        showSuccessToast(response.data.message || 'Mật khẩu đã được cập nhật thành công!');
+                        form.reset();
+                        console.log('[LOG] changePasswordForm: Đã reset form');
+                    }
+                } catch (error) {
+                    console.error('[LOG] changePasswordForm: Có lỗi xảy ra:', error);
+                    
+                    if (error.response && error.response.data) {
+                        console.log('[LOG] changePasswordForm: Lỗi từ server:', error.response.data);
+                        const errors = error.response.data.errors;
+                        if (errors) {
+                            console.log('[LOG] changePasswordForm: Hiển thị lỗi validation từ server');
+                            Object.keys(errors).forEach(field => {
+                                showErrorToast(errors[field][0]);
+                            });
+                        } else {
+                            console.log('[LOG] changePasswordForm: Hiển thị lỗi chung từ server');
+                            showErrorToast(error.response.data.message || 'Có lỗi xảy ra khi cập nhật mật khẩu');
+                        }
+                    } else {
+                        console.log('[LOG] changePasswordForm: Lỗi network hoặc không xác định');
+                        showErrorToast('Có lỗi xảy ra khi cập nhật mật khẩu');
+                    }
+                } finally {
+                    console.log('[LOG] changePasswordForm: Kết thúc xử lý, restore button');
+                    setButtonLoading(button, false);
                 }
-            } else {
-                console.log('[LOG] changePasswordForm: Lỗi network hoặc không xác định');
-                showErrorToast('Có lỗi xảy ra khi cập nhật mật khẩu');
             }
-        } finally {
-            console.log('[LOG] changePasswordForm: Kết thúc xử lý, restore button');
-            setButtonLoading(button, false);
-        }
+        });
     });
 
     // Change Withdrawal Password Form
@@ -457,48 +354,57 @@
             return;
         }
         
-        console.log('[LOG] changeWithdrawalPasswordForm: Client-side validation thành công, bắt đầu gửi request');
-        setButtonLoading(button, true);
-        
-        try {
-            console.log('[LOG] changeWithdrawalPasswordForm: Gửi POST request đến server');
-            const response = await axios.post('{{ route("user.change-withdrawal-password") }}', {
-                login_password: loginPassword,
-                new_withdrawal_password: newWithdrawalPassword,
-                new_withdrawal_password_confirmation: confirmWithdrawalPassword
-            });
-            
-            console.log('[LOG] changeWithdrawalPasswordForm: Nhận response từ server:', response.data);
-            
-            if (response.data.success) {
-                console.log('[LOG] changeWithdrawalPasswordForm: Thay đổi mật khẩu rút tiền thành công');
-                showSuccessToast(response.data.message || 'Mật khẩu rút tiền đã được cập nhật thành công!');
-                form.reset();
-                console.log('[LOG] changeWithdrawalPasswordForm: Đã reset form');
-            }
-        } catch (error) {
-            console.error('[LOG] changeWithdrawalPasswordForm: Có lỗi xảy ra:', error);
-            
-            if (error.response && error.response.data) {
-                console.log('[LOG] changeWithdrawalPasswordForm: Lỗi từ server:', error.response.data);
-                const errors = error.response.data.errors;
-                if (errors) {
-                    console.log('[LOG] changeWithdrawalPasswordForm: Hiển thị lỗi validation từ server');
-                    Object.keys(errors).forEach(field => {
-                        showErrorToast(errors[field][0]);
+        console.log('[LOG] changeWithdrawalPasswordForm: Client-side validation thành công, yêu cầu xác nhận người dùng');
+
+        confirm({
+            title: 'Xác nhận thay đổi',
+            message: 'Bạn có chắc chắn muốn thay đổi mật khẩu rút tiền?',
+            confirmText: 'Xác nhận',
+            onConfirm: async () => {
+                console.log('[LOG] changeWithdrawalPasswordForm: Người dùng đã xác nhận, bắt đầu gửi request');
+                setButtonLoading(button, true);
+                
+                try {
+                    console.log('[LOG] changeWithdrawalPasswordForm: Gửi POST request đến server');
+                    const response = await axios.post('{{ route("user.change-withdrawal-password") }}', {
+                        login_password: loginPassword,
+                        new_withdrawal_password: newWithdrawalPassword,
+                        new_withdrawal_password_confirmation: confirmWithdrawalPassword
                     });
-                } else {
-                    console.log('[LOG] changeWithdrawalPasswordForm: Hiển thị lỗi chung từ server');
-                    showErrorToast(error.response.data.message || 'Có lỗi xảy ra khi cập nhật mật khẩu rút tiền');
+                    
+                    console.log('[LOG] changeWithdrawalPasswordForm: Nhận response từ server:', response.data);
+                    
+                    if (response.data.success) {
+                        console.log('[LOG] changeWithdrawalPasswordForm: Thay đổi mật khẩu rút tiền thành công');
+                        showSuccessToast(response.data.message || 'Mật khẩu rút tiền đã được cập nhật thành công!');
+                        form.reset();
+                        console.log('[LOG] changeWithdrawalPasswordForm: Đã reset form');
+                    }
+                } catch (error) {
+                    console.error('[LOG] changeWithdrawalPasswordForm: Có lỗi xảy ra:', error);
+                    
+                    if (error.response && error.response.data) {
+                        console.log('[LOG] changeWithdrawalPasswordForm: Lỗi từ server:', error.response.data);
+                        const errors = error.response.data.errors;
+                        if (errors) {
+                            console.log('[LOG] changeWithdrawalPasswordForm: Hiển thị lỗi validation từ server');
+                            Object.keys(errors).forEach(field => {
+                                showErrorToast(errors[field][0]);
+                            });
+                        } else {
+                            console.log('[LOG] changeWithdrawalPasswordForm: Hiển thị lỗi chung từ server');
+                            showErrorToast(error.response.data.message || 'Có lỗi xảy ra khi cập nhật mật khẩu rút tiền');
+                        }
+                    } else {
+                        console.log('[LOG] changeWithdrawalPasswordForm: Lỗi network hoặc không xác định');
+                        showErrorToast('Có lỗi xảy ra khi cập nhật mật khẩu rút tiền');
+                    }
+                } finally {
+                    console.log('[LOG] changeWithdrawalPasswordForm: Kết thúc xử lý, restore button');
+                    setButtonLoading(button, false);
                 }
-            } else {
-                console.log('[LOG] changeWithdrawalPasswordForm: Lỗi network hoặc không xác định');
-                showErrorToast('Có lỗi xảy ra khi cập nhật mật khẩu rút tiền');
             }
-        } finally {
-            console.log('[LOG] changeWithdrawalPasswordForm: Kết thúc xử lý, restore button');
-            setButtonLoading(button, false);
-        }
+        });
     });
 
     // Log hoàn thành khởi tạo
