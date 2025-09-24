@@ -12,6 +12,7 @@ use App\Models\SanPhamDauTu;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
+use App\Models\NganHangNapTien;
 
 class AdminController extends Controller
 {
@@ -381,6 +382,160 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Không thể xoá sản phẩm đầu tư. Vui lòng thử lại sau.'
+            ], 500);
+        }
+    }
+    public function nganHangNapTien(Request $request)
+    {
+        $keyword = trim((string) $request->input('q', ''));
+        $banks = NganHangNapTien::orderByDesc('id')
+            ->when($keyword !== '', function ($query) use ($keyword) {
+                $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $keyword) . '%';
+                $query->where(function ($q) use ($like) {
+                    $q->where('ten_ngan_hang', 'like', $like)
+                      ->orWhere('so_tai_khoan', 'like', $like)
+                      ->orWhere('chu_tai_khoan', 'like', $like)
+                      ->orWhere('chi_nhanh', 'like', $like);
+                });
+            })
+            ->paginate(10);
+        return view('admin.ngan-hang-nap-tien', compact('banks'));
+    }
+    public function storeNganHangNapTien(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'ten_ngan_hang' => ['required','string','max:255'],
+                // accept URL string for image/logo
+                'hinh_anh' => ['nullable','string','max:2048'],
+                'so_tai_khoan' => ['required','string','max:100'],
+                'chu_tai_khoan' => ['required','string','max:150'],
+                'chi_nhanh' => ['nullable','string','max:255'],
+                'ghi_chu' => ['nullable','string','max:255'],
+                'trang_thai' => ['required','boolean'],
+            ]);
+
+            $payload = [
+                'ten_ngan_hang' => $validated['ten_ngan_hang'],
+                'so_tai_khoan' => $validated['so_tai_khoan'],
+                'chu_tai_khoan' => $validated['chu_tai_khoan'],
+                'chi_nhanh' => $validated['chi_nhanh'] ?? null,
+                'ghi_chu' => $validated['ghi_chu'] ?? null,
+                'trang_thai' => (int) $validated['trang_thai'],
+            ];
+
+            // If url provided, save as-is
+            if (array_key_exists('hinh_anh', $validated)) {
+                $url = trim((string) ($validated['hinh_anh'] ?? ''));
+                $payload['hinh_anh'] = $url !== '' ? $url : null;
+            }
+
+            $created = NganHangNapTien::create($payload);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Tạo ngân hàng nạp tiền thành công',
+                'data' => $created,
+            ], 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể tạo ngân hàng. Vui lòng thử lại sau.',
+            ], 500);
+        }
+    }
+    public function updateNganHangNapTien(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'id' => ['required','integer','exists:ngan_hang_nap_tien,id'],
+                'ten_ngan_hang' => ['nullable','string','max:255'],
+                // accept URL string for image/logo
+                'hinh_anh' => ['nullable','string','max:2048'],
+                'so_tai_khoan' => ['nullable','string','max:100'],
+                'chu_tai_khoan' => ['nullable','string','max:150'],
+                'chi_nhanh' => ['nullable','string','max:255'],
+                'ghi_chu' => ['nullable','string','max:255'],
+                'trang_thai' => ['nullable','boolean'],
+            ]);
+            $item = NganHangNapTien::findOrFail((int) $validated['id']);
+
+            foreach (['ten_ngan_hang','so_tai_khoan','chu_tai_khoan','chi_nhanh','ghi_chu'] as $field) {
+                if (array_key_exists($field, $validated)) {
+                    $item->{$field} = $validated[$field];
+                }
+            }
+            if (array_key_exists('trang_thai', $validated)) {
+                $item->trang_thai = (int) $validated['trang_thai'];
+            }
+            if (array_key_exists('hinh_anh', $validated)) {
+                $url = trim((string) ($validated['hinh_anh'] ?? ''));
+                $item->hinh_anh = $url !== '' ? $url : null;
+            }
+
+            $item->save();
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật ngân hàng thành công'
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy ngân hàng'
+            ], 404);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể cập nhật ngân hàng. Vui lòng thử lại sau.'
+            ], 500);
+        }
+    }
+    public function destroyNganHangNapTien(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'id' => ['required','integer','exists:ngan_hang_nap_tien,id']
+            ]);
+            $item = NganHangNapTien::findOrFail((int) $validated['id']);
+            $old = (string) ($item->hinh_anh ?? '');
+            if ($old !== '') {
+                $fullPath = public_path($old);
+                if (is_string($fullPath) && $fullPath !== '' && file_exists($fullPath) && is_file($fullPath)) {
+                    @unlink($fullPath);
+                }
+            }
+            $item->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Xoá ngân hàng thành công'
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy ngân hàng'
+            ], 404);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể xoá ngân hàng. Vui lòng thử lại sau.'
             ], 500);
         }
     }

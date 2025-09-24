@@ -114,6 +114,9 @@
     .cms-topbar .breadcrumb { margin: 0; display: flex; align-items: center; }
     .cms-topbar .breadcrumb, .cms-topbar .breadcrumb * { color: #ffffff !important; }
 
+    /* Dim all modal backdrops a bit */
+    .modal-backdrop { --bs-backdrop-opacity: .35; }
+
     /* Collapsed sidebar (desktop) */
     .cms-collapsed .cms-sidebar { width: var(--sidebar-collapsed-width); }
     .cms-collapsed .cms-brand { width: var(--sidebar-collapsed-width); }

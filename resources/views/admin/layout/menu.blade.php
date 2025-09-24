@@ -3,11 +3,17 @@
     <a class="nav-link @yield('nav.dashboard_active')" href="{{ route('admin.index') }}" title="Bảng điều khiển" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-grid"></i> <span class="label">Bảng điều khiển</span>
     </a>
+    <a class="nav-link @yield('nav.users_active')" href="{{ route('dashboard') }}" title="Trang người dùng" data-bs-toggle="tooltip" data-bs-placement="right">
+      <i class="bi bi-person"></i> <span class="label">Trang người dùng</span>
+    </a>
     <a class="nav-link @yield('nav.users_active')" href="{{ route('admin.users') }}" title="Người dùng" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-people"></i> <span class="label">Người dùng</span>
     </a>
     <a class="nav-link @yield('nav.san-pham-dau-tu_active')" href="{{ route('admin.san-pham-dau-tu') }}" title="Sản phẩm đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-cash-coin"></i> <span class="label">Sản phẩm đầu tư</span>
+    </a>
+    <a class="nav-link @yield('nav.ngan-hang-nap-tien_active')" href="{{ route('admin.ngan-hang-nap-tien') }}" title="Ngân hàng nạp tiền" data-bs-toggle="tooltip" data-bs-placement="right">
+      <i class="bi bi-credit-card"></i> <span class="label">Ngân hàng nạp tiền</span>
     </a>
     <a class="nav-link @yield('nav.transactions_active')" href="#" title="Giao dịch" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-cash-coin"></i> <span class="label">Giao dịch</span>

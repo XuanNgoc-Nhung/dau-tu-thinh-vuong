@@ -43,6 +43,20 @@
                 modal.hide();
             });
 
+            // Ensure confirm modal overlays any existing modal
+            modalEl.style.zIndex = '1060';
+            modalEl.addEventListener('shown.bs.modal', function onShown(){
+                modalEl.removeEventListener('shown.bs.modal', onShown);
+                var backdrops = document.querySelectorAll('.modal-backdrop');
+                if (backdrops.length) {
+                    var topBackdrop = backdrops[backdrops.length - 1];
+                    topBackdrop.style.zIndex = '1055';
+                }
+            });
+            modalEl.addEventListener('hidden.bs.modal', function onHidden(){
+                modalEl.removeEventListener('hidden.bs.modal', onHidden);
+                modalEl.style.zIndex = '';
+            });
             const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
             modal.show();
         } else {

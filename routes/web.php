@@ -17,6 +17,13 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('/san-pham-dau-tu', [AdminController::class, 'storeSanPhamDauTu'])->name('admin.san-pham-dau-tu.store');
     Route::post('/san-pham-dau-tu/update', [AdminController::class, 'updateSanPhamDauTu'])->name('admin.san-pham-dau-tu.update');
     Route::post('/delete-san-pham-dau-tu', [AdminController::class, 'destroySanPhamDauTu'])->name('admin.san-pham-dau-tu.destroy');
+    // end sản phẩm đầu tư
+    //Ngân hàng nạp tiền
+    Route::get('/ngan-hang-nap-tien', [AdminController::class, 'nganHangNapTien'])->name('admin.ngan-hang-nap-tien');
+    Route::post('/ngan-hang-nap-tien', [AdminController::class, 'storeNganHangNapTien'])->name('admin.ngan-hang-nap-tien.store');
+    Route::post('/ngan-hang-nap-tien/update', [AdminController::class, 'updateNganHangNapTien'])->name('admin.ngan-hang-nap-tien.update');
+    Route::post('/delete-ngan-hang-nap-tien', [AdminController::class, 'destroyNganHangNapTien'])->name('admin.ngan-hang-nap-tien.destroy');
+    // end Ngân hàng nạp tiền
 });
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/login', [UserController::class, 'login'])->name('login');
