@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Web Đầu Tư - Landing Page')</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    @stack('styles')
+    <style>
+        :root{
+            --bs-primary:#16a34a; /* green */
+            --bs-primary-rgb:22,163,74;
+            --bs-link-color:#16a34a;
+            --bs-link-hover-color:#15803d;
+        }
+        .btn-primary{
+            --bs-btn-bg:var(--bs-primary);
+            --bs-btn-border-color:var(--bs-primary);
+            --bs-btn-hover-bg:#15803d;
+            --bs-btn-hover-border-color:#15803d;
+            --bs-btn-active-bg:#166534;
+            --bs-btn-active-border-color:#166534;
+        }
+        .badge.text-bg-primary{background-color:rgba(var(--bs-primary-rgb),1)!important}
+        /* Navbar inherits primary (green) */
+        .navbar .nav-link{position:relative;color:#fff!important;opacity:.9;transition:opacity .2s ease,color .2s ease}
+        .navbar .nav-link:hover,.navbar .nav-link:focus{opacity:1;color:#ffd54f!important}
+        .navbar .nav-link::after{content:"";position:absolute;left:0;right:auto;bottom:-.25rem;height:2px;width:0;background:#fff;transition:width .25s ease}
+        .navbar .nav-link:hover::after,.navbar .nav-link:focus::after{width:100%}
+        .navbar .nav-link.active{opacity:1;color:#ffd54f!important}
+        .navbar .nav-link.active::after{width:100%}
+        /* Back to top */
+        #backToTop{position:fixed;right:16px;bottom:16px;z-index:1050;opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s ease}
+        #backToTop.show{opacity:1;visibility:visible}
+        /* Full-width banner with background image */
+        .banner-cover{position:relative;color:#fff;background-position:center;background-size:cover;background-repeat:no-repeat;min-height:520px;display:flex;align-items:center}
+        .banner-cover::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.35)}
+        .banner-cover .content{position:relative}
+        /* Common hovers */
+        .card.hover-lift, .feature-card{transition:transform .25s ease, box-shadow .25s ease}
+        .card.hover-lift:hover, .feature-card:hover{transform:translateY(-4px);box-shadow:0 .75rem 1.5rem rgba(0,0,0,.08)}
+        /* Icon circle */
+        .icon-circle{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:rgba(var(--bs-primary-rgb),.1);color:var(--bs-primary)}
+        /* Stepper timeline */
+        .stepper{position:relative;margin-left:.5rem}
+        .step{position:relative}
+        .step .step-index{position:relative;z-index:1}
+        /* Accordion polish */
+        .accordion .accordion-item{border:none;border-radius:1rem;box-shadow:0 .5rem 1rem rgba(0,0,0,.06);overflow:hidden}
+        .accordion-button{gap:.5rem}
+        .accordion-button:not(.collapsed){color:#0f5132;background:rgba(var(--bs-primary-rgb),.08)}
+        /* Project card lift */
+        .card.h-100{transition:transform .25s ease, box-shadow .25s ease}
+        .card.h-100:hover{transform:translateY(-4px);box-shadow:0 .75rem 1.5rem rgba(0,0,0,.08)}
+        /* Soft section backgrounds */
+        .bg-soft-primary{background:linear-gradient(180deg, rgba(var(--bs-primary-rgb),.06), rgba(var(--bs-primary-rgb),.03))}
+        .bg-soft-gray{background:linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.015))}
+        /* Vivid alternating tints for sections */
+        .bg-tint-green{background:linear-gradient(180deg, rgba(22,163,74,.38), rgba(22,163,74,.22))}
+        .bg-tint-teal{background:linear-gradient(180deg, rgba(13,148,136,.38), rgba(13,148,136,.22))}
+        .bg-tint-amber{background:linear-gradient(180deg, rgba(245,158,11,.40), rgba(245,158,11,.22))}
+        .bg-tint-sky{background:linear-gradient(180deg, rgba(2,132,199,.40), rgba(2,132,199,.22))}
+        .bg-tint-slate{background:linear-gradient(180deg, rgba(71,85,105,.34), rgba(71,85,105,.18))}
+        /* Corner-driven gradient background */
+        .bg-corners-brand{
+            background:
+                radial-gradient(60% 80% at 0% 0%, rgba(22,163,74,.44) 0%, rgba(22,163,74,0) 50%),
+                radial-gradient(60% 80% at 100% 0%, rgba(2,132,199,.40) 0%, rgba(2,132,199,0) 50%),
+                radial-gradient(60% 80% at 0% 100%, rgba(13,148,136,.40) 0%, rgba(13,148,136,0) 50%),
+                radial-gradient(60% 80% at 100% 100%, rgba(245,158,11,.40) 0%, rgba(245,158,11,0) 50%),
+                linear-gradient(180deg, #f7f9fb 0%, #eef2f6 100%);
+        }
+        /* Feature card color variants */
+        .feature-card.fc-green{background:linear-gradient(180deg, rgba(22,163,74,.12), rgba(22,163,74,.06))}
+        .feature-card.fc-teal{background:linear-gradient(180deg, rgba(13,148,136,.12), rgba(13,148,136,.06))}
+        .feature-card.fc-amber{background:linear-gradient(180deg, rgba(245,158,11,.14), rgba(245,158,11,.07))}
+        .feature-card.fc-sky{background:linear-gradient(180deg, rgba(2,132,199,.14), rgba(2,132,199,.07))}
+        .feature-card.fc-rose{background:linear-gradient(180deg, rgba(244,63,94,.14), rgba(244,63,94,.07))}
+        .feature-card.fc-indigo{background:linear-gradient(180deg, rgba(79,70,229,.14), rgba(79,70,229,.07))}
+        /* FAQ Q/A distinct colors */
+        .faq-question{color:#0f5132}
+        .faq-answer{color:#374151}
+        .accordion-button.faq-question i{color:#0f5132!important}
+        /* Typing effect */
+        .typing{border-right:.1em solid #fff;white-space:nowrap;overflow:hidden}
+        @keyframes caretBlink{50%{border-color:transparent}}
+        .typing{animation:caretBlink .8s step-end infinite}
+        
+        /* Toast styles */
+        .toast-container {
+            z-index: 1055;
+        }
+        
+        .toast {
+            min-width: 300px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            border: none;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .toast.success {
+            box-shadow: 0 0.5rem 1rem rgba(25, 135, 84, 0.25), 0 0.25rem 0.5rem rgba(25, 135, 84, 0.1);
+        }
+        
+        .toast.error {
+            box-shadow: 0 0.5rem 1rem rgba(220, 53, 69, 0.15), 0 0.25rem 0.5rem rgba(220, 53, 69, 0.05);
+        }
+        
+        .toast.warning {
+            box-shadow: 0 0.5rem 1rem rgba(253, 126, 20, 0.25), 0 0.25rem 0.5rem rgba(253, 126, 20, 0.1);
+        }
+        
+        .toast.info {
+            box-shadow: 0 0.5rem 1rem rgba(13, 202, 240, 0.25), 0 0.25rem 0.5rem rgba(13, 202, 240, 0.1);
+        }
+        
+        .toast-header {
+            background-color: #fff;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 0.75rem 1rem;
+        }
+        
+        .toast-header.success {
+            background: linear-gradient(135deg, rgba(25, 135, 84, 0.25) 0%, rgba(25, 135, 84, 0.15) 100%);
+            border-bottom-color: rgba(25, 135, 84, 0.3);
+        }
+        
+        .toast-header.error {
+            background: linear-gradient(135deg, rgba(152, 0, 25, 0.6) 0%, rgba(139, 69, 19, 0.8) 100%);
+            border-bottom-color: rgba(139, 69, 19, 0.4);
+        }
+        
+        .toast-header.warning {
+            background: linear-gradient(135deg, rgba(253, 126, 20, 0.25) 0%, rgba(253, 126, 20, 0.15) 100%);
+            border-bottom-color: rgba(253, 126, 20, 0.3);
+        }
+        
+        .toast-header.info {
+            background: linear-gradient(135deg, rgba(13, 202, 240, 0.25) 0%, rgba(13, 202, 240, 0.15) 100%);
+            border-bottom-color: rgba(13, 202, 240, 0.3);
+        }
+        
+        .toast-header .toast-title {
+            font-weight: 600;
+        }
+        
+        .toast-header .toast-title.success {
+            color: #198754;
+        }
+        
+        .toast-header .toast-title.error {
+            color: #ffffff;
+        }
+        
+        .toast-header .toast-title.warning {
+            color: #fd7e14;
+        }
+        
+        .toast-header .toast-title.info {
+            color: #0dcaf0;
+        }
+        
+        .toast-body {
+            background-color: #fff;
+            color: #212529;
+        }
+        
+        /* Mobile responsive for toast */
+        @media (max-width: 576px) {
+            .toast-container {
+                top: 1rem !important;
+                right: 1rem !important;
+                left: 1rem !important;
+            }
+            
+            .toast {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#navbarNav" data-bs-offset="80" tabindex="0">
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg sticky-top shadow-sm navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">{{ config('app.name') }}</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item"><a class="nav-link text-white" href="#hero">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#ve-chung-toi">Về chúng tôi</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#vi-sao">Vì sao chọn</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#buoc-thanh-vien">Thành viên</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#faq">Hỏi đáp</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#dau-tu">Đầu tư</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#tiet-kiem">Tiết kiệm</a></li>
+                    @if(auth()->check())    
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ route('dashboard') }}">Tài khoản</a></li>
+                    @else
+                    <li class="nav-item">
+                        <a class="btn btn-warning btn-sm px-3" href="{{ route('register') }}">
+                            <i class="bi bi-person-plus me-1"></i>Đăng ký
+                        </a>
+                    </li>
+                    @endif
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+        <div id="toastContainer"></div>
+    </div>
+
+    <!-- Main Content -->
+    @yield('content')
+
+    <!-- Footer -->
+    <footer class="py-4 bg-body-tertiary border-top">
+        <div class="container d-flex flex-column flex-lg-row align-items-center justify-content-between gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge text-bg-primary rounded-pill">WD</span>
+                <span class="fw-semibold">Web Đầu Tư</span>
+            </div>
+            <div class="text-muted">© <span id="year"></span> Web Đầu Tư. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="btn btn-primary rounded-circle p-3" aria-label="Back to top" title="Lên đầu trang">↑</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+    <script src="{{ asset('js/toast.js') }}"></script>
+    @stack('scripts')
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
+        // Back to top visibility + smooth scroll
+        const btt = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) { btt.classList.add('show'); } else { btt.classList.remove('show'); }
+        });
+        btt.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        
+        // WOW.js init
+        if (typeof WOW === 'function') { new WOW().init(); }
+        
+        // Bootstrap ScrollSpy for active nav on scroll
+        if (typeof bootstrap !== 'undefined' && bootstrap.ScrollSpy) {
+            const navbar = document.querySelector('.navbar');
+            const offset = navbar ? navbar.offsetHeight + 8 : 80;
+            new bootstrap.ScrollSpy(document.body, { target: '#navbarNav', offset });
+        }
+        
+        // Typing effect for top banner slogans
+        (function(){
+            const target = document.getElementById('typedSlogan');
+            if (!target) return;
+            const slogans = [
+                'Đầu tư thông minh – Tương lai vững bền',
+                'An toàn – Minh bạch – Hiệu quả',
+                'Tích lũy hôm nay – Thịnh vượng ngày mai'
+            ];
+            let sloganIndex = 0;
+            let charIndex = 0;
+            let deleting = false;
+            const type = () => {
+                const text = slogans[sloganIndex];
+                if (!deleting) {
+                    target.textContent = text.substring(0, charIndex + 1);
+                    charIndex++;
+                    if (charIndex === text.length) {
+                        deleting = true;
+                        setTimeout(type, 1400);
+                        return;
+                    }
+                } else {
+                    target.textContent = text.substring(0, charIndex - 1);
+                    charIndex--;
+                    if (charIndex === 0) {
+                        deleting = false;
+                        sloganIndex = (sloganIndex + 1) % slogans.length;
+                    }
+                }
+                const speed = deleting ? 35 : 55;
+                setTimeout(type, speed);
+            };
+            type();
+        })();
+    </script>
+</body>
+</html>

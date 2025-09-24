@@ -1,0 +1,152 @@
+/**
+ * Toast Notification System
+ * Hệ thống thông báo toast có thể tái sử dụng
+ */
+
+// Toast configuration
+const ToastConfig = {
+    autohide: true,
+    delay: 5000,
+    position: 'top-end'
+};
+
+/**
+ * Hiển thị toast notification
+ * @param {string} type - Loại toast: 'success', 'error', 'warning', 'info'
+ * @param {string} message - Nội dung thông báo
+ * @param {Object} options - Tùy chọn bổ sung
+ */
+function showToast(type, message, options = {}) {
+    // Merge options with default config
+    const config = { ...ToastConfig, ...options };
+    
+    // Create unique toast ID
+    const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    
+    // Get title and icon based on type
+    let title, iconClass;
+    switch(type) {
+        case 'success':
+            title = 'Thành công';
+            iconClass = 'bi-check-circle-fill text-success';
+            break;
+        case 'error':
+            title = 'Lỗi';
+            iconClass = 'bi-exclamation-triangle-fill text-white';
+            break;
+        case 'warning':
+            title = 'Cảnh báo';
+            iconClass = 'bi-exclamation-triangle-fill text-white';
+            break;
+        case 'info':
+            title = 'Thông tin';
+            iconClass = 'bi-info-circle-fill text-white';
+            break;
+        default:
+            title = 'Thông báo';
+            iconClass = 'bi-info-circle-fill text-white';
+    }
+    
+    // Create toast HTML
+    const toastHtml = `
+        <div id="${toastId}" class="toast ${type}" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header ${type}">
+                <i class="bi ${iconClass} me-2"></i>
+                <strong class="me-auto toast-title ${type}">${title}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    // Get or create toast container
+    let toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) {
+        // Create toast container if it doesn't exist
+        const containerHtml = `
+            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+                <div id="toastContainer"></div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', containerHtml);
+        toastContainer = document.getElementById('toastContainer');
+    }
+    
+    // Add toast to container
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    
+    // Initialize and show toast
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, {
+        autohide: config.autohide,
+        delay: config.delay
+    });
+    toast.show();
+    
+    // Remove toast element after it's hidden
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        toastElement.remove();
+    });
+    
+    return toast;
+}
+
+/**
+ * Hiển thị toast thành công
+ * @param {string} message - Nội dung thông báo
+ * @param {Object} options - Tùy chọn bổ sung
+ */
+function showSuccessToast(message, options = {}) {
+    return showToast('success', message, options);
+}
+
+/**
+ * Hiển thị toast lỗi
+ * @param {string} message - Nội dung thông báo
+ * @param {Object} options - Tùy chọn bổ sung
+ */
+function showErrorToast(message, options = {}) {
+    return showToast('error', message, options);
+}
+
+/**
+ * Hiển thị toast cảnh báo
+ * @param {string} message - Nội dung thông báo
+ * @param {Object} options - Tùy chọn bổ sung
+ */
+function showWarningToast(message, options = {}) {
+    return showToast('warning', message, options);
+}
+
+/**
+ * Hiển thị toast thông tin
+ * @param {string} message - Nội dung thông báo
+ * @param {Object} options - Tùy chọn bổ sung
+ */
+function showInfoToast(message, options = {}) {
+    return showToast('info', message, options);
+}
+
+/**
+ * Xóa tất cả toast đang hiển thị
+ */
+function clearAllToasts() {
+    const toastContainer = document.getElementById('toastContainer');
+    if (toastContainer) {
+        toastContainer.innerHTML = '';
+    }
+}
+
+// Export functions for module usage (if needed)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        showToast,
+        showSuccessToast,
+        showErrorToast,
+        showWarningToast,
+        showInfoToast,
+        clearAllToasts
+    };
+}
