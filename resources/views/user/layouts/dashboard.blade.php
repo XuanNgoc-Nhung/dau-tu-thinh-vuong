@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Mobile Sidebar Toggle Button -->
-<button class="mobile-sidebar-toggle d-md-none" onclick="toggleContentSidebar()">
+<button class="mobile-sidebar-toggle d-md-none">
     <i class="bi bi-list"></i>
 </button>
 
@@ -16,67 +16,7 @@
     <div class="row">
         <!-- Sidebar Menu - col-3 -->
         <div class="col-12 col-md-3 content-sidebar" id="contentSidebar">
-            <div class="sidebar-menu">
-                <div class="menu-section">
-                    <h6 class="menu-title">Tài khoản</h6>
-                    <ul class="menu-list">
-                        <li><a href="{{ route('dashboard.profile') }}" class="menu-item"><i class="bi bi-person me-2"></i>Hồ sơ cá nhân</a></li>
-                        <li><a href="#" class="menu-item"><i class="bi bi-shield-check me-2"></i>Bảo mật</a></li>
-                        <li><a href="#" class="menu-item"><i class="bi bi-bell me-2"></i>Thông báo</a></li>
-                    </ul>
-                </div>
-
-                <div class="menu-section">
-                    <h6 class="menu-title">Tài chính</h6>
-                    <ul class="menu-list">
-                        <li><a href="#" class="menu-item"><i class="bi bi-wallet2 me-2"></i>Ví điện tử</a></li>
-                        <li><a href="#" class="menu-item"><i class="bi bi-credit-card me-2"></i>Thẻ ngân hàng</a></li>
-                        <li><a href="#" class="menu-item"><i class="bi bi-arrow-repeat me-2"></i>Chuyển khoản</a></li>
-                    </ul>
-                </div>
-
-                <div class="menu-section">
-                    <h6 class="menu-title">Đầu tư</h6>
-                    <ul class="menu-list">
-                        <li><a href="#" class="menu-item"><i class="bi bi-graph-up-arrow me-2"></i>Danh mục đầu tư</a>
-                        </li>
-                        <li><a href="#" class="menu-item"><i class="bi bi-pie-chart me-2"></i>Phân tích</a></li>
-                        <li><a href="#" class="menu-item"><i class="bi bi-trophy me-2"></i>Thành tích</a></li>
-                    </ul>
-                </div>
-
-                <div class="menu-section">
-                    <h6 class="menu-title">Tiết kiệm</h6>
-                    <ul class="menu-list">
-                        <li><a href="#" class="menu-item"><i class="bi bi-piggy-bank me-2"></i>Mục tiêu tiết kiệm</a>
-                        </li>
-                        <li><a href="#" class="menu-item"><i class="bi bi-calendar-check me-2"></i>Kế hoạch</a></li>
-                        <li><a href="#" class="menu-item"><i class="bi bi-graph-up me-2"></i>Lãi suất</a></li>
-                    </ul>
-                </div>
-
-                <div class="menu-section">
-                    <h6 class="menu-title">Báo cáo</h6>
-                    <ul class="menu-list">
-                        <li><a href="#" class="menu-item"><i class="bi bi-clock-history me-2"></i>Lịch sử giao dịch</a>
-                        </li>
-                        <li><a href="#" class="menu-item"><i class="bi bi-file-earmark-text me-2"></i>Báo cáo thuế</a>
-                        </li>
-                        <li><a href="#" class="menu-item"><i class="bi bi-download me-2"></i>Xuất dữ liệu</a></li>
-                    </ul>
-                </div>
-
-                @if(auth()->user()->role == 1)
-                <div class="menu-section">
-                    <h6 class="menu-title">Quản trị</h6>
-                    <ul class="menu-list">
-                        <li><a href="#" class="menu-item"><i class="bi bi-people me-2"></i>Quản lý người dùng</a></li>
-                        <li><a href="#" class="menu-item"><i class="bi bi-gear me-2"></i>Cài đặt hệ thống</a></li>
-                        <li><a href="#" class="menu-item"><i class="bi bi-bar-chart me-2"></i>Thống kê</a></li>
-                    </ul>
-                </div>
-                @endif
-            </div>
+            @include('user.layouts.menu-dashboard')
         </div>
 
         <!-- Main Content - col-9 -->
@@ -93,7 +33,10 @@
     .user-avatar-large {
         text-align: center;
     }
-
+    .main-content-area{
+        padding-right: 0;
+        padding-left: 0;
+    }
     .avatar-circle {
         width: 150px;
         height: 150px;
@@ -127,11 +70,11 @@
         background: linear-gradient(135deg, #f8f9fa, #e9ecef);
         border-bottom: 1px solid #e9ecef;
         border-radius: 12px 12px 0 0 !important;
-        padding: 1.25rem 1.5rem;
+        padding: 0.5rem 0.75rem;
     }
 
     .card-body {
-        padding: 1.5rem;
+        padding: 6px;
     }
 
     /* Stats Cards */
@@ -215,7 +158,7 @@
         position: fixed;
         top: calc(56px + 12px); /* navbar height + 4px */
         left: 1rem;
-        z-index: 1002;
+        z-index: 1004;
         background: var(--bs-primary);
         color: white;
         border: none;
@@ -223,11 +166,39 @@
         padding: 0.75rem;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         transition: all 0.3s ease;
+        cursor: grab;
+        user-select: none;
+        touch-action: none;
     }
 
     .mobile-sidebar-toggle:hover {
         background: #15803d;
         transform: scale(1.05);
+    }
+
+    .mobile-sidebar-toggle:active {
+        cursor: grabbing;
+        transform: scale(1.1);
+    }
+
+    .mobile-sidebar-toggle.dragging {
+        cursor: grabbing;
+        opacity: 0.8;
+        transform: scale(1.1);
+        z-index: 1005;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Drag indicator */
+    .mobile-sidebar-toggle::after {
+        content: '⋮⋮';
+        position: absolute;
+        top: 50%;
+        right: 4px;
+        transform: translateY(-50%);
+        font-size: 8px;
+        opacity: 0.7;
+        line-height: 1;
     }
 
     /* Content Sidebar Styles */
@@ -342,6 +313,173 @@
                     closeContentSidebar();
                 }
             });
+        });
+    });
+
+    // Drag and Drop functionality for mobile sidebar toggle button
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButton = document.querySelector('.mobile-sidebar-toggle');
+        let isDragging = false;
+        let hasMoved = false;
+        let startX, startY, startLeft, startTop;
+
+        // Load saved position from localStorage
+        function loadButtonPosition() {
+            const savedPosition = localStorage.getItem('mobileSidebarTogglePosition');
+            if (savedPosition) {
+                const position = JSON.parse(savedPosition);
+                toggleButton.style.left = position.left + 'px';
+                toggleButton.style.top = position.top + 'px';
+            }
+        }
+
+        // Save position to localStorage
+        function saveButtonPosition() {
+            const position = {
+                left: parseInt(toggleButton.style.left) || 16, // default 1rem = 16px
+                top: parseInt(toggleButton.style.top) || 80 // default position
+            };
+            localStorage.setItem('mobileSidebarTogglePosition', JSON.stringify(position));
+        }
+
+        // Initialize position
+        loadButtonPosition();
+
+        // Mouse events for dragging
+        toggleButton.addEventListener('mousedown', function(e) {
+            if (window.innerWidth > 767.98) return; // Only on mobile
+            
+            isDragging = true;
+            hasMoved = false;
+            toggleButton.classList.add('dragging');
+            
+            startX = e.clientX;
+            startY = e.clientY;
+            startLeft = parseInt(toggleButton.style.left) || 16;
+            startTop = parseInt(toggleButton.style.top) || 80;
+            
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+            
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            
+            // Check if mouse has moved significantly (more than 5px)
+            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+                hasMoved = true;
+            }
+            
+            let newLeft = startLeft + deltaX;
+            let newTop = startTop + deltaY;
+            
+            // Constrain to viewport bounds
+            const buttonRect = toggleButton.getBoundingClientRect();
+            const maxLeft = window.innerWidth - buttonRect.width;
+            const maxTop = window.innerHeight - buttonRect.height;
+            
+            newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+            newTop = Math.max(56, Math.min(newTop, maxTop)); // Min top = navbar height
+            
+            toggleButton.style.left = newLeft + 'px';
+            toggleButton.style.top = newTop + 'px';
+        });
+
+        document.addEventListener('mouseup', function(e) {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            toggleButton.classList.remove('dragging');
+            
+            // Only save position if button was actually moved
+            if (hasMoved) {
+                saveButtonPosition();
+            }
+        });
+
+        // Touch events for dragging
+        toggleButton.addEventListener('touchstart', function(e) {
+            if (window.innerWidth > 767.98) return;
+            
+            isDragging = true;
+            hasMoved = false;
+            toggleButton.classList.add('dragging');
+            
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            startLeft = parseInt(toggleButton.style.left) || 16;
+            startTop = parseInt(toggleButton.style.top) || 80;
+            
+            // Don't prevent default on touchstart to allow click events
+        }, { passive: true });
+
+        document.addEventListener('touchmove', function(e) {
+            if (!isDragging) return;
+            
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - startX;
+            const deltaY = touch.clientY - startY;
+            
+            // Check if touch has moved significantly (more than 10px for touch)
+            if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
+                hasMoved = true;
+            }
+            
+            let newLeft = startLeft + deltaX;
+            let newTop = startTop + deltaY;
+            
+            // Constrain to viewport bounds
+            const buttonRect = toggleButton.getBoundingClientRect();
+            const maxLeft = window.innerWidth - buttonRect.width;
+            const maxTop = window.innerHeight - buttonRect.height;
+            
+            newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+            newTop = Math.max(56, Math.min(newTop, maxTop));
+            
+            toggleButton.style.left = newLeft + 'px';
+            toggleButton.style.top = newTop + 'px';
+            
+            e.preventDefault();
+        }, { passive: false });
+
+        // Reset position on double tap
+        let lastTap = 0;
+        
+        document.addEventListener('touchend', function(e) {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            toggleButton.classList.remove('dragging');
+            
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            
+            // Check for double tap first
+            if (tapLength < 500 && tapLength > 0 && !hasMoved) {
+                // Double tap - reset to default position
+                toggleButton.style.left = '1rem';
+                toggleButton.style.top = 'calc(56px + 12px)';
+                saveButtonPosition();
+                e.preventDefault(); // Prevent click event
+            } else if (hasMoved) {
+                // Button was moved - save position
+                saveButtonPosition();
+                e.preventDefault(); // Prevent click event
+            }
+            // For single tap without movement, let click event handle it
+            
+            lastTap = currentTime;
+        });
+
+        // Fallback click event for desktop and mobile
+        toggleButton.addEventListener('click', function(e) {
+            // Only toggle sidebar if button wasn't dragged
+            if (!hasMoved) {
+                toggleContentSidebar();
+            }
         });
     });
 

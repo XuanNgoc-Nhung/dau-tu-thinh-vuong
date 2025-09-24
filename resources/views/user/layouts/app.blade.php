@@ -209,10 +209,11 @@
         /* Dashboard Sidebar Menu Styles */
         .sidebar-menu {
             background: white;
-            border-radius: 12px;
+            border-radius: 7px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            padding: 1.5rem;
+            padding: 6px;
             margin-bottom: 2rem;
+            border:1px solid #cdc4c4
         }
 
         .menu-section {
@@ -222,11 +223,14 @@
         .menu-section:last-child {
             margin-bottom: 0;
         }
-
+        .content-sidebar{
+            padding-right: 0
+        }
         .menu-title {
             color: #2c3e50;
             font-weight: 600;
             font-size: 0.9rem;
+            padding: 15px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 1rem;
@@ -247,7 +251,7 @@
         .menu-item {
             display: flex;
             align-items: center;
-            padding: 0.75rem 1rem;
+            padding: 6px;
             color: #6c757d;
             text-decoration: none;
             border-radius: 8px;
@@ -291,7 +295,7 @@
             background: linear-gradient(135deg, #f8f9fa, #e9ecef);
             border-bottom: 1px solid #e9ecef;
             border-radius: 12px 12px 0 0 !important;
-            padding: 1.25rem 1.5rem;
+            padding: 0.5rem 0.75rem;
         }
 
         .card-body {
@@ -340,7 +344,7 @@
 <body data-bs-spy="scroll" data-bs-target="#navbarNav" data-bs-offset="80" tabindex="0">
     <!-- Header -->
     <nav class="navbar navbar-expand-lg sticky-top shadow-sm navbar-dark bg-primary">
-        <div class="container">
+        <div class="container-fluid">
             <a class="navbar-brand fw-bold" href="#">{{ config('app.name') }}</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -378,7 +382,7 @@
 
     <!-- Footer -->
     <footer class="py-4 bg-body-tertiary border-top">
-        <div class="container d-flex flex-column flex-lg-row align-items-center justify-content-between gap-2">
+        <div class="container-fluid d-flex flex-column flex-lg-row align-items-center justify-content-between gap-2">
             <div class="d-flex align-items-center gap-2">
                 <span class="badge text-bg-primary rounded-pill">WD</span>
                 <span class="fw-semibold">Web Đầu Tư</span>
