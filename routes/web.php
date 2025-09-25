@@ -46,5 +46,9 @@ Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
     // end Ngân hàng
     // Nạp tiền
     Route::get('/nap-tien', [UserDashboardController::class, 'napTien'])->name('dashboard.nap-tien');
+    Route::post('/nap-tien', [UserDashboardController::class, 'createNapTienRequest'])->name('dashboard.nap-tien.create');
     // end Nạp tiền
+    // Lịch sử nạp rút
+    Route::get('/lich-su-nap-rut', [UserDashboardController::class, 'lichSuNapRut'])->name('dashboard.lich-su-nap-rut');
+    // end Lịch sử nạp rút
 });

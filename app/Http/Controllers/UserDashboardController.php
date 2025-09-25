@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\NganHangNapTien;
+use App\Models\NapRut;
 
 class UserDashboardController extends Controller
 {
@@ -360,6 +361,136 @@ class UserDashboardController extends Controller
             return $view;
         } catch (\Exception $e) {
             Log::error('UserDashboardController@napTien: Lỗi khi hiển thị trang nạp tiền', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
+    }
+
+    public function createNapTienRequest(Request $request)
+    {
+        Log::info('UserDashboardController@createNapTienRequest: Bắt đầu tạo yêu cầu nạp tiền', [
+            'user_id' => Auth::id(),
+            'user_email' => Auth::user()->email ?? 'N/A',
+            'is_ajax' => $request->ajax(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'so_tien' => 'required|numeric|min:10000',
+            'ngan_hang' => 'required|string|max:255',
+            'so_tai_khoan' => 'required|string|max:50',
+            'chu_tai_khoan' => 'required|string|max:255',
+            'noi_dung' => 'required|string|max:255',
+        ], [
+            'so_tien.required' => 'Vui lòng nhập số tiền',
+            'so_tien.numeric' => 'Số tiền phải là số',
+            'so_tien.min' => 'Số tiền tối thiểu là 10,000 VND',
+            'ngan_hang.required' => 'Vui lòng chọn ngân hàng',
+            'ngan_hang.max' => 'Tên ngân hàng không được vượt quá 255 ký tự',
+            'so_tai_khoan.required' => 'Vui lòng nhập số tài khoản',
+            'so_tai_khoan.max' => 'Số tài khoản không được vượt quá 50 ký tự',
+            'chu_tai_khoan.required' => 'Vui lòng nhập tên chủ tài khoản',
+            'chu_tai_khoan.max' => 'Tên chủ tài khoản không được vượt quá 255 ký tự',
+            'noi_dung.required' => 'Vui lòng nhập nội dung chuyển khoản',
+            'noi_dung.max' => 'Nội dung chuyển khoản không được vượt quá 255 ký tự',
+        ]);
+
+        if ($validator->fails()) {
+            Log::warning('UserDashboardController@createNapTienRequest: Validation thất bại', [
+                'user_id' => Auth::id(),
+                'errors' => $validator->errors()->toArray(),
+                'input_data' => $request->except(['_token'])
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = Auth::user();
+        Log::info('UserDashboardController@createNapTienRequest: Bắt đầu tạo yêu cầu nạp tiền', [
+            'user_id' => $user->id,
+            'so_tien' => $request->so_tien,
+            'ngan_hang' => $request->ngan_hang,
+            'so_tai_khoan' => $request->so_tai_khoan,
+            'chu_tai_khoan' => $request->chu_tai_khoan,
+            'noi_dung' => $request->noi_dung
+        ]);
+
+        try {
+            // Tạo yêu cầu nạp tiền
+            $napRut = NapRut::create([
+                'user_id' => $user->id,
+                'loai' => 'nap', // Loại nạp tiền
+                'so_tien' => $request->so_tien,
+                'ngan_hang' => $request->ngan_hang,
+                'so_tai_khoan' => $request->so_tai_khoan,
+                'chu_tai_khoan' => $request->chu_tai_khoan,
+                'noi_dung' => $request->noi_dung,
+                'trang_thai' => 0 // 0: chờ xử lý, 1: thành công, 2: từ chối
+            ]);
+
+            Log::info('UserDashboardController@createNapTienRequest: Tạo yêu cầu nạp tiền thành công', [
+                'user_id' => $user->id,
+                'nap_rut_id' => $napRut->id,
+                'ip_address' => $request->ip()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Yêu cầu nạp tiền đã được tạo thành công!',
+                'data' => [
+                    'id' => $napRut->id,
+                    'so_tien' => $napRut->so_tien,
+                    'ngan_hang' => $napRut->ngan_hang,
+                    'so_tai_khoan' => $napRut->so_tai_khoan,
+                    'chu_tai_khoan' => $napRut->chu_tai_khoan,
+                    'noi_dung' => $napRut->noi_dung,
+                    'trang_thai' => $napRut->trang_thai,
+                    'trang_thai_text' => $napRut->trang_thai == 0 ? 'Chờ xử lý' : ($napRut->trang_thai == 1 ? 'Thành công' : 'Từ chối'),
+                    'created_at' => $napRut->created_at->format('d/m/Y H:i:s')
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('UserDashboardController@createNapTienRequest: Lỗi khi tạo yêu cầu nạp tiền', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi tạo yêu cầu nạp tiền'
+            ], 500);
+        }
+    }
+
+    public function lichSuNapRut()
+    {
+        Log::info('UserDashboardController@lichSuNapRut: Bắt đầu hiển thị trang lịch sử nạp rút', [
+            'user_id' => Auth::id(),
+            'user_email' => Auth::user()->email ?? 'N/A'
+        ]);
+        
+        try {
+            $user = Auth::user();
+            $napRutHistory = NapRut::where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+            
+            $view = view('user.dashboard.lich-su-nap-rut', compact('user', 'napRutHistory'));
+            Log::info('UserDashboardController@lichSuNapRut: Hiển thị trang lịch sử nạp rút thành công', [
+                'user_id' => Auth::id(),
+                'total_records' => $napRutHistory->total()
+            ]);
+            return $view;
+        } catch (\Exception $e) {
+            Log::error('UserDashboardController@lichSuNapRut: Lỗi khi hiển thị trang lịch sử nạp rút', [
                 'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()

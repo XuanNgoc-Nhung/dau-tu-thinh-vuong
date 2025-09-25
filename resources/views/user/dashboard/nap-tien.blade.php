@@ -521,22 +521,94 @@ document.addEventListener('DOMContentLoaded', function () {
         qrLoading.classList.remove('d-none');
         qrCodeContainer.classList.add('d-none');
         
-        // Wait 1 second before showing QR code
-        setTimeout(() => {
-            // Hide loading and show QR container
-            qrLoading.classList.add('d-none');
-            qrCodeContainer.classList.remove('d-none');
-            
-            // Generate QR code data (this would typically be a payment URL or bank transfer data)
-            const qrData = generateQRData(accountNumber, bankName, transferContent, amount);
-            
-            // For demo purposes, we'll create a simple QR code using a service
-            // In production, you might want to use a QR code library like qrcode.js
-            generateQRCodeImage(qrData);
-            
-            // Update QR notes with actual values
-            updateQRNotes(transferContent, amount, accountNumber);
-        }, 1000);
+        // Send data to backend via axios
+        sendNapTienRequest(accountNumber, bankName, transferContent, amount);
+    }
+    
+    function sendNapTienRequest(accountNumber, bankName, transferContent, amount) {
+        // Prepare data for API request
+        const requestData = {
+            so_tien: amount,
+            ngan_hang: bankName,
+            so_tai_khoan: accountNumber,
+            chu_tai_khoan: bankHolder.value,
+            noi_dung: transferContent,
+            _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        };
+        
+        // Send axios request
+        axios.post('/dashboard/nap-tien', requestData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+            .then(response => {
+                if (response.data.success) {
+                    // Hide loading and show QR container
+                    qrLoading.classList.add('d-none');
+                    qrCodeContainer.classList.remove('d-none');
+                    
+                    // Generate QR code data
+                    const qrData = generateQRData(accountNumber, bankName, transferContent, amount);
+                    
+                    // Generate QR code image
+                    generateQRCodeImage(qrData);
+                    
+                    // Update QR notes with actual values
+                    updateQRNotes(transferContent, amount, accountNumber);
+                    
+                    // Show success message with countdown
+                    let countdown = 3;
+                    const successMessage = response.data.message + ' Bạn sẽ được chuyển đến trang lịch sử sau ' + countdown + ' giây...';
+                    
+                    if (typeof showToast === 'function') {
+                        showToast('success', successMessage);
+                    } else {
+                        // Fallback alert if showToast is not available
+                        alert(successMessage);
+                    }
+                    
+                    console.log('Yêu cầu nạp tiền đã được tạo:', response.data.data);
+                    
+                    // Show countdown and redirect
+                    const countdownInterval = setInterval(function() {
+                        countdown--;
+                        if (countdown > 0) {
+                            const updatedMessage = response.data.message + ' Bạn sẽ được chuyển đến trang lịch sử sau ' + countdown + ' giây...';
+                            if (typeof showToast === 'function') {
+                                showToast('success', updatedMessage);
+                            }
+                        } else {
+                            clearInterval(countdownInterval);
+                            window.location.href = '{{ route("dashboard.lich-su-nap-rut") }}';
+                        }
+                    }, 1000);
+                } else {
+                    throw new Error(response.data.message || 'Có lỗi xảy ra');
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi tạo yêu cầu nạp tiền:', error);
+                
+                // Hide loading and show error
+                qrLoading.classList.add('d-none');
+                qrPlaceholder.classList.remove('d-none');
+                
+                // Show error message
+                let errorMessage = 'Có lỗi xảy ra khi tạo yêu cầu nạp tiền';
+                if (error.response && error.response.data && error.response.data.message) {
+                    errorMessage = error.response.data.message;
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                if (typeof showToast === 'function') {
+                    showToast('error', errorMessage);
+                } else {
+                    alert(errorMessage);
+                }
+            });
     }
     
     function generateQRData(accountNumber, bankName, transferContent, amount) {
@@ -600,19 +672,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Show QR code when creating deposit request
         const amount = amountInput.value.replace(/[^0-9]/g, '');
         showQRCode(bankAccount.value, bankNameInput.value, transferContent.value, amount);
-
-        if (typeof confirm === 'function') {
-            confirm({
-                title: 'Xác nhận tạo yêu cầu',
-                message: 'Bạn xác nhận đã chuyển khoản theo đúng thông tin?\nSau khi xác minh, tiền sẽ được cộng vào ví.',
-                confirmText: 'Xác nhận',
-                onConfirm: () => {
-                    if (typeof showToast === 'function') showToast('success', 'Đã tạo yêu cầu nạp (demo)');
-                }
-            });
-        } else {
-            alert('Đã tạo yêu cầu nạp (demo)');
-        }
     });
 });
 </script>
