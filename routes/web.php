@@ -44,4 +44,7 @@ Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
     Route::get('/ngan-hang', [UserDashboardController::class, 'nganHang'])->name('dashboard.ngan-hang');
     Route::put('/ngan-hang/update', [UserDashboardController::class, 'updateBankInfo'])->name('user.bank.update');
     // end Ngân hàng
+    // Nạp tiền
+    Route::get('/nap-tien', [UserDashboardController::class, 'napTien'])->name('dashboard.nap-tien');
+    // end Nạp tiền
 });

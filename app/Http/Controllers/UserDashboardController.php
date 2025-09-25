@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Models\NganHangNapTien;
 
 class UserDashboardController extends Controller
 {
@@ -339,6 +340,31 @@ class UserDashboardController extends Controller
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi cập nhật thông tin ngân hàng'
             ], 500);
+        }
+    }
+    public function napTien(){
+        Log::info('UserDashboardController@napTien: Bắt đầu hiển thị trang nạp tiền', [
+            'user_id' => Auth::id(),
+            'user_email' => Auth::user()->email ?? 'N/A'
+        ]); 
+        try {
+            $user = Auth::user();
+            $banks = NganHangNapTien::query()
+                ->where('trang_thai', 1)
+                ->orderBy('ten_ngan_hang')
+                ->get();
+            $view = view('user.dashboard.nap-tien', compact('user', 'banks'));
+            Log::info('UserDashboardController@napTien: Hiển thị trang nạp tiền thành công', [
+                'user_id' => Auth::id()
+            ]);
+            return $view;
+        } catch (\Exception $e) {
+            Log::error('UserDashboardController@napTien: Lỗi khi hiển thị trang nạp tiền', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
         }
     }
 }
