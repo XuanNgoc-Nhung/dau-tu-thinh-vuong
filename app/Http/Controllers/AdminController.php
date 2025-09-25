@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
 use App\Models\NganHangNapTien;
+use App\Models\ThongBao;
 class AdminController extends Controller
 {
     public function index()
@@ -648,6 +649,132 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Không thể cập nhật trạng thái giao dịch. Vui lòng thử lại sau.'
+            ], 500);
+        }
+    }
+    public function thongBao(Request $request){
+        $keyword = trim((string) $request->input('q', ''));
+        $trangThai = $request->input('trang_thai', '');
+
+        $thongBaos = ThongBao::query()
+            ->when($keyword !== '', function ($query) use ($keyword) {
+                $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $keyword) . '%';
+                $query->where(function ($q) use ($like) {
+                    $q->where('tieu_de', 'like', $like)
+                      ->orWhere('noi_dung', 'like', $like);
+                });
+            })
+            ->when($trangThai !== '', function ($query) use ($trangThai) {
+                $query->where('trang_thai', (int) $trangThai);
+            })
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->appends($request->query());
+
+        return view('admin.thong-bao', compact('thongBaos', 'keyword', 'trangThai'));
+    }
+    public function storeThongBao(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'tieu_de' => ['required','string','max:255'],
+                'noi_dung' => ['required','string'],
+                'trang_thai' => ['required','boolean'],
+            ]);
+
+            $created = ThongBao::create([
+                'tieu_de' => $validated['tieu_de'],
+                'noi_dung' => $validated['noi_dung'],
+                'trang_thai' => (int) $validated['trang_thai'],
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Tạo thông báo thành công',
+                'data' => $created,
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể tạo thông báo. Vui lòng thử lại sau.',
+            ], 500);
+        }
+    }
+
+    public function updateThongBao(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'id' => ['required','integer','exists:thong_baos,id'],
+                'tieu_de' => ['required','string','max:255'],
+                'noi_dung' => ['required','string'],
+                'trang_thai' => ['required','boolean'],
+            ]);
+
+            $item = ThongBao::findOrFail((int) $validated['id']);
+            $item->tieu_de = $validated['tieu_de'];
+            $item->noi_dung = $validated['noi_dung'];
+            $item->trang_thai = (int) $validated['trang_thai'];
+            $item->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật thông báo thành công',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy thông báo',
+            ], 404);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể cập nhật thông báo. Vui lòng thử lại sau.',
+            ], 500);
+        }
+    }
+
+    public function destroyThongBao(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'id' => ['required','integer','exists:thong_baos,id'],
+            ]);
+
+            $item = ThongBao::findOrFail((int) $validated['id']);
+            $item->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Xoá thông báo thành công',
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy thông báo',
+            ], 404);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể xoá thông báo. Vui lòng thử lại sau.',
             ], 500);
         }
     }

@@ -28,6 +28,12 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('/nap-rut', [AdminController::class, 'napRut'])->name('admin.nap-rut');
     Route::post('/nap-rut/update-status', [AdminController::class, 'updateNapRutStatus'])->name('admin.nap-rut.update-status');
     // end Nạp rút
+    //Thông báo
+    Route::get('/thong-bao', [AdminController::class, 'thongBao'])->name('admin.thong-bao');
+    Route::post('/thong-bao', [AdminController::class, 'storeThongBao'])->name('admin.thong-bao.store');
+    Route::post('/thong-bao/update', [AdminController::class, 'updateThongBao'])->name('admin.thong-bao.update');
+    Route::post('/delete-thong-bao', [AdminController::class, 'destroyThongBao'])->name('admin.thong-bao.destroy');
+    // end Thông báo
 });
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/login', [UserController::class, 'login'])->name('login');

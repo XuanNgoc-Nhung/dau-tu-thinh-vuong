@@ -282,6 +282,29 @@
       tooltipTriggerList.forEach(function (tooltipTriggerEl) {
         new bootstrap.Tooltip(tooltipTriggerEl);
       });
+
+      // Toast queue: show toast saved before reload
+      try {
+        const queued = localStorage.getItem('cms.toast');
+        if (queued) {
+          const { type, message, options } = JSON.parse(queued);
+          if (typeof showToast === 'function') {
+            showToast(type || 'info', message || '', options || {});
+          }
+          localStorage.removeItem('cms.toast');
+        }
+      } catch (e) {
+        // ignore
+      }
+
+      // Expose helper to queue toast for after reload
+      window.queueToast = function(type, message, options) {
+        try {
+          localStorage.setItem('cms.toast', JSON.stringify({ type, message, options: options || {} }));
+        } catch (e) {
+          // ignore
+        }
+      };
     })();
   </script>
   @stack('scripts')
