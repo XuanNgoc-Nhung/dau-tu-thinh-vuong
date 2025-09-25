@@ -135,6 +135,19 @@
                                     <div id="qr-code-container" class="d-none">
                                         <div id="qr-code" class="mb-3"></div>
                                         <p class="text-muted small mb-0">Quét mã QR để chuyển khoản nhanh</p>
+                                        
+                                        <!-- QR Code Notes -->
+                                        <div class="qr-notes mt-3 text-left">
+                                            <div class="alert alert-warning alert-sm mb-2">
+                                                <h6 class="mb-2"><i class="fas fa-exclamation-triangle mr-1"></i> Lưu ý quan trọng:</h6>
+                                                <ul class="mb-0 pl-3 small">
+                                                    <li><strong>Vui lòng chuyển khoản đúng với nội dung:</strong> <span id="qr-transfer-content" class="text-primary font-weight-bold"></span></li>
+                                                    <li>Chuyển đúng số tiền: <span id="qr-amount" class="text-success font-weight-bold"></span> VND</li>
+                                                    <li>Chuyển đến đúng tài khoản: <span id="qr-account" class="text-info font-weight-bold"></span></li>
+                                                    <li>Sau khi chuyển khoản, tiền sẽ được cộng vào ví trong vòng 5-10 phút</li>
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -251,6 +264,24 @@
     .qr-loading .spinner-border {
         width: 3rem;
         height: 3rem;
+    }
+    .qr-notes .alert-sm {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+    .qr-notes .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeaa7;
+        color: #856404;
+    }
+    .qr-notes ul li {
+        margin-bottom: 0.25rem;
+    }
+    .qr-notes .alert {
+        text-align: left;
+    }
+    .qr-notes h6 {
+        text-align: left;
     }
     #qr-code {
         display: flex;
@@ -502,6 +533,9 @@ document.addEventListener('DOMContentLoaded', function () {
             // For demo purposes, we'll create a simple QR code using a service
             // In production, you might want to use a QR code library like qrcode.js
             generateQRCodeImage(qrData);
+            
+            // Update QR notes with actual values
+            updateQRNotes(transferContent, amount, accountNumber);
         }, 1000);
     }
     
@@ -516,6 +550,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data)}`;
         
         qrCode.innerHTML = `<img src="${qrUrl}" alt="QR Code" class="img-fluid">`;
+    }
+    
+    function updateQRNotes(transferContent, amount, accountNumber) {
+        // Update the notes with actual values
+        document.getElementById('qr-transfer-content').textContent = transferContent;
+        document.getElementById('qr-amount').textContent = formatCurrency(amount);
+        document.getElementById('qr-account').textContent = accountNumber;
     }
 
     copyStkBtn.addEventListener('click', function(){
