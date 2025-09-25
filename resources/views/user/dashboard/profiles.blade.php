@@ -59,12 +59,12 @@
                                             </div>
                                             <div class="card-body text-center">
                                                 @if($profile->anh_mat_truoc)
-                                                    <img src="{{ asset('storage/' . $profile->anh_mat_truoc) }}" 
+                                                    <img src="{{ asset($profile->anh_mat_truoc) }}" 
                                                          class="img-fluid" 
                                                          style="max-height: 200px; border: 1px solid #ddd; border-radius: 5px;"
                                                          alt="Ảnh mặt trước CCCD"
-                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                                    <div class="text-muted d-flex flex-column justify-content-center align-items-center" style="display: none; height: 200px; border: 1px solid #ddd; border-radius: 5px; background-color: #f8f9fa;">
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                    <div class="text-muted d-flex flex-column justify-content-center align-items-center" style="display: none !important; height: 200px; border: 1px solid #ddd; border-radius: 5px; background-color: #f8f9fa;">
                                                         <i class="fas fa-image fa-3x mb-2"></i>
                                                         <p>Ảnh bị lỗi</p>
                                                     </div>
@@ -84,12 +84,12 @@
                                             </div>
                                             <div class="card-body text-center">
                                                 @if($profile->anh_mat_sau)
-                                                    <img src="{{ asset('storage/' . $profile->anh_mat_sau) }}" 
+                                                    <img src="{{ asset($profile->anh_mat_sau) }}" 
                                                          class="img-fluid" 
                                                          style="max-height: 200px; border: 1px solid #ddd; border-radius: 5px;"
                                                          alt="Ảnh mặt sau CCCD"
-                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                                    <div class="text-muted d-flex flex-column justify-content-center align-items-center" style="display: none; height: 200px; border: 1px solid #ddd; border-radius: 5px; background-color: #f8f9fa;">
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                    <div class="text-muted d-flex flex-column justify-content-center align-items-center" style="display: none !important; height: 200px; border: 1px solid #ddd; border-radius: 5px; background-color: #f8f9fa;">
                                                         <i class="fas fa-image fa-3x mb-2"></i>
                                                         <p>Ảnh bị lỗi</p>
                                                     </div>
@@ -109,12 +109,12 @@
                                             </div>
                                             <div class="card-body text-center">
                                                 @if($profile->anh_chan_dung)
-                                                    <img src="{{ asset('storage/' . $profile->anh_chan_dung) }}" 
+                                                    <img src="{{ asset($profile->anh_chan_dung) }}" 
                                                          class="img-fluid" 
                                                          style="max-height: 200px; border: 1px solid #ddd; border-radius: 5px;"
                                                          alt="Ảnh chân dung"
-                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                                    <div class="text-muted d-flex flex-column justify-content-center align-items-center" style="display: none; height: 200px; border: 1px solid #ddd; border-radius: 5px; background-color: #f8f9fa;">
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                    <div class="text-muted d-flex flex-column justify-content-center align-items-center" style="display: none !important; height: 200px; border: 1px solid #ddd; border-radius: 5px; background-color: #f8f9fa;">
                                                         <i class="fas fa-image fa-3x mb-2"></i>
                                                         <p>Ảnh bị lỗi</p>
                                                     </div>

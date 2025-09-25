@@ -44,6 +44,9 @@ Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
     Route::post('/change-password', [UserDashboardController::class, 'changePassword'])->name('user.change-password');
     Route::post('/change-withdrawal-password', [UserDashboardController::class, 'changeWithdrawalPassword'])->name('user.change-withdrawal-password');
     // end bao mat
+    //kyc tài khoản
+    Route::get('/kyc', [UserDashboardController::class, 'kyc'])->name('dashboard.kyc');
+    Route::post('/kyc', [UserDashboardController::class, 'createKycRequest'])->name('user.kyc.submit');
     // Ngân hàng
     Route::get('/ngan-hang', [UserDashboardController::class, 'nganHang'])->name('dashboard.ngan-hang');
     Route::put('/ngan-hang/update', [UserDashboardController::class, 'updateBankInfo'])->name('user.bank.update');

@@ -557,33 +557,37 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     // Update QR notes with actual values
                     updateQRNotes(transferContent, amount, accountNumber);
-                    
-                    // Show success message with countdown
-                    let countdown = 3;
-                    const successMessage = response.data.message + ' Bạn sẽ được chuyển đến trang lịch sử sau ' + countdown + ' giây...';
-                    
+
+                    // Thông báo toast yêu cầu người dùng chuyển khoản đúng nội dung
                     if (typeof showToast === 'function') {
-                        showToast('success', successMessage);
-                    } else {
-                        // Fallback alert if showToast is not available
-                        alert(successMessage);
+                        showToast('info', 'Vui lòng làm theo hướng dẫn trên màn hình để chuyển khoản đúng thông tin.');
                     }
                     
+                    // Hiển thị thông báo hướng dẫn ngay trên màn hình (không chuyển hướng)
+                    const baseMessage = response.data.message;
+                    const existingNotice = document.getElementById('deposit-instruction');
+                    if (existingNotice) {
+                        existingNotice.remove();
+                    }
+                    const noticeHtml = `
+                        <div id="deposit-instruction" class="alert alert-success mt-3">
+                            <h6 class="mb-2"><i class="fas fa-check-circle mr-1"></i> ${baseMessage}</h6>
+                            <ul class="mb-0 pl-3">
+                                <li><strong>Vui lòng chuyển khoản theo đúng thông tin hiển thị bên phải</strong> (ngân hàng, số tài khoản, số tiền, nội dung).</li>
+                                <li>Sau khi chuyển, hệ thống sẽ tự động kiểm tra và cộng tiền vào ví trong 5-10 phút.</li>
+                                <li>Bạn có thể mở trang <a href="{{ route('dashboard.lich-su-nap-rut') }}" target="_blank">lịch sử nạp/rút</a> để theo dõi trạng thái.</li>
+                            </ul>
+                        </div>
+                    `;
+                    // Chèn thông báo ngay dưới form thông tin ngân hàng
+                    const formEl = document.getElementById('bank_info');
+                    if (formEl) {
+                        formEl.insertAdjacentHTML('afterend', noticeHtml);
+                    } else {
+                        document.body.insertAdjacentHTML('afterbegin', noticeHtml);
+                    }
+
                     console.log('Yêu cầu nạp tiền đã được tạo:', response.data.data);
-                    
-                    // Show countdown and redirect
-                    const countdownInterval = setInterval(function() {
-                        countdown--;
-                        if (countdown > 0) {
-                            const updatedMessage = response.data.message + ' Bạn sẽ được chuyển đến trang lịch sử sau ' + countdown + ' giây...';
-                            if (typeof showToast === 'function') {
-                                showToast('success', updatedMessage);
-                            }
-                        } else {
-                            clearInterval(countdownInterval);
-                            window.location.href = '{{ route("dashboard.lich-su-nap-rut") }}';
-                        }
-                    }, 1000);
                 } else {
                     throw new Error(response.data.message || 'Có lỗi xảy ra');
                 }

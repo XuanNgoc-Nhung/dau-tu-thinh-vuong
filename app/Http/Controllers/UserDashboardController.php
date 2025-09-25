@@ -470,7 +470,7 @@ class UserDashboardController extends Controller
         }
     }
 
-    public function lichSuNapRut()
+    public function lichSuNapRut(Request $request)
     {
         Log::info('UserDashboardController@lichSuNapRut: Bắt đầu hiển thị trang lịch sử nạp rút', [
             'user_id' => Auth::id(),
@@ -479,9 +479,28 @@ class UserDashboardController extends Controller
         
         try {
             $user = Auth::user();
-            $napRutHistory = NapRut::where('user_id', $user->id)
+            $query = NapRut::where('user_id', $user->id);
+
+            // Bộ lọc theo loại giao dịch: 'nap' hoặc 'rut'
+            if ($request->filled('loai') && in_array($request->loai, ['nap', 'rut'])) {
+                $query->where('loai', $request->loai);
+            }
+
+            // Bộ lọc theo nội dung (tìm kiếm mơ hồ theo nội dung, số TK, ngân hàng, mã GD)
+            if ($request->filled('search')) {
+                $search = trim($request->search);
+                $query->where(function ($q) use ($search) {
+                    $q->where('noi_dung', 'like', "%{$search}%")
+                      ->orWhere('ngan_hang', 'like', "%{$search}%")
+                      ->orWhere('so_tai_khoan', 'like', "%{$search}%")
+                      ->orWhere('id', $search);
+                });
+            }
+
+            $napRutHistory = $query
                 ->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->paginate(10)
+                ->appends($request->only(['loai', 'search']));
             
             $view = view('user.dashboard.lich-su-nap-rut', compact('user', 'napRutHistory'));
             Log::info('UserDashboardController@lichSuNapRut: Hiển thị trang lịch sử nạp rút thành công', [
@@ -656,6 +675,189 @@ class UserDashboardController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi tạo yêu cầu rút tiền'
+            ], 500);
+        }
+    }
+    public function kyc(){
+        Log::info('UserDashboardController@kyc: Bắt đầu hiển thị trang kyc', [
+            'user_id' => Auth::id(),
+            'user_email' => Auth::user()->email ?? 'N/A'
+        ]);
+        
+        $user = Auth::user();
+        $profile = $user->profile;
+        
+        return view('user.dashboard.kyc', compact('user', 'profile'));
+    }
+
+    public function createKycRequest(Request $request)
+    {
+        Log::info('UserDashboardController@createKycRequest: Bắt đầu tạo yêu cầu KYC', [
+            'user_id' => Auth::id(),
+            'user_email' => Auth::user()->email ?? 'N/A',
+            'is_ajax' => $request->ajax(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
+        $user = Auth::user();
+        $profile = $user->profile;
+        
+        // Check if user has existing KYC images
+        $hasExistingPortrait = $profile && $profile->anh_chan_dung;
+        $hasExistingIdFront = $profile && $profile->anh_mat_truoc;
+        $hasExistingIdBack = $profile && $profile->anh_mat_sau;
+        
+        // Build validation rules based on existing images
+        $rules = [
+            'login_password' => 'required',
+        ];
+        
+        $messages = [
+            'login_password.required' => 'Vui lòng nhập mật khẩu đăng nhập',
+        ];
+        
+        // Only require images if they don't exist
+        if (!$hasExistingPortrait) {
+            $rules['portrait_photo'] = 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120';
+            $messages['portrait_photo.required'] = 'Vui lòng tải lên ảnh chân dung';
+            $messages['portrait_photo.image'] = 'Ảnh chân dung phải là file hình ảnh';
+            $messages['portrait_photo.mimes'] = 'Ảnh chân dung phải có định dạng jpeg, png, jpg, gif hoặc webp';
+            $messages['portrait_photo.max'] = 'Ảnh chân dung không được vượt quá 5MB';
+        } else {
+            $rules['portrait_photo'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120';
+            $messages['portrait_photo.image'] = 'Ảnh chân dung phải là file hình ảnh';
+            $messages['portrait_photo.mimes'] = 'Ảnh chân dung phải có định dạng jpeg, png, jpg, gif hoặc webp';
+            $messages['portrait_photo.max'] = 'Ảnh chân dung không được vượt quá 5MB';
+        }
+        
+        if (!$hasExistingIdFront) {
+            $rules['id_front_photo'] = 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120';
+            $messages['id_front_photo.required'] = 'Vui lòng tải lên ảnh giấy tờ mặt trước';
+            $messages['id_front_photo.image'] = 'Ảnh giấy tờ mặt trước phải là file hình ảnh';
+            $messages['id_front_photo.mimes'] = 'Ảnh giấy tờ mặt trước phải có định dạng jpeg, png, jpg, gif hoặc webp';
+            $messages['id_front_photo.max'] = 'Ảnh giấy tờ mặt trước không được vượt quá 5MB';
+        } else {
+            $rules['id_front_photo'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120';
+            $messages['id_front_photo.image'] = 'Ảnh giấy tờ mặt trước phải là file hình ảnh';
+            $messages['id_front_photo.mimes'] = 'Ảnh giấy tờ mặt trước phải có định dạng jpeg, png, jpg, gif hoặc webp';
+            $messages['id_front_photo.max'] = 'Ảnh giấy tờ mặt trước không được vượt quá 5MB';
+        }
+        
+        if (!$hasExistingIdBack) {
+            $rules['id_back_photo'] = 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120';
+            $messages['id_back_photo.required'] = 'Vui lòng tải lên ảnh giấy tờ mặt sau';
+            $messages['id_back_photo.image'] = 'Ảnh giấy tờ mặt sau phải là file hình ảnh';
+            $messages['id_back_photo.mimes'] = 'Ảnh giấy tờ mặt sau phải có định dạng jpeg, png, jpg, gif hoặc webp';
+            $messages['id_back_photo.max'] = 'Ảnh giấy tờ mặt sau không được vượt quá 5MB';
+        } else {
+            $rules['id_back_photo'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120';
+            $messages['id_back_photo.image'] = 'Ảnh giấy tờ mặt sau phải là file hình ảnh';
+            $messages['id_back_photo.mimes'] = 'Ảnh giấy tờ mặt sau phải có định dạng jpeg, png, jpg, gif hoặc webp';
+            $messages['id_back_photo.max'] = 'Ảnh giấy tờ mặt sau không được vượt quá 5MB';
+        }
+        
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            Log::warning('UserDashboardController@createKycRequest: Validation thất bại', [
+                'user_id' => Auth::id(),
+                'errors' => $validator->errors()->toArray(),
+                'input_data' => $request->except(['portrait_photo', 'id_front_photo', 'id_back_photo'])
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = Auth::user();
+        Log::info('UserDashboardController@createKycRequest: Bắt đầu kiểm tra mật khẩu đăng nhập', [
+            'user_id' => $user->id
+        ]);
+
+        // Kiểm tra mật khẩu đăng nhập
+        if (!Hash::check($request->login_password, $user->password)) {
+            Log::warning('UserDashboardController@createKycRequest: Mật khẩu đăng nhập không đúng', [
+                'user_id' => $user->id,
+                'ip_address' => $request->ip()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'errors' => ['login_password' => ['Mật khẩu đăng nhập không đúng']]
+            ], 422);
+        }
+
+        Log::info('UserDashboardController@createKycRequest: Mật khẩu đăng nhập đúng, bắt đầu xử lý yêu cầu KYC', [
+            'user_id' => $user->id
+        ]);
+
+        try {
+            // Lấy hoặc tạo profile cho user
+            $profile = $user->profile;
+            if (!$profile) {
+                $profile = $user->profile()->create([]);
+                Log::info('UserDashboardController@createKycRequest: Tạo profile mới cho user', [
+                    'user_id' => $user->id,
+                    'profile_id' => $profile->id
+                ]);
+            }
+
+            // Xử lý upload ảnh vào public/uploads/kyc/
+            // Chỉ cập nhật ảnh mới nếu có file được upload
+            if ($request->hasFile('portrait_photo')) {
+                $portraitFile = $request->file('portrait_photo');
+                $portraitName = 'uploads/kyc/' . 'portrait_' . time() . '_' . $user->id . '.' . $portraitFile->getClientOriginalExtension();
+                $portraitFile->move(public_path('uploads/kyc'), $portraitName);
+                $profile->anh_chan_dung = $portraitName;
+            }
+
+            if ($request->hasFile('id_front_photo')) {
+                $idFrontFile = $request->file('id_front_photo');
+                $idFrontName = 'uploads/kyc/' . 'id_front_' . time() . '_' . $user->id . '.' . $idFrontFile->getClientOriginalExtension();
+                $idFrontFile->move(public_path('uploads/kyc'), $idFrontName);
+                $profile->anh_mat_truoc = $idFrontName;
+            }
+
+            if ($request->hasFile('id_back_photo')) {
+                $idBackFile = $request->file('id_back_photo');
+                $idBackName = 'uploads/kyc/' . 'id_back_' . time() . '_' . $user->id . '.' . $idBackFile->getClientOriginalExtension();
+                $idBackFile->move(public_path('uploads/kyc'), $idBackName);
+                $profile->anh_mat_sau = $idBackName;
+            }
+
+            // Lưu profile với hình ảnh KYC
+            $profile->save();
+            $user->save();
+
+            Log::info('UserDashboardController@createKycRequest: Tạo yêu cầu KYC thành công', [
+                'user_id' => $user->id,
+                'profile_id' => $profile->id,
+                'anh_chan_dung' => $profile->anh_chan_dung,
+                'anh_mat_truoc' => $profile->anh_mat_truoc,
+                'anh_mat_sau' => $profile->anh_mat_sau,
+                'ip_address' => $request->ip()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Yêu cầu xác thực danh tính đã được gửi thành công! Chúng tôi sẽ xem xét và phản hồi trong vòng 1-3 ngày làm việc.',
+                'data' => [
+                    'kyc_status' => 'pending'
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('UserDashboardController@createKycRequest: Lỗi khi tạo yêu cầu KYC', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi gửi yêu cầu xác thực danh tính'
             ], 500);
         }
     }

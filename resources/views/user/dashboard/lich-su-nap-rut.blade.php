@@ -12,11 +12,30 @@
                     </h3>
                 </div>
                 <div class="card-body">
+                    <form method="GET" action="{{ route('dashboard.lich-su-nap-rut') }}" class="mb-3">
+                        <div class="form row align-items-center">
+                            <div class="col-md-3 col-sm-6 mb-2">
+                                <select name="loai" class="form-control">
+                                    <option value="">Tất cả loại giao dịch</option>
+                                    <option value="nap" {{ request('loai') === 'nap' ? 'selected' : '' }}>Nạp tiền</option>
+                                    <option value="rut" {{ request('loai') === 'rut' ? 'selected' : '' }}>Rút tiền</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-2">
+                                <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="Nhập từ khoá...">
+                            </div>
+                            <div class="col-md-3 col-sm-12 mb-2">
+                                    <button type="submit" class="btn btn-primary btn-gap"><i class="fas fa-search mr-1"></i>Lọc</button>
+                                    <a href="{{ route('dashboard.lich-su-nap-rut') }}" class="btn btn-secondary"><i class="fas fa-undo mr-1"></i>Reset</a>
+                            </div>
+                        </div>
+                    </form>
                     @if($napRutHistory->count() > 0)
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
+                            <table class="table table-striped table-hover table-bordered">
                                 <thead class="thead-dark">
                                     <tr>
+                                        <th class="text-center" style="width: 70px">STT</th>
                                         <th>Mã giao dịch</th>
                                         <th>Loại</th>
                                         <th>Số tiền</th>
@@ -28,8 +47,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($napRutHistory as $item)
+                                    @foreach($napRutHistory as $index => $item)
                                         <tr>
+                                            <td class="text-center">{{ ($napRutHistory->currentPage() - 1) * $napRutHistory->perPage() + $index + 1 }}</td>
                                             <td>
                                                 <span class="badge badge-secondary">#{{ str_pad($item->id, 6, '0', STR_PAD_LEFT) }}</span>
                                             </td>
@@ -83,8 +103,8 @@
                         </div>
                         
                         <!-- Pagination -->
-                        <div class="d-flex justify-content-center mt-4">
-                            {{ $napRutHistory->links() }}
+                        <div class="d-flex justify-content-center">
+                            {{ $napRutHistory->appends(request()->only(['loai','search']))->links() }}
                         </div>
                     @else
                         <div class="text-center py-5">
@@ -156,6 +176,11 @@
     
     .font-weight-bold {
         font-weight: 600 !important;
+    }
+    
+    /* Space between filter and reset buttons */
+    .btn-gap {
+        margin-right: 12px;
     }
 </style>
 @endpush

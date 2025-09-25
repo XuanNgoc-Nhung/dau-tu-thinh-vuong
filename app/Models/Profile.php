@@ -17,6 +17,7 @@ class Profile extends Model
         'gioi_tinh',
         'dia_chi',
         'mat_khau_rut_tien',
+        // KYC image fields only
         'anh_mat_truoc',
         'anh_mat_sau',
         'anh_chan_dung',
