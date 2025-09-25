@@ -3,7 +3,7 @@
     <a class="nav-link @yield('nav.dashboard_active')" href="{{ route('admin.index') }}" title="Bảng điều khiển" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-grid"></i> <span class="label">Bảng điều khiển</span>
     </a>
-    <a class="nav-link @yield('nav.users_active')" href="{{ route('dashboard') }}" title="Trang người dùng" data-bs-toggle="tooltip" data-bs-placement="right">
+    <a class="nav-link" href="{{ route('dashboard') }}" title="Trang người dùng" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-person"></i> <span class="label">Trang người dùng</span>
     </a>
     <a class="nav-link @yield('nav.users_active')" href="{{ route('admin.users') }}" title="Người dùng" data-bs-toggle="tooltip" data-bs-placement="right">
@@ -15,8 +15,8 @@
     <a class="nav-link @yield('nav.ngan-hang-nap-tien_active')" href="{{ route('admin.ngan-hang-nap-tien') }}" title="Ngân hàng nạp tiền" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-credit-card"></i> <span class="label">Ngân hàng nạp tiền</span>
     </a>
-    <a class="nav-link @yield('nav.transactions_active')" href="#" title="Giao dịch" data-bs-toggle="tooltip" data-bs-placement="right">
-      <i class="bi bi-cash-coin"></i> <span class="label">Giao dịch</span>
+    <a class="nav-link @yield('nav.nap-rut_active')" href="{{ route('admin.nap-rut') }}" title="Giao dịch" data-bs-toggle="tooltip" data-bs-placement="right">
+      <i class="bi bi-cash-coin"></i> <span class="label">Nạp rút</span>
     </a>
     <a class="nav-link @yield('nav.settings_active')" href="#" title="Cài đặt" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-gear"></i> <span class="label">Cài đặt</span>

@@ -24,6 +24,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('/ngan-hang-nap-tien/update', [AdminController::class, 'updateNganHangNapTien'])->name('admin.ngan-hang-nap-tien.update');
     Route::post('/delete-ngan-hang-nap-tien', [AdminController::class, 'destroyNganHangNapTien'])->name('admin.ngan-hang-nap-tien.destroy');
     // end Ngân hàng nạp tiền
+    // Nạp rút
+    Route::get('/nap-rut', [AdminController::class, 'napRut'])->name('admin.nap-rut');
+    Route::post('/nap-rut/update-status', [AdminController::class, 'updateNapRutStatus'])->name('admin.nap-rut.update-status');
+    // end Nạp rút
 });
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/login', [UserController::class, 'login'])->name('login');

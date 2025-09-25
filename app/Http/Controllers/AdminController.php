@@ -9,11 +9,11 @@ use App\Models\Profile;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\SanPhamDauTu;
+use App\Models\NapRut;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
 use App\Models\NganHangNapTien;
-
 class AdminController extends Controller
 {
     public function index()
@@ -536,6 +536,100 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Không thể xoá ngân hàng. Vui lòng thử lại sau.'
+            ], 500);
+        }
+    }
+    public function napRut(Request $request)
+    {
+        $keyword = trim((string) $request->input('q', ''));
+        $loai = $request->input('loai', '');
+        $trangThai = $request->input('trang_thai', '');
+        
+        $transactions = NapRut::with('user')
+            ->when($keyword !== '', function ($query) use ($keyword) {
+                $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $keyword) . '%';
+                $query->where(function ($q) use ($like) {
+                    $q->where('so_tai_khoan', 'like', $like)
+                        ->orWhere('chu_tai_khoan', 'like', $like)
+                        ->orWhere('ngan_hang', 'like', $like)
+                        ->orWhere('noi_dung', 'like', $like)
+                        ->orWhereHas('user', function ($userQuery) use ($like) {
+                            $userQuery->where('name', 'like', $like)
+                                     ->orWhere('email', 'like', $like);
+                        });
+                });
+            })
+            ->when($loai != '', function ($query) use ($loai) {
+                $query->where('loai', $loai);
+            })
+            ->when($trangThai != '', function ($query) use ($trangThai) {
+                $query->where('trang_thai', $trangThai);
+            })
+            ->orderByDesc('id')
+            ->paginate(10);
+            
+        return view('admin.nap-rut', compact('transactions'));
+    }
+
+    public function updateNapRutStatus(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'id' => ['required', 'integer', 'exists:nap_rut,id'],
+                'trang_thai' => ['required', 'integer', 'in:0,1,2']
+            ]);
+
+            $transaction = NapRut::findOrFail($validated['id']);
+            
+            // Lưu trạng thái cũ để kiểm tra
+            $oldStatus = $transaction->trang_thai;
+            $transaction->trang_thai = $validated['trang_thai'];
+            $transaction->save();
+
+            // Xử lý cộng số dư khi duyệt giao dịch nạp tiền
+            if ($validated['trang_thai'] == 1 && $transaction->loai == 'nap' && $oldStatus != 1) {
+                $profile = Profile::where('user_id', $transaction->user_id)->first();
+                if ($profile) {
+                    $profile->so_du = $profile->so_du + $transaction->so_tien;
+                    $profile->save();
+                }
+            }
+
+            // Xử lý hoàn lại số dư khi từ chối giao dịch rút tiền
+            if ($validated['trang_thai'] == 2 && $transaction->loai == 'rut' && $oldStatus == 1) {
+                $profile = Profile::where('user_id', $transaction->user_id)->first();
+                if ($profile) {
+                    $profile->so_du = $profile->so_du + $transaction->so_tien;
+                    $profile->save();
+                }
+            }
+
+            $statusText = '';
+            switch($validated['trang_thai']) {
+                case 0: $statusText = 'Chờ xử lý'; break;
+                case 1: $statusText = 'Đã duyệt'; break;
+                case 2: $statusText = 'Từ chối'; break;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Đã cập nhật trạng thái giao dịch thành '{$statusText}'"
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy giao dịch'
+            ], 404);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể cập nhật trạng thái giao dịch. Vui lòng thử lại sau.'
             ], 500);
         }
     }
