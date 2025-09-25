@@ -498,4 +498,165 @@ class UserDashboardController extends Controller
             throw $e;
         }
     }
+    public function rutTien(){
+        Log::info('UserDashboardController@rutTien: Bắt đầu hiển thị trang rút tiền', [
+            'user_id' => Auth::id(),
+            'user_email' => Auth::user()->email ?? 'N/A'
+        ]);
+        try {
+            $user = Auth::user();
+            $view = view('user.dashboard.rut-tien', compact('user'));
+            Log::info('UserDashboardController@rutTien: Hiển thị trang rút tiền thành công', [
+                'user_id' => Auth::id()
+            ]);
+            return $view;
+        } catch (\Exception $e) {
+            Log::error('UserDashboardController@rutTien: Lỗi khi hiển thị trang rút tiền', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
+    }
+
+    public function createRutTienRequest(Request $request)
+    {
+        Log::info('UserDashboardController@createRutTienRequest: Bắt đầu tạo yêu cầu rút tiền', [
+            'user_id' => Auth::id(),
+            'user_email' => Auth::user()->email ?? 'N/A',
+            'is_ajax' => $request->ajax(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'so_tien' => 'required|numeric|min:50000',
+            'mat_khau_rut_tien' => 'required|string',
+        ], [
+            'so_tien.required' => 'Vui lòng nhập số tiền',
+            'so_tien.numeric' => 'Số tiền phải là số',
+            'so_tien.min' => 'Số tiền tối thiểu là 50,000 VND',
+            'mat_khau_rut_tien.required' => 'Vui lòng nhập mật khẩu rút tiền',
+        ]);
+
+        if ($validator->fails()) {
+            Log::warning('UserDashboardController@createRutTienRequest: Validation thất bại', [
+                'user_id' => Auth::id(),
+                'errors' => $validator->errors()->toArray(),
+                'input_data' => $request->except(['_token', 'mat_khau_rut_tien'])
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = Auth::user();
+        $profile = $user->profile;
+        
+        // Kiểm tra profile và thông tin ngân hàng
+        if (!$profile || !$profile->ngan_hang || !$profile->so_tai_khoan || !$profile->chu_tai_khoan) {
+            Log::warning('UserDashboardController@createRutTienRequest: User chưa cập nhật thông tin ngân hàng', [
+                'user_id' => $user->id,
+                'has_profile' => $profile ? true : false,
+                'has_bank_info' => $profile && $profile->ngan_hang && $profile->so_tai_khoan && $profile->chu_tai_khoan
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Vui lòng cập nhật thông tin ngân hàng trước khi rút tiền'
+            ], 422);
+        }
+
+        // Kiểm tra mật khẩu rút tiền
+        if (!$profile->mat_khau_rut_tien || $profile->mat_khau_rut_tien !== $request->mat_khau_rut_tien) {
+            Log::warning('UserDashboardController@createRutTienRequest: Mật khẩu rút tiền không đúng', [
+                'user_id' => $user->id,
+                'ip_address' => $request->ip()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Mật khẩu rút tiền không đúng'
+            ], 422);
+        }
+
+        // Kiểm tra số dư
+        if ($profile->so_du < $request->so_tien) {
+            Log::warning('UserDashboardController@createRutTienRequest: Số dư không đủ', [
+                'user_id' => $user->id,
+                'current_balance' => $profile->so_du,
+                'requested_amount' => $request->so_tien
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Số dư không đủ để thực hiện giao dịch'
+            ], 422);
+        }
+
+        Log::info('UserDashboardController@createRutTienRequest: Bắt đầu tạo yêu cầu rút tiền', [
+            'user_id' => $user->id,
+            'so_tien' => $request->so_tien,
+            'ngan_hang' => $profile->ngan_hang,
+            'so_tai_khoan' => $profile->so_tai_khoan,
+            'chu_tai_khoan' => $profile->chu_tai_khoan,
+            'current_balance' => $profile->so_du
+        ]);
+
+        try {
+            // Trừ tiền ngay lập tức khi tạo yêu cầu rút tiền
+            $profile->so_du = $profile->so_du - $request->so_tien;
+            $profile->save();
+
+            // Tạo yêu cầu rút tiền
+            $napRut = NapRut::create([
+                'user_id' => $user->id,
+                'loai' => 'rut', // Loại rút tiền
+                'so_tien' => $request->so_tien,
+                'ngan_hang' => $profile->ngan_hang,
+                'so_tai_khoan' => $profile->so_tai_khoan,
+                'chu_tai_khoan' => $profile->chu_tai_khoan,
+                'noi_dung' => $user->phone,
+                'trang_thai' => 0 // 0: chờ xử lý, 1: thành công, 2: từ chối
+            ]);
+
+            Log::info('UserDashboardController@createRutTienRequest: Tạo yêu cầu rút tiền thành công và đã trừ tiền', [
+                'user_id' => $user->id,
+                'nap_rut_id' => $napRut->id,
+                'so_tien_rut' => $request->so_tien,
+                'so_du_con_lai' => $profile->so_du,
+                'ip_address' => $request->ip()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Yêu cầu rút tiền đã được tạo thành công!',
+                'data' => [
+                    'id' => $napRut->id,
+                    'so_tien' => $napRut->so_tien,
+                    'ngan_hang' => $napRut->ngan_hang,
+                    'so_tai_khoan' => $napRut->so_tai_khoan,
+                    'chu_tai_khoan' => $napRut->chu_tai_khoan,
+                    'noi_dung' => $napRut->noi_dung,
+                    'trang_thai' => $napRut->trang_thai,
+                    'trang_thai_text' => $napRut->trang_thai == 0 ? 'Chờ xử lý' : ($napRut->trang_thai == 1 ? 'Thành công' : 'Từ chối'),
+                    'created_at' => $napRut->created_at->format('d/m/Y H:i:s')
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('UserDashboardController@createRutTienRequest: Lỗi khi tạo yêu cầu rút tiền', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi tạo yêu cầu rút tiền'
+            ], 500);
+        }
+    }
 }

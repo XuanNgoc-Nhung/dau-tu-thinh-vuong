@@ -595,7 +595,25 @@ class AdminController extends Controller
                 }
             }
 
-            // Xử lý hoàn lại số dư khi từ chối giao dịch rút tiền
+            // Xử lý hoàn lại số dư khi từ chối giao dịch rút tiền (tiền đã bị trừ khi tạo yêu cầu)
+            if ($validated['trang_thai'] == 2 && $transaction->loai == 'rut' && $oldStatus != 2) {
+                $profile = Profile::where('user_id', $transaction->user_id)->first();
+                if ($profile) {
+                    $profile->so_du = $profile->so_du + $transaction->so_tien;
+                    $profile->save();
+                }
+            }
+
+            // Xử lý trường hợp admin thay đổi từ "từ chối" về "đã duyệt" cho giao dịch rút tiền
+            if ($validated['trang_thai'] == 1 && $transaction->loai == 'rut' && $oldStatus == 2) {
+                $profile = Profile::where('user_id', $transaction->user_id)->first();
+                if ($profile) {
+                    $profile->so_du = $profile->so_du - $transaction->so_tien;
+                    $profile->save();
+                }
+            }
+
+            // Xử lý trường hợp admin thay đổi từ "đã duyệt" về "từ chối" cho giao dịch rút tiền
             if ($validated['trang_thai'] == 2 && $transaction->loai == 'rut' && $oldStatus == 1) {
                 $profile = Profile::where('user_id', $transaction->user_id)->first();
                 if ($profile) {

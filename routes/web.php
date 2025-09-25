@@ -52,6 +52,10 @@ Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
     Route::get('/nap-tien', [UserDashboardController::class, 'napTien'])->name('dashboard.nap-tien');
     Route::post('/nap-tien', [UserDashboardController::class, 'createNapTienRequest'])->name('dashboard.nap-tien.create');
     // end Nạp tiền
+    // Rút tiền
+    Route::get('/rut-tien', [UserDashboardController::class, 'rutTien'])->name('dashboard.rut-tien');
+    Route::post('/rut-tien', [UserDashboardController::class, 'createRutTienRequest'])->name('dashboard.rut-tien.create');
+    // end Rút tiền
     // Lịch sử nạp rút
     Route::get('/lich-su-nap-rut', [UserDashboardController::class, 'lichSuNapRut'])->name('dashboard.lich-su-nap-rut');
     // end Lịch sử nạp rút

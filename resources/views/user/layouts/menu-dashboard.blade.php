@@ -15,8 +15,8 @@
 
             <li class="{{ request()->routeIs('dashboard.ngan-hang') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.ngan-hang') }}" class="menu-item"><i class="bi bi-credit-card me-2"></i>Thẻ ngân hàng</a></li>
             <li class="{{ request()->routeIs('dashboard.nap-tien') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.nap-tien') }}" class="menu-item"><i class="bi bi-wallet2 me-2"></i>Nạp tiền</a></li>
+            <li class="{{ request()->routeIs('dashboard.rut-tien') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.rut-tien') }}" class="menu-item"><i class="bi bi-wallet2 me-2"></i>Rút tiền</a></li>
             <li class="{{ request()->routeIs('dashboard.lich-su-nap-rut') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.lich-su-nap-rut') }}" class="menu-item"><i class="bi bi-clock-history me-2"></i>Lịch sử nạp rút</a></li>
-            <li><a href="#" class="menu-item"><i class="bi bi-arrow-repeat me-2"></i>Chuyển khoản</a></li>
         </ul>
     </div>
 
