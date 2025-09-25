@@ -37,7 +37,7 @@
                         <!-- Form thay đổi mật khẩu đăng nhập -->
                         <div class="col-lg-6 mb-4">
                             <div class="card border-primary">
-                                <div class="card-header bg-primary text-white">
+                                <div class="card-header bg-primary">
                                     <h6 class="mb-0">
                                         <i class="bi bi-key me-2"></i>
                                         Thay đổi mật khẩu đăng nhập
