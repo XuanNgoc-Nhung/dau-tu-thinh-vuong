@@ -133,9 +133,9 @@
 		</div>
 	</div>
 	<div class="card-footer bg-white d-flex justify-content-between align-items-center">
-		<div class="small text-muted">Hiển thị {{ $banks->count() }} / {{ $banks->total() }} ngân hàng</div>
+		<div class="small text-muted">Hiển thị {{ $banks->firstItem() ?? 0 }}–{{ $banks->lastItem() ?? 0 }} / {{ $banks->total() }} ngân hàng</div>
 		<div>
-			{{ $banks->withQueryString()->links() }}
+			{{ $banks->withQueryString()->links('vendor.pagination.admin') }}
 		</div>
 	</div>
 </div>

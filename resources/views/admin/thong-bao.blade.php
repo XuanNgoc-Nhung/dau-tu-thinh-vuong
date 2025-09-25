@@ -116,9 +116,9 @@
       </div>
     </div>
     <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-      <div class="small text-muted">Hiển thị {{ $thongBaos->count() }} / {{ $thongBaos->total() }} thông báo</div>
+      <div class="small text-muted">Hiển thị {{ $thongBaos->firstItem() ?? 0 }}–{{ $thongBaos->lastItem() ?? 0 }} / {{ $thongBaos->total() }} thông báo</div>
       <div>
-        {{ $thongBaos->withQueryString()->links() }}
+        {{ $thongBaos->withQueryString()->links('vendor.pagination.admin') }}
       </div>
     </div>
   </div>

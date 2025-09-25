@@ -153,9 +153,8 @@
 		</div>
 	</div>
 	<div class="card-footer bg-white d-flex justify-content-between align-items-center">
-		<div class="small text-muted">Hiển thị {{ $transactions->count() }} / {{ $transactions->total() }} giao dịch</div>
 		<div>
-			{{ $transactions->withQueryString()->links() }}
+			{{ $transactions->withQueryString()->links('vendor.pagination.admin') }}
 		</div>
 	</div>
 </div>

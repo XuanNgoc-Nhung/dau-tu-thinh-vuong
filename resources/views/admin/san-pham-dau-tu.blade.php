@@ -163,9 +163,9 @@
         </div>
     </div>
     <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-        <div class="small text-muted">Hiển thị {{ $sanPhamDauTu->count() }} / {{ $sanPhamDauTu->total() }} sản phẩm</div>
+        <div class="small text-muted">Hiển thị {{ $sanPhamDauTu->firstItem() ?? 0 }}–{{ $sanPhamDauTu->lastItem() ?? 0 }} / {{ $sanPhamDauTu->total() }} sản phẩm</div>
         <div>
-            {{ $sanPhamDauTu->withQueryString()->links() }}
+            {{ $sanPhamDauTu->withQueryString()->links('vendor.pagination.admin') }}
         </div>
     </div>
 </div>

@@ -208,9 +208,9 @@
         </div>
     </div>
     <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-        <div class="small text-muted">Hiển thị {{ $users->count() }} / {{ $users->total() }} người dùng</div>
+        <div class="small text-muted">Hiển thị {{ $users->firstItem() ?? 0 }}–{{ $users->lastItem() ?? 0 }} / {{ $users->total() }} người dùng</div>
         <div>
-            {{ $users->withQueryString()->links() }}
+            {{ $users->withQueryString()->links('vendor.pagination.admin') }}
         </div>
     </div>
 </div>
