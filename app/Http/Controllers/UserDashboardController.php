@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\NganHangNapTien;
 use App\Models\ThongBao;
 use App\Models\NapRut;
+use App\Models\SanPhamDauTu;
 
 class UserDashboardController extends Controller
 {
@@ -896,5 +897,28 @@ class UserDashboardController extends Controller
                 'message' => 'Có lỗi xảy ra khi gửi yêu cầu xác thực danh tính'
             ], 500);
         }
+    }
+    public function dauTu(\Illuminate\Http\Request $request){
+        $search = trim((string) $request->get('search', ''));
+        Log::info('UserDashboardController@dauTu: Bắt đầu hiển thị trang đầu tư', [
+            'user_id' => Auth::id(),
+            'user_email' => Auth::user()->email ?? 'N/A',
+            'search' => $search !== '' ? $search : null
+        ]);
+
+        $query = SanPhamDauTu::query()->where('trang_thai', 1);
+        if ($search !== '') {
+            $query->where('ten', 'like', '%'.$search.'%');
+        }
+
+        $sanPhamDauTu = $query->orderByDesc('id')->get();
+        return view('user.dashboard.dau-tu', compact('sanPhamDauTu'));
+    }
+    public function duAnCuaToi(){
+        Log::info('UserDashboardController@duAnCuaToi: Bắt đầu hiển thị trang dự án của tôi', [
+            'user_id' => Auth::id(),
+            'user_email' => Auth::user()->email ?? 'N/A'
+        ]);
+        return view('user.dashboard.du-an-cua-toi');
     }
 }

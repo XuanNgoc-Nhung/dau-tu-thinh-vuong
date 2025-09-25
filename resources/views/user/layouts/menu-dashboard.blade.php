@@ -24,9 +24,9 @@
     <div class="menu-section">
         <h6 class="menu-title">Đầu tư</h6>
         <ul class="menu-list">
-            <li><a href="#" class="menu-item"><i class="bi bi-graph-up-arrow me-2"></i>Danh mục đầu tư</a>
+            <li class="{{ request()->routeIs('dashboard.dau-tu') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.dau-tu') }}" class="menu-item"><i class="bi bi-graph-up-arrow me-2"></i>Danh mục đầu tư</a>
             </li>
-            <li><a href="#" class="menu-item"><i class="bi bi-pie-chart me-2"></i>Dự án của tôi</a></li>
+            <li class="{{ request()->routeIs('dashboard.du-an-cua-toi') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.du-an-cua-toi') }}" class="menu-item"><i class="bi bi-pie-chart me-2"></i>Dự án của tôi</a></li>
         </ul>
     </div>
     <div class="menu-section">

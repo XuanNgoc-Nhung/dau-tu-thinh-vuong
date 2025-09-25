@@ -28,6 +28,12 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('/nap-rut', [AdminController::class, 'napRut'])->name('admin.nap-rut');
     Route::post('/nap-rut/update-status', [AdminController::class, 'updateNapRutStatus'])->name('admin.nap-rut.update-status');
     // end Nạp rút
+    //Đầu tư
+    Route::get('/dau-tu', [AdminController::class, 'dauTu'])->name('admin.dau-tu');
+    Route::post('/dau-tu', [AdminController::class, 'storeDauTu'])->name('admin.dau-tu.store');
+    Route::post('/dau-tu/update', [AdminController::class, 'updateDauTu'])->name('admin.dau-tu.update');
+    Route::post('/delete-dau-tu', [AdminController::class, 'destroyDauTu'])->name('admin.dau-tu.destroy');
+    // end Đầu tư
     //Thông báo
     Route::get('/thong-bao', [AdminController::class, 'thongBao'])->name('admin.thong-bao');
     Route::post('/thong-bao', [AdminController::class, 'storeThongBao'])->name('admin.thong-bao.store');
@@ -71,4 +77,10 @@ Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
     // Thông báo
     Route::get('/thong-bao', [UserDashboardController::class, 'thongBao'])->name('dashboard.thong-bao');
     // end Thông báo
+    // Đầu tư
+    Route::get('/dau-tu', [UserDashboardController::class, 'dauTu'])->name('dashboard.dau-tu');
+    // end Đầu tư
+    // Dự án của tôi
+    Route::get('/du-an-cua-toi', [UserDashboardController::class, 'duAnCuaToi'])->name('dashboard.du-an-cua-toi');
+    // end Dự án của tôi
 });

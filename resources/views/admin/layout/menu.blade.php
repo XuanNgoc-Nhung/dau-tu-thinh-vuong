@@ -18,6 +18,9 @@
     <a class="nav-link @yield('nav.nap-rut_active')" href="{{ route('admin.nap-rut') }}" title="Giao dịch" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-cash-coin"></i> <span class="label">Nạp rút</span>
     </a>
+    <a class="nav-link @yield('nav.dau-tu_active')" href="{{ route('admin.dau-tu') }}" title="Đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
+      <i class="bi bi-graph-up"></i> <span class="label">Đầu tư</span>
+    </a>
     <a class="nav-link @yield('nav.thong-bao_active')" href="{{ route('admin.thong-bao') }}" title="Thông báo" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-bell"></i> <span class="label">Thông báo</span>
     </a>
