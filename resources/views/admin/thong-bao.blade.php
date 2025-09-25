@@ -71,12 +71,29 @@
                 <td class="text-muted">{{ $thongBaos->firstItem() + $index }}</td>
                 <td class="fw-semibold">{{ $tb->tieu_de }}</td>
                 <td class="text-muted">{{ Str::limit($tb->noi_dung, 120) }}</td>
-                <td>
+                <td class="align-items-center gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    title="Ẩn/Hiển thị nhanh"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-action="toggle-status"
+                    onclick='toggleThongBao({{ $tb }})'
+                  >
+                    @if($tb->trang_thai)
+                      <i class="bi bi-eye-slash"></i>
+                    @else
+                      <i class="bi bi-eye"></i>
+                    @endif
+                  </button>
                   @if($tb->trang_thai)
-                    <span class="badge text-bg-success">Đang hiển thị</span>
+                    <span class="badge text-bg-success mb-0">Đang hiển thị</span>
                   @else
-                    <span class="badge text-bg-secondary">Ẩn</span>
+                    <span class="badge text-bg-secondary mb-0">Ẩn</span>
                   @endif
+                    </div>
                 </td>
                 <td class="action-col text-center">
                   <div class="btn-group btn-group-sm" role="group">
@@ -144,6 +161,12 @@
 @section('scripts')
 <script>
   (function() {
+    // init tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+      new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
     const modalEl = document.getElementById('thongBaoModal');
     const modal = new bootstrap.Modal(modalEl);
     const btnOpenCreate = document.getElementById('btnOpenCreate');
@@ -260,6 +283,59 @@
       }
     }
 
+    function toggleStatus(btn) {
+      let tb;
+      try {
+        const raw = btn.getAttribute('data-tb');
+        tb = raw ? JSON.parse(raw) : null;
+      } catch(_) { tb = null; }
+      if (!tb) {
+        tb = {
+          id: btn.getAttribute('data-id'),
+          tieu_de: btn.getAttribute('data-title'),
+          noi_dung: btn.getAttribute('data-content'),
+          trang_thai: parseInt(btn.getAttribute('data-status') || '0', 10)
+        };
+      }
+      toggleThongBao(tb);
+    }
+
+    window.toggleThongBao = function(tb) {
+      const id = tb.id;
+      const currentStatus = String(tb.trang_thai) === '1';
+      const newStatus = currentStatus ? '0' : '1';
+      const tieuDe = tb.tieu_de;
+      const noiDung = tb.noi_dung;
+
+      const payload = new FormData();
+      payload.append('id', id);
+      payload.append('tieu_de', tieuDe);
+      payload.append('noi_dung', noiDung);
+      payload.append('trang_thai', newStatus);
+
+      axios.post('{{ route('admin.thong-bao.update') }}', payload)
+        .then(function(res) {
+          const data = res.data || {};
+          if (data.success) {
+            if (typeof queueToast === 'function') {
+              queueToast('success', 'Đã cập nhật trạng thái');
+            } else if (typeof showToast === 'function') {
+              showToast('success', 'Đã cập nhật trạng thái');
+            }
+            window.location.reload();
+          } else {
+            if (typeof showToast === 'function') {
+              showToast('error', data.message || 'Không thể cập nhật trạng thái');
+            }
+          }
+        })
+        .catch(function() {
+          if (typeof showToast === 'function') {
+            showToast('error', 'Không thể cập nhật trạng thái');
+          }
+        });
+    }
+
     btnOpenCreate.addEventListener('click', openCreate);
     btnSave.addEventListener('click', save);
 
@@ -269,6 +345,7 @@
       const action = target.getAttribute('data-action');
       if (action === 'edit') openEdit(target);
       if (action === 'delete') confirmDelete(target.getAttribute('data-id'));
+      if (action === 'toggle-status') toggleStatus(target);
     });
   })();
 </script>

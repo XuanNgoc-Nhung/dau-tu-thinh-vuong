@@ -31,7 +31,9 @@
                                     <h2 class="accordion-header" id="heading{{ $tb->id }}">
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $tb->id }}" aria-expanded="false" aria-controls="collapse{{ $tb->id }}">
                                             <div class="d-flex w-100 justify-content-between align-items-center">
-                                                <div class="me-3 fw-semibold">{{ $index + 1 }}. {{ $tb->tieu_de }}</div>
+                                                <div class="me-3 fw-semibold">
+                                                    <img src="{{ asset('noti-icon.gif') }}" alt="Noti" class="img-fluid me-2" style="width: 20px; height: 20px;">
+                                                    {{ $index + 1 }}. {{ $tb->tieu_de }}</div>
                                                 {{-- <small class="text-muted">#{{ str_pad($tb->id, 6, '0', STR_PAD_LEFT) }}</small> --}}
                                                 <small class="text-muted">{{ $tb->created_at->format('d/m/Y H:i') }}</small>
                                             </div>
