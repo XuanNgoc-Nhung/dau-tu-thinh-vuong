@@ -329,6 +329,11 @@
             font-weight: bold;
             box-shadow: 0 8px 25px rgba(22, 163, 74, 0.3);
         }
+        /* Navbar dropdown hover (desktop) */
+        @media (min-width: 992px) {
+            .navbar .dropdown:hover .dropdown-menu { display:block; }
+            .navbar .dropdown-toggle::after { vertical-align: .15em; }
+        }
     </style>
 </head>
 <body data-bs-spy="scroll" data-bs-target="#navbarNav" data-bs-offset="80" tabindex="0">
@@ -346,10 +351,29 @@
                     <li class="nav-item"><a class="nav-link text-white" href="#vi-sao">Vì sao chọn</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="#buoc-thanh-vien">Thành viên</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="#faq">Hỏi đáp</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#dau-tu">Đầu tư</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#tiet-kiem">Tiết kiệm</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ route('dashboard.dau-tu') }}">Đầu tư</a></li>
                     @if(auth()->check())    
-                    <li class="nav-item"><a class="btn btn-warning btn-sm px-3" href="{{ route('dashboard') }}">Tài khoản</a></li>
+                    <li class="nav-item me-2">
+                        <span class="btn btn-info btn-sm px-3 fw-semibold">
+                            $ {{ number_format(optional(auth()->user()->profile)->so_du ?? 0, 0, ',', '.') }}
+                        </span>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="btn btn-warning btn-sm px-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ auth()->user()->phone ?? 'Tài khoản' }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ route('dashboard.profile') }}">Cá nhân</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
                     @else
                     <li class="nav-item">
                         <a class="btn btn-warning btn-sm px-3" href="{{ route('register') }}">
