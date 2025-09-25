@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\NganHangNapTien;
+use App\Models\ThongBao;
 use App\Models\NapRut;
 
 class UserDashboardController extends Controller
@@ -538,7 +539,42 @@ class UserDashboardController extends Controller
             throw $e;
         }
     }
+    public function thongBao(Request $request){
+        Log::info('UserDashboardController@thongBao: Bắt đầu hiển thị trang thông báo', [
+            'user_id' => Auth::id(),
+            'q' => $request->q
+        ]);
 
+        try {
+            $query = ThongBao::query()->where('trang_thai', 1);
+            if ($request->filled('q')) {
+                $keyword = trim($request->q);
+                $query->where(function($q) use ($keyword) {
+                    $q->where('tieu_de', 'like', "%{$keyword}%")
+                      ->orWhere('noi_dung', 'like', "%{$keyword}%");
+                });
+            }
+
+            $thongBao = $query
+                ->orderByDesc('id')
+                ->paginate(10)
+                ->appends($request->only('q'));
+
+            $view = view('user.dashboard.thong-bao', compact('thongBao'));
+            Log::info('UserDashboardController@thongBao: Hiển thị trang thông báo thành công', [
+                'user_id' => Auth::id(),
+                'total_records' => $thongBao->total()
+            ]);
+            return $view;
+        } catch (\Exception $e) {
+            Log::error('UserDashboardController@thongBao: Lỗi khi hiển thị trang thông báo', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
+    }
     public function createRutTienRequest(Request $request)
     {
         Log::info('UserDashboardController@createRutTienRequest: Bắt đầu tạo yêu cầu rút tiền', [

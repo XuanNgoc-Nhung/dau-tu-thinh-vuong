@@ -68,4 +68,7 @@ Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
     // Lịch sử nạp rút
     Route::get('/lich-su-nap-rut', [UserDashboardController::class, 'lichSuNapRut'])->name('dashboard.lich-su-nap-rut');
     // end Lịch sử nạp rút
+    // Thông báo
+    Route::get('/thong-bao', [UserDashboardController::class, 'thongBao'])->name('dashboard.thong-bao');
+    // end Thông báo
 });
