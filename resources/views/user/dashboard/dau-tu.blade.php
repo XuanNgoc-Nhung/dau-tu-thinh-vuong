@@ -34,10 +34,21 @@
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title mb-2">{{ $sp->ten }}</h5>
                     <ul class="list-unstyled mb-3">
-                        <li>Vốn tối thiểu: <strong>{{ number_format($sp->von_toi_thieu) }}</strong></li>
-                        <li>Vốn tối đa: <strong>{{ $sp->von_toi_da ? number_format($sp->von_toi_da) : 'Không giới hạn' }}</strong></li>
+                        <li>Vốn: <strong>
+                            @php($min = $sp->von_toi_thieu)
+                            @php($max = $sp->von_toi_da)
+                            @if($min !== null && $max !== null)
+                                {{ number_format($min) }} - {{ number_format($max) }}
+                            @elseif($min !== null)
+                                ≥ {{ number_format($min) }}
+                            @elseif($max !== null)
+                                ≤ {{ number_format($max) }}
+                            @else
+                                —
+                            @endif
+                        </strong></li>
                         <li>Lãi suất: <strong>{{ rtrim(rtrim(number_format($sp->lai_suat, 2), '0'), '.') }}%</strong></li>
-                        <li>Số chu kỳ: <strong>{{ $sp->so_luong_chu_ky }}</strong></li>
+                        
                         <li>Thời gian/chu kỳ: <strong>{{ $sp->thoi_gian_mot_chu_ky }} ngày</strong></li>
                     </ul>
                     <div class="mt-auto">

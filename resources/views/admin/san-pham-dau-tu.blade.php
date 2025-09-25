@@ -71,7 +71,6 @@
                         <th>Tên</th>
                         <th class="image-cell">Hình ảnh</th>
                         <th>Khoảng vốn</th>
-                        <th>Số lượng chu kỳ</th>
                         <th>Thời gian 1 chu kỳ</th>
                         <th>Lãi suất</th>
                         <th>Nhãn dán</th>
@@ -107,7 +106,6 @@
                                 —
                             @endif
                         </td>
-                        <td>{{ $sp->so_luong_chu_ky ?? '—' }}</td>
                         <td>{{ $sp->thoi_gian_mot_chu_ky ? $sp->thoi_gian_mot_chu_ky . ' giờ' : '—' }}</td>
                         <td>{{ $sp->lai_suat !== null ? rtrim(rtrim(number_format((float)$sp->lai_suat, 2, '.', ''), '0'), '.') . '%' : '—' }}</td>
                         <td>{{ $sp->nhan_dan ?? '—' }}</td>
@@ -139,7 +137,6 @@
                                     data-hinh_anh="{{ $sp->hinh_anh }}"
                                     data-von_toi_thieu="{{ $sp->von_toi_thieu }}"
                                     data-von_toi_da="{{ $sp->von_toi_da }}"
-                                    data-so_luong_chu_ky="{{ $sp->so_luong_chu_ky }}"
                                     data-thoi_gian_mot_chu_ky="{{ $sp->thoi_gian_mot_chu_ky }}"
                                     data-lai_suat="{{ $sp->lai_suat }}"
                                     data-nhan_dan="{{ $sp->nhan_dan }}"
@@ -155,7 +152,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="11" class="text-center text-muted py-4">Không có sản phẩm đầu tư nào.</td>
+                        <td colspan="10" class="text-center text-muted py-4">Không có sản phẩm đầu tư nào.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -210,10 +207,7 @@
 							<label class="form-label">Vốn tối đa</label>
 						<input type="number" step="0.01" name="von_toi_da" class="form-control" placeholder="0" required>
 						</div>
-						<div class="col-12 col-md-6 col-lg-3">
-							<label class="form-label">Số lượng chu kỳ</label>
-						<input type="number" name="so_luong_chu_ky" class="form-control" placeholder="ví dụ: 12" required>
-						</div>
+
 						<div class="col-12 col-md-6 col-lg-3">
 							<label class="form-label">Thời gian 1 chu kỳ (giờ)</label>
 						<input type="number" name="thoi_gian_mot_chu_ky" class="form-control" placeholder="ví dụ: 24" required>
@@ -284,10 +278,7 @@
                             <label class="form-label">Vốn tối đa</label>
                             <input type="number" step="0.01" name="von_toi_da" id="editVonToiDa" class="form-control" required>
                         </div>
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <label class="form-label">Số lượng chu kỳ</label>
-                            <input type="number" name="so_luong_chu_ky" id="editSoLuongChuKy" class="form-control" required>
-                        </div>
+
                         <div class="col-12 col-md-6 col-lg-3">
                             <label class="form-label">Thời gian 1 chu kỳ (giờ)</label>
                             <input type="number" name="thoi_gian_mot_chu_ky" id="editThoiGianMotChuKy" class="form-control" required>
@@ -472,7 +463,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var editImagePreview = document.getElementById('editImagePreview');
     var editVonToiThieu = document.getElementById('editVonToiThieu');
     var editVonToiDa = document.getElementById('editVonToiDa');
-    var editSoLuongChuKy = document.getElementById('editSoLuongChuKy');
+    
     var editThoiGianMotChuKy = document.getElementById('editThoiGianMotChuKy');
     var editLaiSuat = document.getElementById('editLaiSuat');
     var editNhanDan = document.getElementById('editNhanDan');
@@ -513,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (editTen) editTen.value = d.ten || '';
             if (editVonToiThieu) editVonToiThieu.value = d.von_toi_thieu || '';
             if (editVonToiDa) editVonToiDa.value = d.von_toi_da || '';
-            if (editSoLuongChuKy) editSoLuongChuKy.value = d.so_luong_chu_ky || '';
+            
             if (editThoiGianMotChuKy) editThoiGianMotChuKy.value = d.thoi_gian_mot_chu_ky || '';
             if (editLaiSuat) editLaiSuat.value = d.lai_suat || '';
             if (editNhanDan) editNhanDan.value = d.nhan_dan || '';

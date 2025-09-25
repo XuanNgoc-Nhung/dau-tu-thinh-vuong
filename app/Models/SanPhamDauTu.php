@@ -14,7 +14,6 @@ class SanPhamDauTu extends Model
         'von_toi_thieu',
         'von_toi_da',
         'lai_suat',
-        'so_luong_chu_ky',
         'thoi_gian_mot_chu_ky',
         'nhan_dan',
         'mo_ta',

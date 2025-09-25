@@ -176,7 +176,6 @@ class AdminController extends Controller
                 'hinh_anh' => ['nullable','file','image','mimes:jpeg,jpg,png,webp','max:5120'],
                 'von_toi_thieu' => ['nullable','numeric'],
                 'von_toi_da' => ['nullable','numeric'],
-                'so_luong_chu_ky' => ['nullable','integer'],
                 'thoi_gian_mot_chu_ky' => ['nullable','integer'],
                 'nhan_dan' => ['nullable','string','max:255'],
                 'mo_ta' => ['nullable','string','max:255'],
@@ -222,9 +221,7 @@ class AdminController extends Controller
             if (array_key_exists('von_toi_da', $validated)) {
                 $sanPhamDauTu->von_toi_da = $validated['von_toi_da'];
             }
-            if (array_key_exists('so_luong_chu_ky', $validated)) {
-                $sanPhamDauTu->so_luong_chu_ky = $validated['so_luong_chu_ky'];
-            }
+            
             if (array_key_exists('thoi_gian_mot_chu_ky', $validated)) {
                 $sanPhamDauTu->thoi_gian_mot_chu_ky = $validated['thoi_gian_mot_chu_ky'];
             }
@@ -271,7 +268,6 @@ class AdminController extends Controller
                 'hinh_anh' => ['required','file','image','mimes:jpeg,jpg,png,webp','max:5120'],
                 'von_toi_thieu' => ['required','numeric'],
                 'von_toi_da' => ['required','numeric'],
-                'so_luong_chu_ky' => ['required','integer','min:0'],
                 'thoi_gian_mot_chu_ky' => ['required','integer','min:0'],
                 'lai_suat' => ['required','numeric'],
                 'nhan_dan' => ['nullable','string','max:255'],
@@ -304,7 +300,6 @@ class AdminController extends Controller
                 'von_toi_thieu' => $validated['von_toi_thieu'],
                 'von_toi_da' => $validated['von_toi_da'],
                 'lai_suat' => $validated['lai_suat'],
-                'so_luong_chu_ky' => $validated['so_luong_chu_ky'],
                 'thoi_gian_mot_chu_ky' => $validated['thoi_gian_mot_chu_ky'],
                 'nhan_dan' => $validated['nhan_dan'] ?? null,
                 'mo_ta' => $validated['mo_ta'],
