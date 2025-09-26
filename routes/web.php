@@ -43,6 +43,8 @@ Route::group(['prefix' => 'admin'], function () {
     // end Thông báo
 });
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/refresh-gia-vang', [HomeController::class, 'refreshGiaVang'])->name('refresh-gia-vang');
+Route::get('/api/gia-vang-data-list', [HomeController::class, 'getGiaVangDataList'])->name('api.gia-vang-data-list');
 Route::get('/login', [UserController::class, 'login'])->name('login');
 Route::post('/login', [UserController::class, 'postLogin'])->name('post-login');
 Route::get('/register', [UserController::class, 'register'])->name('register');

@@ -12,6 +12,7 @@
                 </li>
                 @if(request()->routeIs('home'))
                 <li class="nav-item me-3"><a class="nav-link text-white" href="#du-an">Dự án</a></li>
+                <li class="nav-item me-3"><a class="nav-link text-white" href="#gia-vang">Giá vàng</a></li>
                 <li class="nav-item me-3"><a class="nav-link text-white" href="#ve-chung-toi">Về chúng tôi</a></li>
                 <li class="nav-item me-3"><a class="nav-link text-white" href="#loi-the">Lợi thế</a></li>
                 <li class="nav-item me-3"><a class="nav-link text-white" href="#buoc-thanh-vien">Thành viên</a></li>
