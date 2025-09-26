@@ -441,9 +441,11 @@
             const target = document.getElementById('typedSlogan');
             if (!target) return;
             const slogans = [
-                'Đầu tư thông minh – Tương lai vững bền',
-                'An toàn – Minh bạch – Hiệu quả',
-                'Tích lũy hôm nay – Thịnh vượng ngày mai'
+                'Đầu tư thông minh',
+                'An toàn - Minh bạch',
+                'Hiệu quả - Bền vững',
+                'An tâm - Song hành',
+                'Tương lai vững bền'
             ];
             let sloganIndex = 0;
             let charIndex = 0;

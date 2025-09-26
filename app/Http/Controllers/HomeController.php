@@ -18,16 +18,9 @@ class HomeController extends Controller
             ->get();
         
         // Lấy dữ liệu giá vàng từ API BTMC
-        $giaVangData = $this->getGiaVangDataDirect();
-        
-        // Lấy ra dataList từ giaVangData
-        $dataList = $this->getDataListFromGiaVang($giaVangData);
-        if ($dataList) {
-            Log::info('DataList extracted successfully', ['count' => count($dataList)]);
-        } else {
-            Log::warning('DataList not found in giaVangData', ['giaVangData' => $giaVangData]);
-        }
-        return view('user.home', compact('sanPhamDauTu', 'giaVangData', 'dataList'));
+        $dataList = $this->getGiaVangDataDirect();
+        // dd($dataList);
+        return view('user.home', compact('sanPhamDauTu', 'dataList'));
     }
     
     /**
@@ -35,18 +28,72 @@ class HomeController extends Controller
      */
     private function getGiaVangDataDirect()
     {
-        try {
-            $link   = 'http://api.btmc.vn/api/BTMCAPI/getpricebtmc?key=3kd8ub1llcg9t45hnoh8hmn7t5kc2v';
-            $response = Http::get($link);
-            return $response->json();
-        } catch (\Exception $e) {
-            Log::error('Error fetching DOJI Gold data', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
-            return $this->getFallbackData();
-        }
+        $data = [
+            [
+                "name" => "SJC",
+                "prices" => [
+                    "giaMuaHomQua" => 132500,
+                    "giaBanHomQua" => 134500,
+                    "giaMuaHomNay" => 132500,
+                    "giaBanHomNay" => 134500,
+                ]
+            ],
+            [
+                "name" => "DOJI HN",
+                "prices" => [
+                    "giaMuaHomQua" => 132500,
+                    "giaBanHomQua" => 134500,
+                    "giaMuaHomNay" => 132500,
+                    "giaBanHomNay" => 134500,
+                ]
+            ],
+            [
+                "name" => "DOJI SG",
+                "prices" => [
+                    "giaMuaHomQua" => 132500,
+                    "giaBanHomQua" => 134500,
+                    "giaMuaHomNay" => 132500,
+                    "giaBanHomNay" => 134500,
+                ]
+            ],
+            [
+                "name" => "BTMC SJC",
+                "prices" => [
+                    "giaMuaHomQua" => 132500,
+                    "giaBanHomQua" => 134500,
+                    "giaMuaHomNay" => 132500,
+                    "giaBanHomNay" => 134500,
+                ]
+            ],
+            [
+                "name" => "Phú Qúy SJC",
+                "prices" => [
+                    "giaMuaHomQua" => 132000,
+                    "giaBanHomQua" => 134500,
+                    "giaMuaHomNay" => 132000,
+                    "giaBanHomNay" => 134500,
+                ]
+            ],
+            [
+                "name" => "PNJ TP.HCM",
+                "prices" => [
+                    "giaMuaHomQua" => 128500,
+                    "giaBanHomQua" => 131500,
+                    "giaMuaHomNay" => 128500,
+                    "giaBanHomNay" => 131500,
+                ]
+            ],
+            [
+                "name" => "PNJ Hà Nội",
+                "prices" => [
+                    "giaMuaHomQua" => 128500,
+                    "giaBanHomQua" => 131500,
+                    "giaMuaHomNay" => 128500,
+                    "giaBanHomNay" => 131500,
+                ]
+            ]
+        ];
+        return $data;
     }
     
     /**
@@ -102,7 +149,17 @@ class HomeController extends Controller
             }
             
             // Loại bỏ trùng lặp theo loại vàng
-            return $this->removeDuplicateGoldTypes($dataList);
+            $uniqueByType = $this->removeDuplicateGoldTypes($dataList);
+
+            // Lưu snapshot theo ngày cho hôm nay
+            try {
+                $this->saveDailySnapshot($uniqueByType);
+            } catch (\Exception $e) {
+                Log::warning('Failed to save daily gold price snapshot', ['message' => $e->getMessage()]);
+            }
+
+            // Biến đổi dataList theo yêu cầu UI: loại vàng, mua hôm qua, mua hôm nay, bán hôm qua, bán hôm nay
+            return $this->buildDataListWithYesterdayComparison($uniqueByType);
         }
         return null;
     }
@@ -155,6 +212,90 @@ class HomeController extends Controller
             'removed_count' => count($dataList) - count($result)
         ]);
         
+        return $result;
+    }
+
+    /**
+     * Lưu snapshot giá vàng theo ngày vào storage (để lấy dữ liệu hôm qua)
+     */
+    private function saveDailySnapshot(array $dataList): void
+    {
+        $directory = storage_path('app/private/gold_prices');
+        if (!is_dir($directory)) {
+            @mkdir($directory, 0775, true);
+        }
+
+        $filePath = $directory . '/' . date('Y-m-d') . '.json';
+
+        // Chuyển dữ liệu về map theo loại vàng để tra cứu nhanh
+        $snapshot = [];
+        foreach ($dataList as $item) {
+            $rowKey = $item['@row'] ?? null;
+            $goldTypeName = $rowKey ? ($item['@n_' . $rowKey] ?? null) : null;
+            if (!$goldTypeName) {
+                continue;
+            }
+            $buy = $rowKey ? ($item['@pb_' . $rowKey] ?? null) : null;
+            $sell = $rowKey ? ($item['@ps_' . $rowKey] ?? null) : null;
+            $snapshot[$goldTypeName] = [
+                'buy' => is_numeric($buy) ? (int)$buy : null,
+                'sell' => is_numeric($sell) ? (int)$sell : null,
+            ];
+        }
+
+        @file_put_contents($filePath, json_encode($snapshot, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+    }
+
+    /**
+     * Tải snapshot theo ngày (Y-m-d). Trả về mảng [loại_vàng => ['buy'=>..., 'sell'=>...]]
+     */
+    private function loadSnapshot(string $date)
+    {
+        $filePath = storage_path('app/private/gold_prices/' . $date . '.json');
+        if (!file_exists($filePath)) {
+            return null;
+        }
+        try {
+            $content = file_get_contents($filePath);
+            if ($content === false) {
+                return null;
+            }
+            $data = json_decode($content, true);
+            return is_array($data) ? $data : null;
+        } catch (\Throwable $e) {
+            Log::warning('Failed to load snapshot', ['date' => $date, 'error' => $e->getMessage()]);
+            return null;
+        }
+    }
+
+    /**
+     * Xây dựng mảng dataList mới gồm: loại_vàng, mua_hqua, mua_hnay, bán_hqua, bán_hnay
+     */
+    private function buildDataListWithYesterdayComparison(array $todayUniqueList): array
+    {
+        $yesterday = date('Y-m-d', strtotime('-1 day'));
+        $yesterdaySnapshot = $this->loadSnapshot($yesterday) ?? [];
+
+        $result = [];
+        foreach ($todayUniqueList as $item) {
+            $rowKey = $item['@row'] ?? null;
+            $goldTypeName = $rowKey ? ($item['@n_' . $rowKey] ?? 'Unknown') : 'Unknown';
+            $buyToday = $rowKey ? ($item['@pb_' . $rowKey] ?? null) : null;
+            $sellToday = $rowKey ? ($item['@ps_' . $rowKey] ?? null) : null;
+
+            $ySnap = $yesterdaySnapshot[$goldTypeName] ?? null;
+            $buyYesterday = $ySnap['buy'] ?? null;
+            $sellYesterday = $ySnap['sell'] ?? null;
+
+            $result[] = [
+                'loai_vang' => $goldTypeName,
+                'mua_hqua' => is_numeric($buyYesterday) ? (int)$buyYesterday : null,
+                'mua_hnay' => is_numeric($buyToday) ? (int)$buyToday : null,
+                'ban_hqua' => is_numeric($sellYesterday) ? (int)$sellYesterday : null,
+                'ban_hnay' => is_numeric($sellToday) ? (int)$sellToday : null,
+            ];
+        }
+
         return $result;
     }
     
