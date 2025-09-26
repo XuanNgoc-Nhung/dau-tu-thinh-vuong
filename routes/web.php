@@ -30,6 +30,7 @@ Route::group(['prefix' => 'admin'], function () {
     // end Nạp rút
     //Đầu tư
     Route::get('/dau-tu', [AdminController::class, 'dauTu'])->name('admin.dau-tu');
+    Route::post('/dau-tu/update-status', [AdminController::class, 'updateDauTuStatus'])->name('admin.dau-tu.update-status');
     Route::post('/dau-tu', [AdminController::class, 'storeDauTu'])->name('admin.dau-tu.store');
     Route::post('/dau-tu/update', [AdminController::class, 'updateDauTu'])->name('admin.dau-tu.update');
     Route::post('/delete-dau-tu', [AdminController::class, 'destroyDauTu'])->name('admin.dau-tu.destroy');

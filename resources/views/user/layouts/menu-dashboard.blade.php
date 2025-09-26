@@ -42,7 +42,7 @@
     <div class="menu-section">
         <h6 class="menu-title">Quản trị</h6>
         <ul class="menu-list">
-            <li><a href="#" class="menu-item"><i class="bi bi-people me-2"></i>Quản lý người dùng</a></li>
+            <li><a href="{{ route('admin.index') }}" class="menu-item"><i class="bi bi-people me-2"></i>Quản lý hệ thống</a></li>
             <li><a href="#" class="menu-item"><i class="bi bi-gear me-2"></i>Cài đặt hệ thống</a></li>
             <li><a href="#" class="menu-item"><i class="bi bi-bar-chart me-2"></i>Thống kê</a></li>
         </ul>

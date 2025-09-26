@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Throwable;
 use App\Models\NganHangNapTien;
 use App\Models\ThongBao;
+use App\Models\DauTu;
 class AdminController extends Controller
 {
     public function index()
@@ -770,6 +771,77 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Không thể xoá thông báo. Vui lòng thử lại sau.',
+            ], 500);
+        }
+    }
+    public function dauTu(Request $request)
+    {
+        $keyword = trim((string) $request->input('q', ''));
+        $trangThai = $request->input('trang_thai', '');
+        $sanPhamId = $request->input('san_pham_id', '');
+        
+        $dauTu = DauTu::with(['user', 'sanPham'])
+            ->when($keyword !== '', function ($query) use ($keyword) {
+                $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $keyword) . '%';
+                $query->whereHas('user', function ($userQuery) use ($like) {
+                    $userQuery->where('name', 'like', $like)
+                             ->orWhere('email', 'like', $like);
+                });
+            })
+            ->when($trangThai != '', function ($query) use ($trangThai) {
+                $query->where('trang_thai', $trangThai);
+            })
+            ->when($sanPhamId != '', function ($query) use ($sanPhamId) {
+                $query->where('san_pham_id', $sanPhamId);
+            })
+            ->orderByDesc('id')
+            ->paginate(10);
+            
+        // Lấy danh sách sản phẩm đầu tư cho dropdown filter
+        $sanPhamDauTu = SanPhamDauTu::where('trang_thai', 1)->orderBy('ten')->get();
+            
+        return view('admin.dau-tu', compact('dauTu', 'sanPhamDauTu'));
+    }
+
+    public function updateDauTuStatus(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'id' => ['required', 'integer', 'exists:dau_tu,id'],
+                'trang_thai' => ['required', 'integer', 'in:0,1,2,3']
+            ]);
+
+            $dauTu = DauTu::findOrFail($validated['id']);
+            $dauTu->trang_thai = $validated['trang_thai'];
+            $dauTu->save();
+
+            $statusText = '';
+            switch($validated['trang_thai']) {
+                case 0: $statusText = 'Chờ xử lý'; break;
+                case 1: $statusText = 'Đang hoạt động'; break;
+                case 2: $statusText = 'Hoàn thành'; break;
+                case 3: $statusText = 'Hủy bỏ'; break;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Đã cập nhật trạng thái đầu tư thành '{$statusText}'"
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đầu tư'
+            ], 404);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể cập nhật trạng thái đầu tư. Vui lòng thử lại sau.'
             ], 500);
         }
     }
