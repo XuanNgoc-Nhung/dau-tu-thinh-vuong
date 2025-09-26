@@ -67,7 +67,7 @@
                                                    placeholder="Nhập mật khẩu"
                                                    required>
                                             <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3" onclick="togglePassword('password')">
-                                                <i class="bi bi-eye" id="password-icon"></i>
+                                                <i id="password-icon"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -238,7 +238,7 @@
                     showToast('success', 'Đăng nhập thành công!');
                     // Redirect to dashboard after 1.5 seconds
                     setTimeout(() => {
-                        window.location.href = '{{ route("dashboard") }}';
+                        window.location.href = '{{ route("home") }}';
                     }, 1500);
                 } else {
                     showToast('error', response.data.message);

@@ -9,7 +9,7 @@
             <div class="row">
                 <div class="col-12 col-lg-8 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
                     <span class="badge text-bg-primary rounded-pill mb-2">Khẩu hiệu</span>
-                    <h2 class="fw-bold mb-2"><span id="typedSlogan" class="typing" style="font-size: 2.5rem;"></span></h2>
+                    <h2 class="fw-bold mb-2"><span id="typedSlogan" class="typing responsive-slogan"></span></h2>
                     <p class="mb-0">An toàn – Minh bạch – Hiệu quả</p>
                 </div>
             </div>
@@ -27,21 +27,21 @@
                 </div>
                 <div class="carousel-inner rounded-4 shadow">
                     <div class="carousel-item active" data-bs-interval="4500">
-                        <img src="https://images.unsplash.com/photo-1501183638710-841dd1904471?q=80&w=1600&auto=format&fit=crop" class="d-block w-100" style="max-height:460px;object-fit:cover" alt="Toà nhà hiện đại">
+                        <img src="https://images.unsplash.com/photo-1501183638710-841dd1904471?q=80&w=1600&auto=format&fit=crop" class="d-block w-100 carousel-image" alt="Toà nhà hiện đại">
                         <div class="carousel-caption text-start bg-dark bg-opacity-50 rounded p-3">
                             <h5>Dự án A</h5>
                             <p>Tối ưu lợi nhuận bền vững</p>
                         </div>
                     </div>
                     <div class="carousel-item" data-bs-interval="4500">
-                        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop" class="d-block w-100" style="max-height:460px;object-fit:cover" alt="Thành phố về đêm">
+                        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop" class="d-block w-100 carousel-image" alt="Thành phố về đêm">
                         <div class="carousel-caption text-start bg-dark bg-opacity-50 rounded p-3">
                             <h5>Dự án B</h5>
                             <p>Đa dạng hoá danh mục đầu tư</p>
                         </div>
                     </div>
                     <div class="carousel-item" data-bs-interval="4500">
-                        <img src="https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?q=80&w=1600&auto=format&fit=crop" class="d-block w-100" style="max-height:460px;object-fit:cover" alt="Khu đô thị xanh">
+                        <img src="https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?q=80&w=1600&auto=format&fit=crop" class="d-block w-100 carousel-image" alt="Khu đô thị xanh">
                         <div class="carousel-caption text-start bg-dark bg-opacity-50 rounded p-3">
                             <h5>Dự án C</h5>
                             <p>An toàn – Minh bạch – Hiệu quả</p>
@@ -68,37 +68,88 @@
                 <h2 class="mt-2">Dự án tiêu biểu</h2>
                 <p class="text-muted">Tổng hợp các dự án đang được quan tâm nhiều nhất.</p>
             </div>
-            <div class="row g-4">
-                <div class="col-12 col-md-6 col-lg-4 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
-                    <div class="card h-100 shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1451976426598-a7593bd6d0b2?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Dự án 1">
+            <div class="row g-3">
+                @forelse($sanPhamDauTu as $index => $sanPham)
+                <div class="col-6 col-md-6 col-lg-3 wow animate__animated animate__fadeInUp" data-wow-delay="{{ ($index + 1) * 0.1 }}s">
+                    <div class="card h-100 shadow-sm border-0 product-card">
+                        <div class="position-relative">
+                            @if($sanPham->hinh_anh)
+                                <img src="{{ asset($sanPham->hinh_anh) }}" class="card-img-top product-image" style="border-radius:24px" alt="{{ $sanPham->ten }}">
+                            @else
+                                <img src="https://images.unsplash.com/photo-1451976426598-a7593bd6d0b2?q=80&w=1200&auto=format&fit=crop" class="card-img-top product-image" style="border-radius:6px" alt="{{ $sanPham->ten }}">
+                            @endif
+                            <div class="position-absolute top-0 end-0 m-2">
+                                @if($sanPham->nhan_dan)
+                                    <span class="badge text-bg-info border border-white">{{ $sanPham->nhan_dan }}</span>
+                                @endif
+                            </div>
+                        </div>
                         <div class="card-body">
-                            <span class="badge text-bg-info">Đang mở</span>
-                            <h5 class="card-title mt-2">Quỹ Bất động sản Alpha</h5>
-                            <p class="card-text text-muted">Lợi nhuận kỳ vọng 12-15%/năm, rủi ro thấp.</p>
+                            <h5 class="card-title fw-bold text-dark">{{ $sanPham->ten }}</h5>
+                            <p class="card-text text-muted">{{ Str::limit($sanPham->mo_ta, 80) }}</p>
+                            
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <div class="border rounded-3 text-center bg-light">
+                                        <small class="text-muted d-block mb-1 fw-bold" style="font-size: 0.6rem;">Vốn tối thiểu</small>
+                                        <div class="text-primary fw-bold" style="font-size: 0.7rem;">{{ number_format($sanPham->von_toi_thieu, 0, ',', '.') }}$</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="border rounded-3 text-center bg-light">
+                                        <small class="text-muted d-block mb-1 fw-bold" style="font-size: 0.6rem;">Vốn tối đa</small>
+                                        <div class="text-danger fw-bold" style="font-size: 0.7rem;">{{ number_format($sanPham->von_toi_da, 0, ',', '.') }}$</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Thời gian và Lợi nhuận cùng hàng -->
+                            <div class="row g-2 mb-3">
+                                @if($sanPham->thoi_gian_mot_chu_ky)
+                                <div class="col-6">
+                                    <div class="border rounded-3 text-center bg-light">
+                                        <small class="text-muted d-block mb-1 fw-bold">Thời gian</small>
+                                        <div class="fw-bold text-dark">{{ \App\Helpers\TimeHelper::formatTimeFromHours($sanPham->thoi_gian_mot_chu_ky) }}</div>
+                                    </div>
+                                </div>
+                                @endif
+                                
+                                <div class="col-6">
+                                    <div class="border rounded-3 text-center bg-light">
+                                        <small class="text-muted d-block mb-1 fw-bold">Lợi nhuận</small>
+                                        <div class="fw-bold text-success">{{ number_format($sanPham->lai_suat, 2) }}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Thời gian mở bán một mình một hàng -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-12">
+                                    <div class="border rounded-3 text-center bg-light">
+                                        <small class="text-muted d-block mb-1 fw-bold">Mở bán</small>
+                                        <div class="fw-bold text-info">{{ \Carbon\Carbon::parse($sanPham->created_at)->format('d/m/Y H:i') }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Button đầu tư ngay -->
+                            <div class="d-grid">
+                                <button class="btn btn-primary btn-sm fw-semibold">
+                                    <i class="bi bi-cash-coin me-1"></i>Đầu tư ngay
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-md-6 col-lg-4 wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
-                    <div class="card h-100 shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1462899006636-339e08d1844e?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Dự án 2">
-                        <div class="card-body">
-                            <span class="badge text-bg-success">Hoàn thành</span>
-                            <h5 class="card-title mt-2">Trái phiếu Doanh nghiệp Beta</h5>
-                            <p class="card-text text-muted">Kỳ hạn 18 tháng, thanh khoản tốt.</p>
-                        </div>
+                @empty
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox display-1 text-muted"></i>
+                        <h4 class="text-muted mt-3">Chưa có dự án nào</h4>
+                        <p class="text-muted">Hiện tại chưa có dự án đầu tư nào được hiển thị.</p>
                     </div>
                 </div>
-                <div class="col-12 col-md-6 col-lg-4 wow animate__animated animate__fadeInUp" data-wow-delay=".3s">
-                    <div class="card h-100 shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1519683109079-d5f539e15488?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Dự án 3">
-                        <div class="card-body">
-                            <span class="badge text-bg-info">Đang mở</span>
-                            <h5 class="card-title mt-2">Start-up Công nghệ Gamma</h5>
-                            <p class="card-text text-muted">Gọi vốn vòng A, tiềm năng tăng trưởng mạnh.</p>
-                        </div>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </section>
@@ -117,7 +168,7 @@
                         <div class="card-body">
                             <p class="mb-3">"Đội ngũ tư vấn chuyên nghiệp, giúp tôi xây dựng danh mục đầu tư hợp lý."</p>
                             <div class="d-flex align-items-center gap-2">
-                                <div class="rounded-circle bg-secondary" style="width:40px;height:40px"></div>
+                                <div class="rounded-circle bg-secondary" style="width:40px;height:40px;border-radius:50%"></div>
                                 <div>
                                     <div class="fw-semibold">Minh Anh</div>
                                     <div class="text-muted small">Nhà đầu tư cá nhân</div>
@@ -131,7 +182,7 @@
                         <div class="card-body">
                             <p class="mb-3">"Thông tin minh bạch, cập nhật liên tục. Tôi rất yên tâm khi hợp tác."</p>
                             <div class="d-flex align-items-center gap-2">
-                                <div class="rounded-circle bg-secondary" style="width:40px;height:40px"></div>
+                                <div class="rounded-circle bg-secondary" style="width:40px;height:40px;border-radius:50%"></div>
                                 <div>
                                     <div class="fw-semibold">Quốc Huy</div>
                                     <div class="text-muted small">CEO, Công ty thương mại</div>
@@ -145,7 +196,7 @@
                         <div class="card-body">
                             <p class="mb-3">"Tỷ suất sinh lời ổn định và dịch vụ hỗ trợ nhanh chóng."</p>
                             <div class="d-flex align-items-center gap-2">
-                                <div class="rounded-circle bg-secondary" style="width:40px;height:40px"></div>
+                                <div class="rounded-circle bg-secondary" style="width:40px;height:40px;border-radius:50%"></div>
                                 <div>
                                     <div class="fw-semibold">Thu Trang</div>
                                     <div class="text-muted small">Chuyên viên tài chính</div>
@@ -173,7 +224,7 @@
                     </ul>
                 </div>
                 <div class="col-12 col-lg-6 wow animate__animated animate__fadeInRight" data-wow-delay=".15s">
-                    <img class="img-fluid rounded-4 shadow-sm" src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1600&auto=format&fit=crop" alt="Về chúng tôi">
+                    <img class="img-fluid rounded-4 shadow-sm" src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1600&auto=format&fit=crop" style="border-radius:20px" alt="Về chúng tôi">
                 </div>
             </div>
         </div>
@@ -386,6 +437,265 @@
     </section>
 @endsection
 
+@push('styles')
+<style>
+.responsive-slogan {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    word-wrap: break-word;
+    white-space: normal;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+/* Product Card Styles */
+.product-card {
+    border-radius: 16px !important;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef !important;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+    border-color: #007bff !important;
+}
+
+.product-image {
+    height: 180px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+    transition: transform 0.3s ease;
+    border: 12px solid #f8f9fa;
+    box-sizing: border-box;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+/* Badge positioning */
+.position-absolute .badge {
+    font-size: 0.6rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Card body styling */
+.product-card .card-body {
+    background: #fff;
+    padding: 0.75rem !important;
+}
+
+/* Card title styling for smaller cards */
+.product-card .card-title {
+    font-size: 0.9rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem !important;
+}
+
+/* Card text styling */
+.product-card .card-text {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    margin-bottom: 0.75rem !important;
+}
+
+/* Info boxes styling */
+.bg-light {
+    background-color: #f8f9fa !important;
+    border: 1px solid #e9ecef !important;
+    transition: all 0.2s ease;
+    padding: 0.5rem !important;
+    min-height: 60px; /* Chiều cao tối thiểu cố định */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.bg-light:hover {
+    background-color: #e9ecef !important;
+    border-color: #007bff !important;
+}
+
+.bg-light small {
+    font-size: 0.65rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+.bg-light .fw-bold, .bg-light .fw-semibold {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+/* Mobile responsive - 2 sản phẩm/hàng */
+@media (max-width: 767.98px) {
+    .responsive-slogan {
+        font-size: 2rem;
+        line-height: 1.3;
+    }
+    
+    .product-image {
+        height: 140px;
+    }
+    
+    .product-card .card-body {
+        padding: 0.6rem !important;
+    }
+    
+    .product-card .card-title {
+        font-size: 0.85rem;
+    }
+    
+    .product-card .card-text {
+        font-size: 0.72rem;
+    }
+    
+    .bg-light {
+        padding: 0.5rem !important;
+        min-height: 55px; /* Chiều cao nhỏ hơn cho mobile */
+    }
+    
+    .bg-light small {
+        font-size: 0.65rem;
+    }
+    
+    .bg-light .fw-bold, .bg-light .fw-semibold {
+        font-size: 0.75rem;
+    }
+    
+    .position-absolute .badge {
+        font-size: 0.6rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* Tablet responsive - 2 sản phẩm/hàng */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .responsive-slogan {
+        font-size: 2.2rem;
+        line-height: 1.25;
+    }
+    
+    .product-image {
+        height: 160px;
+    }
+    
+    .product-card .card-body {
+        padding: 0.7rem !important;
+    }
+    
+    .product-card .card-title {
+        font-size: 0.9rem;
+    }
+    
+    .product-card .card-text {
+        font-size: 0.75rem;
+    }
+    
+    .bg-light {
+        min-height: 58px; /* Chiều cao cho tablet */
+    }
+}
+
+/* Desktop responsive - 4 sản phẩm/hàng */
+@media (min-width: 992px) {
+    .responsive-slogan {
+        font-size: 2.5rem;
+        line-height: 1.2;
+    }
+    
+    .product-image {
+        height: 180px;
+    }
+    
+    .product-card .card-body {
+        padding: 0.8rem !important;
+    }
+    
+    .product-card .card-title {
+        font-size: 1rem;
+    }
+    
+    .product-card .card-text {
+        font-size: 0.8rem;
+    }
+    
+    .bg-light {
+        min-height: 60px; /* Chiều cao cho desktop */
+    }
+}
+
+/* Button đầu tư ngay styling */
+.product-card .btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}
+
+.product-card .btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.product-card .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}
+
+/* Mobile responsive cho button */
+@media (max-width: 767.98px) {
+    .product-card .btn-primary {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+    }
+}
+
+/* Carousel Image Styles - Đảm bảo tất cả hình ảnh có cùng kích thước */
+.carousel-image {
+    height: 460px;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 16px;
+}
+
+/* Responsive cho carousel images */
+@media (max-width: 767.98px) {
+    .carousel-image {
+        height: 300px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .carousel-image {
+        height: 380px;
+    }
+}
+
+@media (min-width: 992px) {
+    .carousel-image {
+        height: 460px;
+    }
+}
+</style>
+@endpush
+
 @push('scripts')
 <script>
     document.getElementById('contactForm').addEventListener('submit', function (e) {
@@ -393,5 +703,17 @@
         alert('Cảm ơn bạn! Chúng tôi sẽ liên hệ sớm.');
         this.reset();
     });
+    
+    // Function xử lý khi click button "Đầu tư ngay"
+    function investNow(productId) {
+        // Kiểm tra xem user đã đăng nhập chưa
+        @auth
+            // Nếu đã đăng nhập, chuyển đến trang đầu tư
+            window.location.href = '/dau-tu/' + productId;
+        @else
+            // Nếu chưa đăng nhập, chuyển đến trang đăng nhập
+            window.location.href = '/login?redirect=/dau-tu/' + productId;
+        @endauth
+    }
 </script>
 @endpush

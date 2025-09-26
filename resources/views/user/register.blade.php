@@ -95,7 +95,7 @@
                                                    placeholder="Nhập mật khẩu"
                                                    required>
                                             <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3" onclick="togglePassword('password')">
-                                                <i class="bi bi-eye" id="password-icon"></i>
+                                                <i id="password-icon"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -113,7 +113,7 @@
                                                    placeholder="Nhập lại mật khẩu"
                                                    required>
                                             <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3" onclick="togglePassword('password_confirmation')">
-                                                <i class="bi bi-eye" id="password_confirmation-icon"></i>
+                                                <i id="password_confirmation-icon"></i>
                                             </button>
                                         </div>
                                     </div>
