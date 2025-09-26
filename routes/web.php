@@ -41,7 +41,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('/delete-thong-bao', [AdminController::class, 'destroyThongBao'])->name('admin.thong-bao.destroy');
     // end Thông báo
 });
-Route::get('/', [HomeController::class, 'index']);
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/login', [UserController::class, 'login'])->name('login');
 Route::post('/login', [UserController::class, 'postLogin'])->name('post-login');
 Route::get('/register', [UserController::class, 'register'])->name('register');

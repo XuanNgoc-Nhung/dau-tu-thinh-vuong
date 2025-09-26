@@ -364,53 +364,7 @@
 </head>
 <body class="global-animated-bg" data-bs-spy="scroll" data-bs-target="#navbarNav" data-bs-offset="80" tabindex="0">
     <!-- Header -->
-    <nav class="navbar navbar-expand-lg sticky-top shadow-sm navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="#">{{ config('app.name') }}</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-lg-center">
-                    <li class="nav-item"><a class="nav-link text-white" href="#hero">Trang chủ</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#ve-chung-toi">Về chúng tôi</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#vi-sao">Vì sao chọn</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#buoc-thanh-vien">Thành viên</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#faq">Hỏi đáp</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{{ route('dashboard.dau-tu') }}">Đầu tư</a></li>
-                    @if(auth()->check())    
-                    <li class="nav-item me-2">
-                        <span class="btn btn-info btn-sm px-3 fw-semibold">
-                            $ {{ number_format(optional(auth()->user()->profile)->so_du ?? 0, 0, ',', '.') }}
-                        </span>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="btn btn-warning btn-sm px-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ auth()->user()->phone ?? 'Tài khoản' }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a></li>
-                            <li><a class="dropdown-item" href="{{ route('dashboard.profile') }}">Cá nhân</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                    @else
-                    <li class="nav-item">
-                        <a class="btn btn-warning btn-sm px-3" href="{{ route('register') }}">
-                            <i class="bi bi-person-plus me-1"></i>Đăng ký
-                        </a>
-                    </li>
-                    @endif
-                </ul>
-            </div>
-        </div>
-    </nav>
+    @include('components.navbar')
 
     <!-- Toast Container -->
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">

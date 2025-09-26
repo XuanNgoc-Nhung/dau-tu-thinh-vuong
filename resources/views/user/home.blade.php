@@ -9,7 +9,7 @@
             <div class="row">
                 <div class="col-12 col-lg-8 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
                     <span class="badge text-bg-primary rounded-pill mb-2">Khẩu hiệu</span>
-                    <h2 class="fw-bold mb-2"><span id="typedSlogan" class="typing"></span></h2>
+                    <h2 class="fw-bold mb-2"><span id="typedSlogan" class="typing" style="font-size: 2.5rem;"></span></h2>
                     <p class="mb-0">An toàn – Minh bạch – Hiệu quả</p>
                 </div>
             </div>
@@ -180,7 +180,7 @@
     </section>
 
     <!-- Why Choose Us -->
-    <section id="vi-sao" class="py-5 bg-tint-amber">
+    <section id="loi-the" class="py-5 bg-tint-amber">
         <div class="container">
             <div class="text-center mb-4">
                 <span class="text-primary fw-bold text-uppercase small">Lợi thế</span>
