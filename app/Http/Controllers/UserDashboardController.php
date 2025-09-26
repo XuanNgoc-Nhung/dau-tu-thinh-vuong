@@ -921,4 +921,21 @@ class UserDashboardController extends Controller
         ]);
         return view('user.dashboard.du-an-cua-toi');
     }
+    public function chiTietDauTu($slug){
+        Log::info('UserDashboardController@chiTietDauTu: Bắt đầu hiển thị trang chi tiết dự án', [
+            'user_id' => Auth::id(),
+            'user_email' => Auth::user()->email ?? 'N/A',
+            'slug' => $slug
+        ]);
+        $sanPhamDauTu = SanPhamDauTu::where('slug', $slug)->first();
+        if (!$sanPhamDauTu) {
+            return redirect()->route('dashboard.dau-tu')->with('error', 'Dự án không tồn tại');
+        }
+        if($sanPhamDauTu->trang_thai != 1){
+            return redirect()->route('dashboard.dau-tu')->with('error', 'Dự án đã không hoạt động');
+        }
+        $user = Auth::user();
+        $profile = $user ? $user->profile : null;
+        return view('user.dashboard.chi-tiet-dau-tu', compact('sanPhamDauTu', 'user', 'profile'));
+    }
 }

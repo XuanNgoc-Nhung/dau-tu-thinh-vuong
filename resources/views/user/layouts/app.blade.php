@@ -65,7 +65,7 @@
         .banner-cover .content{position:relative}
         /* Common hovers */
         .card.hover-lift, .feature-card{transition:transform .25s ease, box-shadow .25s ease}
-        .card.hover-lift:hover, .feature-card:hover{transform:translateY(-4px);box-shadow:0 .75rem 1.5rem rgba(0,0,0,.08)}
+        .card.hover-lift:hover, .feature-card:hover{transform:none;box-shadow:0 .75rem 1.5rem rgba(0,0,0,.08)}
         /* Icon circle */
         .icon-circle{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:rgba(var(--bs-primary-rgb),.1);color:var(--bs-primary)}
         /* Stepper timeline */
@@ -78,7 +78,7 @@
         .accordion-button:not(.collapsed){color:#0f5132;background:rgba(var(--bs-primary-rgb),.08)}
         /* Project card lift */
         .card.h-100{transition:transform .25s ease, box-shadow .25s ease}
-        .card.h-100:hover{transform:translateY(-4px);box-shadow:0 .75rem 1.5rem rgba(0,0,0,.08)}
+        .card.h-100:hover{transform:none;box-shadow:0 .75rem 1.5rem rgba(0,0,0,.08)}
         /* Soft section backgrounds */
         .bg-soft-primary{background:linear-gradient(180deg, rgba(var(--bs-primary-rgb),.06), rgba(var(--bs-primary-rgb),.03))}
         .bg-soft-gray{background:linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.015))}
@@ -88,6 +88,32 @@
         .bg-tint-amber{background:linear-gradient(180deg, rgba(245,158,11,.40), rgba(245,158,11,.22))}
         .bg-tint-sky{background:linear-gradient(180deg, rgba(2,132,199,.40), rgba(2,132,199,.22))}
         .bg-tint-slate{background:linear-gradient(180deg, rgba(71,85,105,.34), rgba(71,85,105,.18))}
+        /* Global animated soft gradient background */
+        body.global-animated-bg{
+            min-height:100vh;
+            background:
+                radial-gradient(60% 80% at 0% 0%, rgba(22,163,74,.28) 0%, rgba(22,163,74,0) 50%),
+                radial-gradient(60% 80% at 100% 0%, rgba(2,132,199,.26) 0%, rgba(2,132,199,0) 50%),
+                radial-gradient(60% 80% at 0% 100%, rgba(13,148,136,.24) 0%, rgba(13,148,136,0) 50%),
+                radial-gradient(60% 80% at 100% 100%, rgba(245,158,11,.22) 0%, rgba(245,158,11,0) 50%),
+                linear-gradient(180deg, #f7fafc 0%, #eef2f7 100%);
+            background-attachment: fixed;
+            position: relative;
+        }
+        body.global-animated-bg::before{
+            content:"";
+            position:fixed;
+            inset:-10% -10% -10% -10%;
+            background: radial-gradient(1200px 1200px at var(--spot-x,20%) var(--spot-y,30%), rgba(22,163,74,.08), transparent 60%);
+            pointer-events:none;
+            animation: bgFloat 12s ease-in-out infinite alternate;
+            filter: blur(0.5px);
+        }
+        @keyframes bgFloat{ 
+            0%{ --spot-x:20%; --spot-y:30%; }
+            50%{ --spot-x:80%; --spot-y:40%; }
+            100%{ --spot-x:35%; --spot-y:75%; }
+        }
         /* Corner-driven gradient background */
         .bg-corners-brand{
             background:
@@ -277,7 +303,7 @@
         }
 
         .dashboard-card:hover {
-            transform: translateY(-2px);
+            transform: none;
             box-shadow: 0 4px 20px rgba(0,0,0,0.12);
         }
 
@@ -336,7 +362,7 @@
         }
     </style>
 </head>
-<body data-bs-spy="scroll" data-bs-target="#navbarNav" data-bs-offset="80" tabindex="0">
+<body class="global-animated-bg" data-bs-spy="scroll" data-bs-target="#navbarNav" data-bs-offset="80" tabindex="0">
     <!-- Header -->
     <nav class="navbar navbar-expand-lg sticky-top shadow-sm navbar-dark bg-primary">
         <div class="container-fluid">

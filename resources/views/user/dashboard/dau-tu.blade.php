@@ -49,10 +49,10 @@
                         </strong></li>
                         <li>Lãi suất: <strong>{{ rtrim(rtrim(number_format($sp->lai_suat, 2), '0'), '.') }}%</strong></li>
                         
-                        <li>Thời gian/chu kỳ: <strong>{{ $sp->thoi_gian_mot_chu_ky }} ngày</strong></li>
+                        <li>Thời gian/chu kỳ: <strong>{{ \App\Helpers\TimeHelper::formatTimeFromHours($sp->thoi_gian_mot_chu_ky) }}</strong></li>
                     </ul>
                     <div class="mt-auto">
-                        <a href="{{ route('dashboard.du-an-cua-toi') }}" class="btn btn-primary w-100">Đầu tư ngay</a>
+                        <a href="{{ route('dashboard.chi-tiet-dau-tu', $sp->slug) }}" class="btn btn-primary w-100">Đầu tư ngay</a>
                     </div>
                 </div>
             </div>
@@ -62,6 +62,39 @@
             <div class="alert alert-info">Hiện chưa có sản phẩm đầu tư nào.</div>
         </div>
         @endforelse
+    </div>
+    <div class="row mt-4">
+        <div class="col-12 col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-book-open mr-2"></i>Hướng dẫn đầu tư</h5>
+                </div>
+                <div class="card-body">
+                    <ol class="mb-0 pl-3">
+                        <li>Chọn sản phẩm phù hợp và bấm "Đầu tư ngay".</li>
+                        <li>Đọc kỹ thông tin: vốn tối thiểu/tối đa, lãi suất và chu kỳ.</li>
+                        <li>Nhập số tiền muốn đầu tư trong khoảng hợp lệ.</li>
+                        <li>Chọn số chu kỳ mong muốn rồi xác nhận.</li>
+                        <li>Theo dõi lợi nhuận trong mục "Dự án của tôi".</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4 mt-3 mt-lg-0">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle mr-2"></i>Lưu ý quan trọng</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0 pl-3">
+                        <li>Lãi suất hiển thị là theo chu kỳ; tổng lợi nhuận phụ thuộc số chu kỳ.</li>
+                        <li>Vui lòng hoàn tất KYC để rút lợi nhuận an toàn.</li>
+                        <li>Nên đa dạng hóa danh mục thay vì dồn toàn bộ vốn vào 1 sản phẩm.</li>
+                        <li>Kiểm tra lại số tiền trước khi xác nhận để tránh sai sót.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
         </div>
     </div>

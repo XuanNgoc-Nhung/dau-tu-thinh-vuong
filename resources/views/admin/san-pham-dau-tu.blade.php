@@ -106,7 +106,7 @@
                                 —
                             @endif
                         </td>
-                        <td>{{ $sp->thoi_gian_mot_chu_ky ? $sp->thoi_gian_mot_chu_ky . ' giờ' : '—' }}</td>
+                        <td>{{ $sp->thoi_gian_mot_chu_ky ? \App\Helpers\TimeHelper::formatTimeFromHours($sp->thoi_gian_mot_chu_ky) : '—' }}</td>
                         <td>{{ $sp->lai_suat !== null ? rtrim(rtrim(number_format((float)$sp->lai_suat, 2, '.', ''), '0'), '.') . '%' : '—' }}</td>
                         <td>{{ $sp->nhan_dan ?? '—' }}</td>
                         <td>

@@ -12,7 +12,7 @@
 <div class="content-sidebar-overlay d-md-none" id="contentSidebarOverlay" onclick="closeContentSidebar()"></div>
 
 <!-- Dashboard Container with Bootstrap Grid -->
-<div class="container-fluid py-4 pt-2">
+<div class="container-fluid py-4 pt-3">
     <div class="row">
         <!-- Sidebar Menu - col-3 -->
         <div class="col-12 col-md-3 content-sidebar" id="contentSidebar">
@@ -62,7 +62,7 @@
     }
 
     .dashboard-card:hover {
-        transform: translateY(-2px);
+        transform: none;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
     }
 
@@ -205,6 +205,13 @@
     .content-sidebar {
         position: relative;
         transition: all 0.3s ease;
+    }
+
+    /* Subtle card-like container feel on new background */
+    .main-content-area > *:first-child .card,
+    .main-content-area > .card {
+        backdrop-filter: saturate(120%) blur(2px);
+        background-color: rgba(255,255,255,.9);
     }
 
     /* Content Sidebar Overlay */
