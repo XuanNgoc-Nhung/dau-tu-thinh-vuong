@@ -99,7 +99,7 @@
                                         </td>
                                         <td class="text-center sticky-col w-action">
                                             <button class="btn btn-success btn-sm fw-semibold" onclick="buyGold('{{ $item['name'] ?? 'N/A' }}', '{{ isset($item['prices']['giaMuaHomNay']) && is_numeric($item['prices']['giaMuaHomNay']) ? number_format($item['prices']['giaMuaHomNay'], 0, ',', '.') : '-' }}')">
-                                                <i class="bi bi-cart-plus me-1"></i>Mua ngay
+                                                <i class="bi bi-cart-plus me-1"></i>Giao dịch
                                             </button>
                                         </td>
                                     </tr>

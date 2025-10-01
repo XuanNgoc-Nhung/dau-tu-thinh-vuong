@@ -22,6 +22,25 @@
 @include('user.home.sections.faq')
 
 @include('user.home.sections.contact')
+    
+    <!-- Modal: Yêu cầu đăng nhập để sử dụng dịch vụ -->
+    <div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginRequiredModalLabel">Cần đăng nhập</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn chưa đăng nhập. Vui lòng đăng nhập để sử dụng dịch vụ.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <a href="/login" class="btn btn-primary">Đăng nhập</a>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('styles')
@@ -474,9 +493,14 @@
             alert('Chức năng mua vàng đang được phát triển. Vui lòng liên hệ hotline để được hỗ trợ!');
         }
         @else
-        // Nếu chưa đăng nhập, chuyển đến trang đăng nhập
-        alert('Vui lòng đăng nhập để sử dụng chức năng mua vàng!');
-        window.location.href = '/login';
+            // Nếu chưa đăng nhập, hiển thị modal Bootstrap yêu cầu đăng nhập
+            if (window.bootstrap && document.getElementById('loginRequiredModal')) {
+                var modal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+                modal.show();
+            } else {
+                alert('Bạn chưa đăng nhập. Vui lòng đăng nhập để sử dụng dịch vụ.');
+                window.location.href = '/login';
+            }
         @endauth
     }
 

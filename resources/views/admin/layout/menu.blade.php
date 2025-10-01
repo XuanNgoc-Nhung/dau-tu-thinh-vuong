@@ -12,6 +12,12 @@
     <a class="nav-link @yield('nav.san-pham-dau-tu_active')" href="{{ route('admin.san-pham-dau-tu') }}" title="Sản phẩm đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-cash-coin"></i> <span class="label">Sản phẩm đầu tư</span>
     </a>
+    <a class="nav-link @yield('nav.vang-dau-tu_active')" href="{{ route('admin.vang-dau-tu') }}" title="Vàng đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
+      <i class="bi bi-cash-coin"></i> <span class="label">Vàng đầu tư</span>
+    </a>
+    <a class="nav-link @yield('nav.gia-vang_active')" href="{{ route('admin.gia-vang') }}" title="Giá vàng" data-bs-toggle="tooltip" data-bs-placement="right">
+      <i class="bi bi-cash-coin"></i> <span class="label">Giá vàng</span>
+    </a>
     <a class="nav-link @yield('nav.ngan-hang-nap-tien_active')" href="{{ route('admin.ngan-hang-nap-tien') }}" title="Ngân hàng nạp tiền" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-credit-card"></i> <span class="label">Ngân hàng nạp tiền</span>
     </a>

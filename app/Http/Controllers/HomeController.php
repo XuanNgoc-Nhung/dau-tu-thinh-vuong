@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SanPhamDauTu;
+use App\Models\VangDauTu;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Models\GiaVang;
 
 class HomeController extends Controller
 {
@@ -17,9 +19,60 @@ class HomeController extends Controller
             ->limit(6) // Giới hạn 6 sản phẩm để hiển thị
             ->get();
         
-        // Lấy dữ liệu giá vàng từ API BTMC
-        $dataList = $this->getGiaVangDataDirect();
-        // dd($dataList);
+        // Lấy danh sách giá vàng theo định dạng của getGiaVangDataDirect
+        $homNay = date('Y-m-d');
+        $homQua = date('Y-m-d', strtotime('-1 day'));
+
+        // Lấy danh sách sản phẩm vàng đang active
+        $dsVang = VangDauTu::where('trang_thai', 1)
+            ->orderBy('ten_vang')
+            ->get(['id', 'ten_vang','ma_vang']);
+
+        $ids = $dsVang->pluck('id')->all();
+
+        // Lấy bản ghi giá vàng hôm nay và hôm qua cho các sản phẩm ở trên
+        $todayByVang = GiaVang::query()
+            ->where('trang_thai', 1)
+            ->whereIn('id_vang', $ids)
+            ->whereDate('thoi_gian', $homNay)
+            ->orderByDesc('id')
+            ->get()
+            ->groupBy('id_vang')
+            ->map(function ($group) {
+                return $group->first();
+            });
+
+        $yesterdayByVang = GiaVang::query()
+            ->where('trang_thai', 1)
+            ->whereIn('id_vang', $ids)
+            ->whereDate('thoi_gian', $homQua)
+            ->orderByDesc('id')
+            ->get()
+            ->groupBy('id_vang')
+            ->map(function ($group) {
+                return $group->first();
+            });
+
+        $dataList = [];
+        foreach ($dsVang as $vang) {
+            $today = $todayByVang->get($vang->id);
+            $yesterday = $yesterdayByVang->get($vang->id);
+
+            // Chỉ hiển thị khi có dữ liệu hôm nay hoặc hôm qua
+            if (!$today && !$yesterday) {
+                continue;
+            }
+
+            $dataList[] = [
+                'name' => (string) $vang->ma_vang,
+                'prices' => [
+                    'giaMuaHomQua' => $yesterday ? (int) $yesterday->gia_mua : null,
+                    'giaBanHomQua' => $yesterday ? (int) $yesterday->gia_ban : null,
+                    'giaMuaHomNay' => $today ? (int) $today->gia_mua : null,
+                    'giaBanHomNay' => $today ? (int) $today->gia_ban : null,
+                ],
+            ];
+        }
         return view('user.home', compact('sanPhamDauTu', 'dataList'));
     }
     

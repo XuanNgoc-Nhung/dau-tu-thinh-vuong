@@ -15,7 +15,11 @@ use Illuminate\Support\Str;
 use Throwable;
 use App\Models\NganHangNapTien;
 use App\Models\ThongBao;
+use App\Models\VangDauTu;
 use App\Models\DauTu;
+use App\Models\GiaVang;
+use Illuminate\Support\Facades\Log;
+
 class AdminController extends Controller
 {
     public function index()
@@ -844,5 +848,173 @@ class AdminController extends Controller
                 'message' => 'Không thể cập nhật trạng thái đầu tư. Vui lòng thử lại sau.'
             ], 500);
         }
+    }
+    public function vangDauTu(Request $request)
+    {
+        $keyword = trim((string) $request->input('q', ''));
+        $trangThai = $request->input('trang_thai', '');
+        
+        $vangDauTu = VangDauTu::query()
+            ->when($keyword !== '', function ($query) use ($keyword) {
+                $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $keyword) . '%';
+                $query->where('ten_vang', 'like', $like);
+            })
+            ->when($trangThai != '', function ($query) use ($trangThai) {
+                $query->where('trang_thai', $trangThai);
+            })
+            ->orderByDesc('id')
+            ->paginate(10);
+            
+        return view('admin.vang-dau-tu', compact('vangDauTu'));
+    }
+    public function storeVangDauTu(Request $request)
+    {
+        Log::info('storeVangDauTu', $request->all());
+        $validated = $request->validate([
+            'ten_vang' => ['required','string','max:255'],
+            'ma_vang' => ['required','string','max:255'],
+            'trang_thai' => ['required','boolean'],
+        ]);
+        $vangDauTu = VangDauTu::create([
+            'ten_vang' => $validated['ten_vang'],
+            'ma_vang' => $validated['ma_vang'],
+            'trang_thai' => $validated['trang_thai'],
+        ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Thêm sản phẩm vàng đầu tư thành công',
+        ]);
+    }
+    public function updateVangDauTu(Request $request)
+    {
+        Log::info('updateVangDauTu', $request->all());
+        $validated = $request->validate([
+            'id' => ['required','integer','exists:san_pham_vang,id'],
+            'ten_vang' => ['nullable','string','max:255'],
+            'ma_vang' => ['nullable','string','max:255'],
+            'trang_thai' => ['nullable','integer','in:0,1'],
+        ]);
+        $vangDauTu = VangDauTu::findOrFail($validated['id']);
+        if (array_key_exists('ten_vang', $validated)) {
+            $vangDauTu->ten_vang = $validated['ten_vang'];
+        }
+        if (array_key_exists('ma_vang', $validated)) {
+            $vangDauTu->ma_vang = $validated['ma_vang'];
+        }
+        if (array_key_exists('trang_thai', $validated)) {
+            $vangDauTu->trang_thai = (int) $validated['trang_thai'];
+        }
+        $vangDauTu->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'Cập nhật sản phẩm vàng đầu tư thành công',
+        ]);
+    }
+    public function destroyVangDauTu(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => ['required','integer','exists:san_pham_vang,id'],
+        ]);
+        $item = VangDauTu::findOrFail($validated['id']);
+        $item->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Xoá sản phẩm vàng đầu tư thành công',
+        ]);
+    }
+    public function giaVang(Request $request)
+    {
+        $idVang = (string) $request->input('id_vang', '');
+        $dateFrom = (string) $request->input('date_from', '');
+        $dateTo = (string) $request->input('date_to', '');
+
+        $giaVang = GiaVang::query()
+            ->when($idVang !== '', function ($query) use ($idVang) {
+                $query->where('id_vang', (int) $idVang);
+            })
+            ->when($dateFrom !== '', function ($query) use ($dateFrom) {
+                $query->whereDate('thoi_gian', '>=', $dateFrom);
+            })
+            ->when($dateTo !== '', function ($query) use ($dateTo) {
+                $query->whereDate('thoi_gian', '<=', $dateTo);
+            })
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->appends($request->query());
+
+        $dsVang = VangDauTu::orderBy('ten_vang')->get();
+        $mapVang = $dsVang->keyBy('id');
+        return view('admin.gia-vang', compact('giaVang', 'dsVang', 'mapVang', 'idVang', 'dateFrom', 'dateTo'));
+    }
+    public function storeGiaVang(Request $request)
+    {
+        $validated = $request->validate([
+            'id_vang' => ['required','integer','exists:san_pham_vang,id'],
+            'gia_mua' => ['required','numeric','min:0'],
+            'gia_ban' => ['required','numeric','min:0'],
+            'thoi_gian' => ['required','date'],
+            'trang_thai' => ['required','integer','in:0,1'],
+            'ghi_chu' => ['nullable','string','max:255'],
+        ]);
+        $giaVang = GiaVang::create([
+            'id_vang' => $validated['id_vang'],
+            'gia_mua' => $validated['gia_mua'],
+            'gia_ban' => $validated['gia_ban'],
+            'thoi_gian' => $validated['thoi_gian'],
+            'trang_thai' => $validated['trang_thai'],
+            'ghi_chu' => $validated['ghi_chu']??'',
+        ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Thêm giá vàng thành công',
+        ]);
+    }
+    public function updateGiaVang(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => ['required','integer','exists:gia_vang,id'],
+            'id_vang' => ['nullable','integer','exists:san_pham_vang,id'],
+            'gia_mua' => ['nullable','numeric','min:0'],
+            'gia_ban' => ['nullable','numeric','min:0'],
+            'thoi_gian' => ['nullable','date'],
+            'trang_thai' => ['nullable','integer','in:0,1'],
+            'ghi_chu' => ['nullable','string','max:255'],
+        ]);
+        $giaVang = GiaVang::findOrFail($validated['id']);
+        if (array_key_exists('id_vang', $validated)) {
+            $giaVang->id_vang = $validated['id_vang'];
+        }
+        if (array_key_exists('gia_mua', $validated)) {
+            $giaVang->gia_mua = $validated['gia_mua'];
+        }
+        if (array_key_exists('gia_ban', $validated)) {
+            $giaVang->gia_ban = $validated['gia_ban'];
+        }
+        if (array_key_exists('thoi_gian', $validated)) {
+            $giaVang->thoi_gian = $validated['thoi_gian'];
+        }
+        if (array_key_exists('trang_thai', $validated)) {
+            $giaVang->trang_thai = (int) $validated['trang_thai'];
+        }
+        if (array_key_exists('ghi_chu', $validated)) {
+            $giaVang->ghi_chu = $validated['ghi_chu'];
+        }
+        $giaVang->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'Cập nhật giá vàng thành công',
+        ]);
+    }
+    public function destroyGiaVang(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => ['required','integer','exists:gia_vang,id'],
+        ]);
+        $item = GiaVang::findOrFail($validated['id']);
+        $item->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Xoá giá vàng thành công',
+        ]);
     }
 }

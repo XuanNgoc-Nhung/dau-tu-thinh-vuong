@@ -35,6 +35,19 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('/dau-tu/update', [AdminController::class, 'updateDauTu'])->name('admin.dau-tu.update');
     Route::post('/delete-dau-tu', [AdminController::class, 'destroyDauTu'])->name('admin.dau-tu.destroy');
     // end Đầu tư
+    //Vàng đầu tư
+    Route::get('/vang-dau-tu', [AdminController::class, 'vangDauTu'])->name('admin.vang-dau-tu');
+    Route::post('/vang-dau-tu', [AdminController::class, 'storeVangDauTu'])->name('admin.vang-dau-tu.store');
+    Route::post('/vang-dau-tu/update', [AdminController::class, 'updateVangDauTu'])->name('admin.vang-dau-tu.update');
+    Route::post('/delete-vang-dau-tu', [AdminController::class, 'destroyVangDauTu'])->name('admin.vang-dau-tu.destroy');
+    // end Vàng đầu tư
+    //Giá vàng
+    Route::get('/gia-vang', [AdminController::class, 'giaVang'])->name('admin.gia-vang');
+    Route::post('/gia-vang', [AdminController::class, 'storeGiaVang'])->name('admin.gia-vang.store');
+    Route::post('/gia-vang/update', [AdminController::class, 'updateGiaVang'])->name('admin.gia-vang.update');
+    Route::post('/delete-gia-vang', [AdminController::class, 'destroyGiaVang'])->name('admin.gia-vang.destroy');
+    // end Giá vàng
+    
     //Thông báo
     Route::get('/thong-bao', [AdminController::class, 'thongBao'])->name('admin.thong-bao');
     Route::post('/thong-bao', [AdminController::class, 'storeThongBao'])->name('admin.thong-bao.store');
