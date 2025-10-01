@@ -445,4 +445,55 @@ class HomeController extends Controller
         ]);
     }
     
+    /**
+     * API: Lịch sử giá vàng theo mã vàng trong khoảng N ngày gần nhất
+     */
+    public function getGiaVangHistory(Request $request)
+    {
+        $maVang = (string) $request->query('ma_vang', '');
+        $days = (int) $request->query('days', 30);
+        $to = (string) $request->query('to', '');
+        
+        if ($maVang === '') {
+            return response()->json(['success' => false, 'message' => 'Thiếu tham số ma_vang'], 422);
+        }
+        if ($days <= 0) { $days = 30; }
+        
+        $toDate = $to !== '' ? date('Y-m-d', strtotime($to)) : date('Y-m-d');
+        $fromDate = date('Y-m-d', strtotime('-' . $days . ' days', strtotime($toDate)));
+        
+        $vang = VangDauTu::where('ma_vang', $maVang)->first();
+        if (!$vang) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy mã vàng'], 404);
+        }
+        
+        $records = GiaVang::query()
+            ->where('trang_thai', 1)
+            ->where('id_vang', $vang->id)
+            ->whereDate('thoi_gian', '>=', $fromDate)
+            ->whereDate('thoi_gian', '<=', $toDate)
+            ->orderBy('thoi_gian', 'asc')
+            ->get(['gia_mua','gia_ban','thoi_gian']);
+        
+        $labels = [];
+        $mua = [];
+        $ban = [];
+        foreach ($records as $r) {
+            $labels[] = date('d/m', strtotime($r->thoi_gian));
+            $mua[] = (int) $r->gia_mua;
+            $ban[] = (int) $r->gia_ban;
+        }
+        
+        return response()->json([
+            'success' => true,
+            'ma_vang' => $maVang,
+            'ten_vang' => $vang->ten_vang,
+            'from' => $fromDate,
+            'to' => $toDate,
+            'labels' => $labels,
+            'gia_mua' => $mua,
+            'gia_ban' => $ban,
+            'count' => count($labels),
+        ]);
+    }
 }
