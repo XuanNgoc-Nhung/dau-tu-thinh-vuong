@@ -196,7 +196,7 @@ const __nativeConfirm = typeof window !== 'undefined' && typeof window.confirm =
  * confirm({ title: 'Xác nhận', message: 'Bạn chắc chắn?', onConfirm: fn })
  * confirm('Bạn chắc chắn?') // fallback confirm gốc
  */
-function confirm(opts) {
+function customConfirm(opts) {
     // Object -> sử dụng modal confirm tuỳ biến
     if (opts && typeof opts === 'object') {
         return showConfirm(opts);
@@ -212,7 +212,7 @@ function confirm(opts) {
 // Gán ra global để dùng trực tiếp trong view
 if (typeof window !== 'undefined') {
     window.showConfirm = showConfirm;
-    window.confirm = confirm; // ghi đè confirm để hỗ trợ gọi với object
+    window.confirm = customConfirm; // ghi đè confirm để hỗ trợ gọi với object
 }
 
 // Export functions for module usage (if needed)
@@ -225,6 +225,6 @@ if (typeof module !== 'undefined' && module.exports) {
         showInfoToast,
         clearAllToasts,
         showConfirm,
-        confirm
+        confirm: customConfirm
     };
 }

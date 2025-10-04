@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Log;
 use App\Models\NganHangNapTien;
 use App\Models\ThongBao;
 use App\Models\NapRut;
-use App\Models\SanPhamDauTu;
-use App\Models\DauTu;
+use App\Models\SanPhamTietKiem;
+use App\Models\TietKiem;
 
 class UserDashboardController extends Controller
 {
@@ -907,7 +907,7 @@ class UserDashboardController extends Controller
             'search' => $search !== '' ? $search : null
         ]);
 
-        $query = SanPhamDauTu::query()->where('trang_thai', 1);
+        $query = SanPhamTietKiem::query()->where('trang_thai', 1);
         if ($search !== '') {
             $query->where('ten', 'like', '%'.$search.'%');
         }
@@ -921,7 +921,7 @@ class UserDashboardController extends Controller
             'user_email' => Auth::user()->email ?? 'N/A'
         ]);
         $user = Auth::user();
-        $duAns = DauTu::where('user_id', $user->id)->orderByDesc('id')->paginate(10);
+        $duAns = TietKiem::where('user_id', $user->id)->orderByDesc('id')->paginate(10);
         return view('user.dashboard.du-an-cua-toi', compact('duAns'));
     }
     public function chiTietDauTu($slug){
@@ -930,7 +930,7 @@ class UserDashboardController extends Controller
             'user_email' => Auth::user()->email ?? 'N/A',
             'slug' => $slug
         ]);
-        $sanPhamDauTu = SanPhamDauTu::where('slug', $slug)->first();
+        $sanPhamDauTu = SanPhamTietKiem::where('slug', $slug)->first();
         if (!$sanPhamDauTu) {
             return redirect()->route('dashboard.dau-tu')->with('error', 'Dự án không tồn tại');
         }
@@ -1003,7 +1003,7 @@ class UserDashboardController extends Controller
             }
 
             // Lấy thông tin sản phẩm đầu tư
-            $sanPham = SanPhamDauTu::find($request->san_pham_id);
+            $sanPham = SanPhamTietKiem::find($request->san_pham_id);
             if (!$sanPham || $sanPham->trang_thai != 1) {
                 return response()->json([
                     'success' => false,
@@ -1051,7 +1051,7 @@ class UserDashboardController extends Controller
                 ], 422);
             }
 
-            $dauTu = DauTu::create([
+            $dauTu = TietKiem::create([
                 'user_id' => $user->id,
                 'san_pham_id' => $request->san_pham_id,
                 'so_chu_ky' => $sanPham->thoi_gian_mot_chu_ky,

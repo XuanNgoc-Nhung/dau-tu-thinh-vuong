@@ -1,7 +1,7 @@
 @extends('admin.layout.app')
 
 @section('title', 'Gói tiết kiệm')
-@section('nav.san-pham-dau-tu_active', 'active')
+@section('nav.san-pham-tiet-kiem_active', 'active')
 
 @section('breadcrumb')
 <span class="text-secondary">Admin</span> / <span class="text-dark">Gói tiết kiệm</span>
@@ -13,14 +13,14 @@
             <strong class="text-success">Bộ lọc</strong>
         </div>
         <div class="card-body">
-            <form method="GET" action="{{ route('admin.san-pham-dau-tu') }}" class="row g-2 align-items-center" role="search">
+            <form method="GET" action="{{ route('admin.san-pham-tiet-kiem') }}" class="row g-2 align-items-center" role="search">
                 <div class="col-12 col-md-6 col-lg-4">
                     <input type="text" name="q" value="{{ request('q') }}" class="form-control form-control-sm" placeholder="Nhập tên Gói">
                 </div>
                 <div class="col-12 col-md-auto d-flex gap-2">
                     <button class="btn btn-sm btn-primary" type="submit">Tìm kiếm</button>
                     @if(request('q'))
-                        <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.san-pham-dau-tu') }}">Xoá lọc</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.san-pham-tiet-kiem') }}">Xoá lọc</a>
                     @endif
                 </div>
             </form>
@@ -332,7 +332,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     window.toggleProductStatus = async function(id, current){
         try{
-            var url = "{{ route('admin.san-pham-dau-tu.update') }}";
+            var url = "{{ route('admin.san-pham-tiet-kiem.update') }}";
             var next = Number(current) === 1 ? 0 : 1;
             var fd = new FormData();
             fd.append('id', String(id));
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!clientValidate()) return;
             submitBtn.disabled = true;
             var fd = toFormData(formEl);
-            axios.post("{{ route('admin.san-pham-dau-tu.store') }}", fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+            axios.post("{{ route('admin.san-pham-tiet-kiem.store') }}", fd, { headers: { 'Content-Type': 'multipart/form-data' } })
                 .then(function(res){
                     if (res.data && res.data.success) {
                         if (window.showToast) window.showToast('success', 'Thành công', res.data.message || 'Đã tạo Gói');
@@ -608,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!editFormEl.checkValidity()) { editFormEl.reportValidity(); return; }
             editSubmitBtn.disabled = true;
             var fd = toFormDataFrom(editFormEl);
-            axios.post("{{ route('admin.san-pham-dau-tu.update') }}", fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+            axios.post("{{ route('admin.san-pham-tiet-kiem.update') }}", fd, { headers: { 'Content-Type': 'multipart/form-data' } })
                 .then(function(res){
                     if (res.data && res.data.success) {
                         if (window.showToast) window.showToast('success', 'Thành công', res.data.message || 'Đã cập nhật Gói');
@@ -642,7 +642,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     message: 'Bạn có chắc chắn muốn xoá Gói này? Hành động không thể hoàn tác.',
                     confirmText: 'Xoá',
                     onConfirm: function(){
-                        axios.post("{{ route('admin.san-pham-dau-tu.destroy') }}", { id: id })
+                        axios.post("{{ route('admin.san-pham-tiet-kiem.destroy') }}", { id: id })
                             .then(function(res){
                                 if (res.data && res.data.success) {
                                     if (window.showToast) window.showToast('success', 'Đã xoá', res.data.message || 'Đã xoá Gói');
@@ -659,7 +659,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             } else if (window.confirm('Bạn có chắc chắn muốn xoá Gói này?')) {
-                axios.post("{{ route('admin.san-pham-dau-tu.destroy') }}", { id: id })
+                axios.post("{{ route('admin.san-pham-tiet-kiem.destroy') }}", { id: id })
                     .then(function(){ window.location.reload(); })
                     .catch(function(){});
             }

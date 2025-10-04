@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class DauTu extends Model
+class TietKiem extends Model
 {
-    protected $table = 'dau_tu';
+    protected $table = 'tiet_kiem';
     
     protected $fillable = [
         'user_id',
@@ -37,7 +37,7 @@ class DauTu extends Model
 
     public function sanPham(): BelongsTo
     {
-        return $this->belongsTo(SanPhamDauTu::class, 'san_pham_id');
+        return $this->belongsTo(SanPhamTietKiem::class, 'san_pham_id');
     }
 
     public function chiTietDauTu(): HasMany

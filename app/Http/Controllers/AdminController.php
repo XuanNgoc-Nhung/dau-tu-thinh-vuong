@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 use App\Models\Profile;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\SanPhamDauTu;
+use App\Models\SanPhamTietKiem;
 use App\Models\NapRut;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -16,7 +16,7 @@ use Throwable;
 use App\Models\NganHangNapTien;
 use App\Models\ThongBao;
 use App\Models\VangDauTu;
-use App\Models\DauTu;
+use App\Models\TietKiem;
 use App\Models\GiaVang;
 use Illuminate\Support\Facades\Log;
 
@@ -160,7 +160,7 @@ class AdminController extends Controller
     public function sanPhamDauTu(Request $request)
     {
         $keyword = trim((string) $request->input('q', ''));
-        $sanPhamDauTu = SanPhamDauTu::orderByDesc('id')
+        $sanPhamDauTu = SanPhamTietKiem::orderByDesc('id')
             ->when($keyword !== '', function ($query) use ($keyword) {
                 $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $keyword) . '%';
                 $query->where(function ($q) use ($like) {
@@ -168,7 +168,7 @@ class AdminController extends Controller
                 });
             })
             ->paginate(10);
-        return view('admin.san-pham-dau-tu', compact('sanPhamDauTu'));
+        return view('admin.san-pham-tiet-kiem', compact('sanPhamDauTu'));
     }
     public function updateSanPhamDauTu(Request $request)
     {
@@ -186,7 +186,7 @@ class AdminController extends Controller
                 'mo_ta' => ['nullable','string','max:255'],
                 'trang_thai' => ['nullable','boolean'],
             ]);
-            $sanPhamDauTu = SanPhamDauTu::findOrFail($validated['id']);
+            $sanPhamDauTu = SanPhamTietKiem::findOrFail($validated['id']);
             if (array_key_exists('ten', $validated)) {
                 $sanPhamDauTu->ten = $validated['ten'];
             }
@@ -195,13 +195,13 @@ class AdminController extends Controller
                 if ($newSlug !== '') {
                     $newSlug = Str::slug($newSlug);
                     // uniqueness check, if conflicts then append random suffix
-                    if (SanPhamDauTu::where('slug', $newSlug)->where('id', '!=', $sanPhamDauTu->id)->exists()) {
+                    if (SanPhamTietKiem::where('slug', $newSlug)->where('id', '!=', $sanPhamDauTu->id)->exists()) {
                         $base = $newSlug;
                         $attempt = 0;
                         do {
                             $attempt++;
                             $candidate = $base . '-' . Str::lower(Str::random(6));
-                        } while (SanPhamDauTu::where('slug', $candidate)->where('id', '!=', $sanPhamDauTu->id)->exists() && $attempt < 60);
+                        } while (SanPhamTietKiem::where('slug', $candidate)->where('id', '!=', $sanPhamDauTu->id)->exists() && $attempt < 60);
                         $newSlug = $candidate;
                     }
                     $sanPhamDauTu->slug = $newSlug;
@@ -290,7 +290,7 @@ class AdminController extends Controller
             // Ensure unique slug
             $original = $slug;
             $i = 0;
-            while (SanPhamDauTu::where('slug', $slug)->exists()) {
+            while (SanPhamTietKiem::where('slug', $slug)->exists()) {
                 $i++;
                 $slug = $original . '-' . Str::lower(Str::random(6));
                 if ($i > 50) { // safety guard
@@ -323,7 +323,7 @@ class AdminController extends Controller
                 $payload['hinh_anh'] = 'uploads/products/' . $filename;
             }
 
-            $created = SanPhamDauTu::create($payload);
+            $created = SanPhamTietKiem::create($payload);
 
             return response()->json([
                 'success' => true,
@@ -351,7 +351,7 @@ class AdminController extends Controller
                 'id' => ['required','integer','exists:san_pham_dau_tu,id']
             ]);
 
-            $item = SanPhamDauTu::findOrFail((int) $validated['id']);
+            $item = SanPhamTietKiem::findOrFail((int) $validated['id']);
 
             // Remove associated image file if exists
             $relativePath = (string) ($item->hinh_anh ?? '');
@@ -784,7 +784,7 @@ class AdminController extends Controller
         $trangThai = $request->input('trang_thai', '');
         $sanPhamId = $request->input('san_pham_id', '');
         
-        $dauTu = DauTu::with(['user', 'sanPham'])
+        $dauTu = TietKiem::with(['user', 'sanPham'])
             ->when($keyword !== '', function ($query) use ($keyword) {
                 $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $keyword) . '%';
                 $query->whereHas('user', function ($userQuery) use ($like) {
@@ -802,7 +802,7 @@ class AdminController extends Controller
             ->paginate(10);
             
         // Lấy danh sách sản phẩm đầu tư cho dropdown filter
-        $sanPhamDauTu = SanPhamDauTu::where('trang_thai', 1)->orderBy('ten')->get();
+        $sanPhamDauTu = SanPhamTietKiem::where('trang_thai', 1)->orderBy('ten')->get();
             
         return view('admin.dau-tu', compact('dauTu', 'sanPhamDauTu'));
     }
@@ -815,7 +815,7 @@ class AdminController extends Controller
                 'trang_thai' => ['required', 'integer', 'in:0,1,2,3']
             ]);
 
-            $dauTu = DauTu::findOrFail($validated['id']);
+            $dauTu = TietKiem::findOrFail($validated['id']);
             $dauTu->trang_thai = $validated['trang_thai'];
             $dauTu->save();
 
@@ -1016,5 +1016,163 @@ class AdminController extends Controller
             'success' => true,
             'message' => 'Xoá giá vàng thành công',
         ]);
+    }
+    public function lichSuDauTu(Request $request)
+    {
+        $dauTu = TietKiem::with(['user', 'sanPham'])->withCount('chiTietDauTu')->orderByDesc('id')->paginate(10);
+        return view('admin.lich-su-tiet-kiem', compact('dauTu'));
+    }
+
+    public function updateTietKiemStatus(Request $request)
+    {
+        try {
+            // Log bắt đầu quá trình cập nhật trạng thái
+            Log::info('Bắt đầu cập nhật trạng thái tiết kiệm', [
+                'request_data' => $request->all(),
+                'user_id' => auth()->id(),
+                'ip_address' => $request->ip()
+            ]);
+
+            $validated = $request->validate([
+                'id' => 'required|integer',
+                'trang_thai' => 'required|integer|in:0,1,2,3'
+            ]);
+
+            // Log validation thành công
+            Log::info('Validation dữ liệu thành công', [
+                'validated_data' => $validated,
+                'user_id' => auth()->id()
+            ]);
+
+            $tietKiem = TietKiem::findOrFail($validated['id']);
+            $oldStatus = $tietKiem->trang_thai;
+            
+            // Log thông tin bản ghi trước khi cập nhật
+            Log::info('Thông tin bản ghi tiết kiệm trước khi cập nhật', [
+                'tiet_kiem_id' => $tietKiem->id,
+                'user_id' => $tietKiem->user_id,
+                'old_status' => $oldStatus,
+                'new_status' => $validated['trang_thai'],
+                'so_tien' => $tietKiem->so_tien,
+                'hoa_hong' => $tietKiem->hoa_hong
+            ]);
+
+            $tietKiem->trang_thai = $validated['trang_thai'];
+            $tietKiem->save();
+
+            // Log cập nhật trạng thái thành công
+            Log::info('Cập nhật trạng thái tiết kiệm thành công', [
+                'tiet_kiem_id' => $tietKiem->id,
+                'old_status' => $oldStatus,
+                'new_status' => $tietKiem->trang_thai,
+                'user_id' => auth()->id()
+            ]);
+
+            // Nếu trạng thái được đổi thành 2 (hoàn thành), cộng tiền vào số dư
+            if ($validated['trang_thai'] == 2 && $oldStatus != 2) {
+                // Log bắt đầu quá trình hoàn thành tiết kiệm
+                Log::info('Bắt đầu quá trình hoàn thành tiết kiệm', [
+                    'tiet_kiem_id' => $tietKiem->id,
+                    'user_id' => $tietKiem->user_id,
+                    'so_tien' => $tietKiem->so_tien,
+                    'hoa_hong' => $tietKiem->hoa_hong
+                ]);
+
+                $user = $tietKiem->user;
+                if ($user && $user->profile) {
+                    $soTienCong = $tietKiem->so_tien + $tietKiem->hoa_hong;
+                    $soDuCu = $user->profile->so_du ?? 0;
+                    $soDuMoi = $soDuCu + $soTienCong;
+                    
+                    // Log thông tin số dư trước khi cập nhật
+                    Log::info('Thông tin số dư trước khi cập nhật', [
+                        'user_id' => $user->id,
+                        'so_du_cu' => $soDuCu,
+                        'so_tien_cong' => $soTienCong,
+                        'so_du_moi' => $soDuMoi,
+                        'tiet_kiem_id' => $tietKiem->id
+                    ]);
+
+                    $user->profile->so_du = $soDuMoi;
+                    $user->profile->save();
+
+                    // Log cập nhật số dư thành công
+                    Log::info('Cập nhật số dư tài khoản thành công', [
+                        'user_id' => $user->id,
+                        'so_du_moi' => $user->profile->so_du,
+                        'tiet_kiem_id' => $tietKiem->id,
+                        'admin_id' => auth()->id()
+                    ]);
+
+                    // Tạo thông báo cho người dùng
+                    $thongBao = ThongBao::create([
+                        'user_id' => $user->id,
+                        'tieu_de' => 'Tiết kiệm hoàn thành',
+                        'noi_dung' => "Tài khoản tiết kiệm của bạn đã hoàn thành. Số tiền {$soTienCong} VNĐ đã được cộng vào số dư tài khoản.",
+                        'trang_thai' => 0
+                    ]);
+
+                    // Log tạo thông báo thành công
+                    Log::info('Tạo thông báo hoàn thành tiết kiệm thành công', [
+                        'thong_bao_id' => $thongBao->id,
+                        'user_id' => $user->id,
+                        'tiet_kiem_id' => $tietKiem->id,
+                        'so_tien_cong' => $soTienCong
+                    ]);
+                } else {
+                    // Log lỗi không tìm thấy user hoặc profile
+                    Log::warning('Không tìm thấy user hoặc profile khi hoàn thành tiết kiệm', [
+                        'tiet_kiem_id' => $tietKiem->id,
+                        'user_id' => $tietKiem->user_id,
+                        'user_exists' => $user ? true : false,
+                        'profile_exists' => $user && $user->profile ? true : false
+                    ]);
+                }
+            }
+
+            // Log phản hồi thành công
+            Log::info('Cập nhật trạng thái tiết kiệm hoàn tất thành công', [
+                'tiet_kiem_id' => $tietKiem->id,
+                'old_status' => $oldStatus,
+                'new_status' => $tietKiem->trang_thai,
+                'admin_id' => auth()->id(),
+                'user_id' => $tietKiem->user_id,
+                'is_completed' => $validated['trang_thai'] == 2
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật trạng thái thành công!'
+            ]);
+
+        } catch (ValidationException $e) {
+            // Log lỗi validation
+            Log::warning('Lỗi validation khi cập nhật trạng thái tiết kiệm', [
+                'request_data' => $request->all(),
+                'validation_errors' => $e->errors(),
+                'user_id' => auth()->id(),
+                'ip_address' => $request->ip()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ!',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            // Log lỗi hệ thống
+            Log::error('Lỗi hệ thống khi cập nhật trạng thái tiết kiệm', [
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString(),
+                'request_data' => $request->all(),
+                'user_id' => auth()->id(),
+                'ip_address' => $request->ip()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi cập nhật trạng thái!'
+            ], 500);
+        }
     }
 }

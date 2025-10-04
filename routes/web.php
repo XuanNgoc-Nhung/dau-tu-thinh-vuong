@@ -12,12 +12,14 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
     Route::post('/users/update', [AdminController::class, 'updateUser'])->name('admin.users.update');
     Route::post('/delete-user', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
-    // Sản phẩm đầu tư
-    Route::get('/san-pham-dau-tu', [AdminController::class, 'sanPhamDauTu'])->name('admin.san-pham-dau-tu');
-    Route::post('/san-pham-dau-tu', [AdminController::class, 'storeSanPhamDauTu'])->name('admin.san-pham-dau-tu.store');
-    Route::post('/san-pham-dau-tu/update', [AdminController::class, 'updateSanPhamDauTu'])->name('admin.san-pham-dau-tu.update');
-    Route::post('/delete-san-pham-dau-tu', [AdminController::class, 'destroySanPhamDauTu'])->name('admin.san-pham-dau-tu.destroy');
-    // end sản phẩm đầu tư
+    // Sản phẩm tiết kiệm
+    Route::get('/san-pham-tiet-kiem', [AdminController::class, 'sanPhamDauTu'])->name('admin.san-pham-tiet-kiem');
+    Route::get('/lich-su-tiet-kiem', [AdminController::class, 'lichSuDauTu'])->name('admin.lich-su-tiet-kiem');
+    Route::post('/lich-su-tiet-kiem/update-status', [AdminController::class, 'updateTietKiemStatus'])->name('admin.lich-su-tiet-kiem.update-status');
+    Route::post('/san-pham-tiet-kiem', [AdminController::class, 'storeSanPhamDauTu'])->name('admin.san-pham-tiet-kiem.store');
+    Route::post('/san-pham-tiet-kiem/update', [AdminController::class, 'updateSanPhamDauTu'])->name('admin.san-pham-tiet-kiem.update');
+    Route::post('/delete-san-pham-tiet-kiem', [AdminController::class, 'destroySanPhamDauTu'])->name('admin.san-pham-tiet-kiem.destroy');
+    // end sản phẩm tiết kiệm
     //Ngân hàng nạp tiền
     Route::get('/ngan-hang-nap-tien', [AdminController::class, 'nganHangNapTien'])->name('admin.ngan-hang-nap-tien');
     Route::post('/ngan-hang-nap-tien', [AdminController::class, 'storeNganHangNapTien'])->name('admin.ngan-hang-nap-tien.store');
@@ -95,9 +97,9 @@ Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
     Route::get('/thong-bao', [UserDashboardController::class, 'thongBao'])->name('dashboard.thong-bao');
     // end Thông báo
     // Đầu tư
-    Route::get('/dau-tu', [UserDashboardController::class, 'dauTu'])->name('dashboard.dau-tu');
-    Route::get('/chi-tiet-dau-tu/{slug}', [UserDashboardController::class, 'chiTietDauTu'])->name('dashboard.chi-tiet-dau-tu');
-    Route::post('/dau-tu', [UserDashboardController::class, 'createDauTu'])->name('dashboard.dau-tu.create');
+    Route::get('/tiet-kiem', [UserDashboardController::class, 'dauTu'])->name('dashboard.tiet-kiem');
+    Route::get('/chi-tiet-tiet-kiem/{slug}', [UserDashboardController::class, 'chiTietDauTu'])->name('dashboard.chi-tiet-tiet-kiem');
+    Route::post('/tiet-kiem', [UserDashboardController::class, 'createDauTu'])->name('dashboard.tiet-kiem.create');
     // end Đầu tư
     // Dự án của tôi
     Route::get('/du-an-cua-toi', [UserDashboardController::class, 'duAnCuaToi'])->name('dashboard.du-an-cua-toi');

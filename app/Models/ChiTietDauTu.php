@@ -32,7 +32,7 @@ class ChiTietDauTu extends Model
 
     public function dauTu(): BelongsTo
     {
-        return $this->belongsTo(DauTu::class, 'dau_tu_id');
+        return $this->belongsTo(TietKiem::class, 'dau_tu_id');
     }
 
     public function user(): BelongsTo
@@ -42,6 +42,6 @@ class ChiTietDauTu extends Model
 
     public function sanPham(): BelongsTo
     {
-        return $this->belongsTo(SanPhamDauTu::class, 'san_pham_id');
+        return $this->belongsTo(SanPhamTietKiem::class, 'san_pham_id');
     }
 }

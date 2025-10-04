@@ -22,11 +22,11 @@
     </div>
 
     <div class="menu-section">
-        <h6 class="menu-title">Đầu tư</h6>
+        <h6 class="menu-title">Tiết kiệm</h6>
         <ul class="menu-list">
-            <li class="{{ request()->routeIs('dashboard.dau-tu') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.dau-tu') }}" class="menu-item"><i class="bi bi-graph-up-arrow me-2"></i>Danh mục đầu tư</a>
+            <li class="{{ request()->routeIs('dashboard.tiet-kiem') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.tiet-kiem') }}" class="menu-item"><i class="bi bi-graph-up-arrow me-2"></i>Gói tiết kiệm</a>
             </li>
-            <li class="{{ request()->routeIs('dashboard.du-an-cua-toi') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.du-an-cua-toi') }}" class="menu-item"><i class="bi bi-pie-chart me-2"></i>Dự án của tôi</a></li>
+            <li class="{{ request()->routeIs('dashboard.du-an-cua-toi') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.du-an-cua-toi') }}" class="menu-item"><i class="bi bi-pie-chart me-2"></i>Tiết kiệm của tôi</a></li>
         </ul>
     </div>
     <div class="menu-section">

@@ -9,8 +9,11 @@
     <a class="nav-link @yield('nav.users_active')" href="{{ route('admin.users') }}" title="Người dùng" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-people"></i> <span class="label">Người dùng</span>
     </a>
-    <a class="nav-link @yield('nav.san-pham-dau-tu_active')" href="{{ route('admin.san-pham-dau-tu') }}" title="Sản phẩm đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
+    <a class="nav-link @yield('nav.san-pham-tiet-kiem_active')" href="{{ route('admin.san-pham-tiet-kiem') }}" title="Sản phẩm tiết kiệm" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-cash-coin"></i> <span class="label">Sản phẩm tiết kiệm</span>
+    </a>
+    <a class="nav-link @yield('nav.lich-su-tiet-kiem_active')" href="{{ route('admin.lich-su-tiet-kiem') }}" title="Lịch sử tiết kiệm" data-bs-toggle="tooltip" data-bs-placement="right">
+      <i class="bi bi-cash-coin"></i> <span class="label">Lịch sử tiết kiệm</span>
     </a>
     <a class="nav-link @yield('nav.vang-dau-tu_active')" href="{{ route('admin.vang-dau-tu') }}" title="Vàng đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-cash-coin"></i> <span class="label">Vàng đầu tư</span>

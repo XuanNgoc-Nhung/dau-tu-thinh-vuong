@@ -21,7 +21,7 @@
                 @if(request()->routeIs('dashboard*'))
                 {{-- Menu chỉ hiển thị khi đang ở trong dashboard --}}
                 <li class="nav-item me-3">
-                    <a class="nav-link text-white {{ request()->routeIs('dashboard.dau-tu') ? 'active' : '' }}" href="{{ route('dashboard.dau-tu') }}">Đầu tư</a>
+                    <a class="nav-link text-white {{ request()->routeIs('dashboard.tiet-kiem') ? 'active' : '' }}" href="{{ route('dashboard.tiet-kiem') }}">Đầu tư</a>
                 </li>
                 <li class="nav-item me-3">
                     <a class="nav-link text-white {{ request()->routeIs('dashboard.nap-tien') ? 'active' : '' }}" href="{{ route('dashboard.nap-tien') }}">Nạp tiền</a>
@@ -30,12 +30,12 @@
                     <a class="nav-link text-white {{ request()->routeIs('dashboard.rut-tien') ? 'active' : '' }}" href="{{ route('dashboard.rut-tien') }}">Rút tiền</a>
                 </li>
                 <li class="nav-item me-3">
-                    <a class="nav-link text-white {{ request()->routeIs('dashboard.du-an-cua-toi') ? 'active' : '' }}" href="{{ route('dashboard.du-an-cua-toi') }}">Dự án của tôi</a>
+                    <a class="nav-link text-white {{ request()->routeIs('dashboard.du-an-cua-toi') ? 'active' : '' }}" href="{{ route('dashboard.du-an-cua-toi') }}">Gói tiết kiệm</a>
                 </li>
                 @else
                 {{-- Menu hiển thị khi không ở dashboard --}}
                 <li class="nav-item me-3">
-                    <a class="nav-link text-white {{ request()->routeIs('dashboard.dau-tu') ? 'active' : '' }}" href="{{ route('dashboard.dau-tu') }}">Đầu tư</a>
+                    <a class="nav-link text-white {{ request()->routeIs('dashboard.tiet-kiem') ? 'active' : '' }}" href="{{ route('dashboard.tiet-kiem') }}">Gói tiết kiệm</a>
                 </li>
                 @endif
                 @if(auth()->check())    

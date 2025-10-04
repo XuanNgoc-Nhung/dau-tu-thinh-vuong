@@ -83,7 +83,7 @@
                                         <span class="badge badge-success"><i class="fas fa-clock mr-1"></i>Đang đầu
                                             tư</span>
                                         @elseif($status === 'da_hoan_thanh' || $status === 2)
-                                        <span class="badge badge-primary"><i class="fas fa-check mr-1"></i>Đã hoàn
+                                        <span class="badge badge-danger"><i class="fas fa-check mr-1"></i>Đã hoàn
                                             thành</span>
                                         @else
                                         <span class="badge badge-danger"><i class="fas fa-times mr-1"></i>Đã huỷ</span>
