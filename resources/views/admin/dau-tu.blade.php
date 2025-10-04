@@ -17,10 +17,8 @@
 				<div class="col-12 col-md-3 col-lg-2">
 					<select name="trang_thai" class="form-select form-select-sm">
 						<option value="">Tất cả trạng thái</option>
-						<option value="0" {{ request('trang_thai') == '0' ? 'selected' : '' }}>Chờ xử lý</option>
 						<option value="1" {{ request('trang_thai') == '1' ? 'selected' : '' }}>Đang hoạt động</option>
 						<option value="2" {{ request('trang_thai') == '2' ? 'selected' : '' }}>Hoàn thành</option>
-						<option value="3" {{ request('trang_thai') == '3' ? 'selected' : '' }}>Hủy bỏ</option>
 					</select>
 				</div>
 				<div class="col-12 col-md-3 col-lg-2">
@@ -28,7 +26,7 @@
 						<option value="">Tất cả gói đầu tư</option>
 						@foreach($sanPhamDauTu as $sanPham)
 							<option value="{{ $sanPham->id }}" {{ request('san_pham_id') == $sanPham->id ? 'selected' : '' }}>
-								{{ $sanPham->ten }}
+								{{ $sanPham->ma_vang }}
 							</option>
 						@endforeach
 					</select>
@@ -70,13 +68,11 @@
 					<tr>
 						<th>STT</th>
 						<th>Người dùng</th>
-						<th>Gói đầu tư</th>
-						<th>Số tiền đầu tư</th>
-						<th>Số chu kỳ</th>
-						<th>Hoa hồng</th>
-						<th>Trạng thái</th>
+						<th>Sản phẩm vàng</th>
+						<th>Giá mua</th>
+						<th>Số lượng</th>
 						<th>Thời gian</th>
-						<th class="action-col text-center">Hành động</th>
+						<th>Trạng thái</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -91,22 +87,19 @@
 						</td>
 						<td>
 							<div class="d-flex flex-column">
-								<strong>{{ $dt->sanPham->ten ?? '—' }}</strong>
-								<small class="text-muted">Lãi suất: {{ $dt->sanPham->lai_suat ?? 0 }}%</small>
+								<strong>{{ $dt->vangDauTu->ten_vang ?? '—' }}</strong>
 							</div>
 						</td>
 						<td>
 							<strong class="text-success">
-								{{ number_format($dt->so_tien, 0, ',', '.') }} VNĐ
+								{{ number_format($dt->gia_mua, 0, ',', '.') }} VNĐ
 							</strong>
 						</td>
 						<td class="text-center">
-							<span class="badge bg-info">{{ $dt->so_chu_ky }} chu kỳ</span>
+							<span>{{ number_format($dt->so_luong, 0, ',', '.') }} chỉ</span>
 						</td>
 						<td>
-							<strong class="text-warning">
-								{{ number_format($dt->hoa_hong, 0, ',', '.') }} VNĐ
-							</strong>
+								{{ $dt->thoi_gian ? $dt->thoi_gian->format('d/m/Y H:i') : '—' }}
 						</td>
 						<td>
 							@php
@@ -119,37 +112,6 @@
 								$status = $statusConfig[$dt->trang_thai] ?? $statusConfig[0];
 							@endphp
 							<span class="badge {{ $status['class'] }}">{{ $status['text'] }}</span>
-						</td>
-						<td>
-							<div class="d-flex flex-column">
-								<small>{{ $dt->created_at->format('d/m/Y') }}</small>
-								<small class="text-muted">{{ $dt->created_at->format('H:i:s') }}</small>
-							</div>
-						</td>
-						<td class="action-col text-center">
-							<div class="btn-group btn-group-sm" role="group">
-								<button type="button" class="btn {{ $dt->trang_thai == 0 ? 'btn-outline-success' : 'btn-success' }}" 
-									data-id="{{ $dt->id }}" 
-									{{ $dt->trang_thai != 0 ? 'disabled' : '' }}
-									title="{{ $dt->trang_thai == 1 ? 'Đang hoạt động' : 'Kích hoạt' }}"
-									onclick="activateInvestment({{ $dt->id }}, this)">
-									<i class="bi bi-play-fill"></i>
-								</button>
-								<button type="button" class="btn {{ $dt->trang_thai == 1 ? 'btn-outline-primary' : 'btn-primary' }}" 
-									data-id="{{ $dt->id }}" 
-									{{ $dt->trang_thai != 1 ? 'disabled' : '' }}
-									title="{{ $dt->trang_thai == 2 ? 'Hoàn thành' : 'Hoàn thành' }}"
-									onclick="completeInvestment({{ $dt->id }}, this)">
-									<i class="bi bi-check-circle-fill"></i>
-								</button>
-								<button type="button" class="btn {{ $dt->trang_thai == 0 || $dt->trang_thai == 1 ? 'btn-outline-danger' : 'btn-danger' }}" 
-									data-id="{{ $dt->id }}" 
-									{{ $dt->trang_thai == 2 || $dt->trang_thai == 3 ? 'disabled' : '' }}
-									title="{{ $dt->trang_thai == 3 ? 'Đã hủy' : 'Hủy bỏ' }}"
-									onclick="cancelInvestment({{ $dt->id }}, this)">
-									<i class="bi bi-x-circle-fill"></i>
-								</button>
-							</div>
 						</td>
 					</tr>
 					@empty

@@ -65,6 +65,7 @@ class HomeController extends Controller
 
             $dataList[] = [
                 'name' => (string) $vang->ma_vang,
+                'ma' => (string) $vang->ten_vang,
                 'prices' => [
                     'giaMuaHomQua' => $yesterday ? (int) $yesterday->gia_mua : null,
                     'giaBanHomQua' => $yesterday ? (int) $yesterday->gia_ban : null,

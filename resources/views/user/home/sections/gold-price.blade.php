@@ -72,7 +72,7 @@
                                     @foreach($dataList as $index => $item)
                                     <tr class="gold-type-row" data-ma-vang="{{ $item['name'] ?? '' }}" data-index="{{ $index }}" style="cursor:pointer">
                                         <td class="text-center fw-semibold text-dark sticky-col-left w-index">
-                                            {{ $index + 1 }}
+                                            {{ $index + 1 }} 
                                         </td>
                                         <td class="text-left fw-semibold text-primary sticky-col-left-2 w-name">
                                             {{ $item['name'] ?? 'N/A' }}
@@ -106,9 +106,9 @@
                                             @endif
                                         </td>
                                         <td class="text-center sticky-col w-action">
-                                            <button class="btn btn-success btn-sm fw-semibold" onclick="buyGold('{{ $item['name'] ?? 'N/A' }}', '{{ isset($item['prices']['giaMuaHomNay']) && is_numeric($item['prices']['giaMuaHomNay']) ? number_format($item['prices']['giaMuaHomNay'], 0, ',', '.') : '-' }}')">
+                                            <a href="{{ route('dashboard.chi-tiet-dau-tu', $item['ma'] ?? '') }}" class="btn btn-success btn-sm fw-semibold">
                                                 <i class="bi bi-cart-plus me-1"></i>Giao dịch
-                                            </button>
+                                            </a>
                                         </td>
                                     </tr>
                                     @endforeach

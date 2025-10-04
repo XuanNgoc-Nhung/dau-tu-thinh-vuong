@@ -18,6 +18,7 @@ use App\Models\ThongBao;
 use App\Models\VangDauTu;
 use App\Models\TietKiem;
 use App\Models\GiaVang;
+use App\Models\DauTuVang;
 use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
@@ -784,7 +785,7 @@ class AdminController extends Controller
         $trangThai = $request->input('trang_thai', '');
         $sanPhamId = $request->input('san_pham_id', '');
         
-        $dauTu = TietKiem::with(['user', 'sanPham'])
+        $dauTu = DauTuVang::with(['user', 'vangDauTu'])
             ->when($keyword !== '', function ($query) use ($keyword) {
                 $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $keyword) . '%';
                 $query->whereHas('user', function ($userQuery) use ($like) {
@@ -796,13 +797,13 @@ class AdminController extends Controller
                 $query->where('trang_thai', $trangThai);
             })
             ->when($sanPhamId != '', function ($query) use ($sanPhamId) {
-                $query->where('san_pham_id', $sanPhamId);
+                $query->where('id_vang', $sanPhamId);
             })
             ->orderByDesc('id')
             ->paginate(10);
             
         // Lấy danh sách sản phẩm đầu tư cho dropdown filter
-        $sanPhamDauTu = SanPhamTietKiem::where('trang_thai', 1)->orderBy('ten')->get();
+        $sanPhamDauTu = VangDauTu::where('trang_thai', 1)->orderBy('ten_vang')->get();
             
         return view('admin.dau-tu', compact('dauTu', 'sanPhamDauTu'));
     }
@@ -811,11 +812,11 @@ class AdminController extends Controller
     {
         try {
             $validated = $request->validate([
-                'id' => ['required', 'integer', 'exists:dau_tu,id'],
+                'id' => ['required', 'integer', 'exists:dau_tu_vang,id'],
                 'trang_thai' => ['required', 'integer', 'in:0,1,2,3']
             ]);
 
-            $dauTu = TietKiem::findOrFail($validated['id']);
+            $dauTu = DauTuVang::findOrFail($validated['id']);
             $dauTu->trang_thai = $validated['trang_thai'];
             $dauTu->save();
 

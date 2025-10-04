@@ -15,20 +15,20 @@
     <a class="nav-link @yield('nav.lich-su-tiet-kiem_active')" href="{{ route('admin.lich-su-tiet-kiem') }}" title="Lịch sử tiết kiệm" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-cash-coin"></i> <span class="label">Lịch sử tiết kiệm</span>
     </a>
-    <a class="nav-link @yield('nav.vang-dau-tu_active')" href="{{ route('admin.vang-dau-tu') }}" title="Vàng đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
+    {{-- <a class="nav-link @yield('nav.vang-dau-tu_active')" href="{{ route('admin.vang-dau-tu') }}" title="Vàng đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-cash-coin"></i> <span class="label">Vàng đầu tư</span>
-    </a>
+    </a> --}}
     <a class="nav-link @yield('nav.gia-vang_active')" href="{{ route('admin.gia-vang') }}" title="Giá vàng" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-cash-coin"></i> <span class="label">Giá vàng</span>
+    </a>
+    <a class="nav-link @yield('nav.dau-tu_active')" href="{{ route('admin.dau-tu') }}" title="Đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
+      <i class="bi bi-graph-up"></i> <span class="label">Đầu tư</span>
     </a>
     <a class="nav-link @yield('nav.ngan-hang-nap-tien_active')" href="{{ route('admin.ngan-hang-nap-tien') }}" title="Ngân hàng nạp tiền" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-credit-card"></i> <span class="label">Ngân hàng nạp tiền</span>
     </a>
     <a class="nav-link @yield('nav.nap-rut_active')" href="{{ route('admin.nap-rut') }}" title="Giao dịch" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-cash-coin"></i> <span class="label">Nạp rút</span>
-    </a>
-    <a class="nav-link @yield('nav.dau-tu_active')" href="{{ route('admin.dau-tu') }}" title="Đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
-      <i class="bi bi-graph-up"></i> <span class="label">Đầu tư</span>
     </a>
     <a class="nav-link @yield('nav.thong-bao_active')" href="{{ route('admin.thong-bao') }}" title="Thông báo" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-bell"></i> <span class="label">Thông báo</span>
