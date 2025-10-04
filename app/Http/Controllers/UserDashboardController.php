@@ -16,6 +16,7 @@ use App\Models\TietKiem;
 use App\Models\GiaVang;
 use App\Models\VangDauTu;
 use App\Models\DauTuVang;
+use App\Models\DauTu;
 
 class UserDashboardController extends Controller
 {
@@ -1799,6 +1800,75 @@ class UserDashboardController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi bán vàng'
+            ]);
+        }
+    }
+    public function taiSan(){
+        try {
+            $user = Auth::user();
+            $profile = $user->profile;
+            
+            // 1. Số dư khả dụng từ profile->so_du
+            $soDuHienTai = $profile ? $profile->so_du : 0;
+            
+            // 2. Tính tài sản đầu tư từ bảng dau_tu_vang (so_luong * gia_mua)
+            $taiSanDauTu = DauTuVang::where('user_id', $user->id)
+                ->where('trang_thai', 1) // Chỉ tính những khoản đang nắm giữ
+                ->selectRaw('
+                    SUM(so_luong * gia_mua) as tong_gia_tri_dau_tu,
+                    COUNT(*) as so_giao_dich_dau_tu
+                ')
+                ->first();
+            
+            $tongGiaTriDauTu = $taiSanDauTu->tong_gia_tri_dau_tu ?? 0;
+            $soGiaoDichDauTu = $taiSanDauTu->so_giao_dich_dau_tu ?? 0;
+            
+            // 3. Tính tài sản tiết kiệm từ bảng tiet_kiem
+            $taiSanTietKiem = TietKiem::where('user_id', $user->id)
+                ->where('trang_thai', 1) // Chỉ tính những gói đang hoạt động
+                ->selectRaw('
+                    SUM(so_tien) as tong_tien_tiet_kiem,
+                    COUNT(*) as so_goi_tiet_kiem
+                ')
+                ->first();
+            
+            $tongTienTietKiem = $taiSanTietKiem->tong_tien_tiet_kiem ?? 0;
+            $soGoiTietKiem = $taiSanTietKiem->so_goi_tiet_kiem ?? 0;
+            
+            // 4. Tính tổng tài sản
+            $tongTaiSan = $soDuHienTai + $tongGiaTriDauTu + $tongTienTietKiem;
+            
+            Log::info('UserDashboardController@taiSan: Tính toán tài sản thành công', [
+                'user_id' => $user->id,
+                'so_du_hien_tai' => $soDuHienTai,
+                'tong_gia_tri_dau_tu' => $tongGiaTriDauTu,
+                'tong_tien_tiet_kiem' => $tongTienTietKiem,
+                'tong_tai_san' => $tongTaiSan
+            ]);
+            
+            return view('user.dashboard.tai-san', compact(
+                'soDuHienTai',
+                'tongGiaTriDauTu', 
+                'soGiaoDichDauTu',
+                'tongTienTietKiem',
+                'soGoiTietKiem',
+                'tongTaiSan'
+            ));
+            
+        } catch (\Exception $e) {
+            Log::error('UserDashboardController@taiSan: Lỗi khi lấy dữ liệu tài sản', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return view('user.dashboard.tai-san', [
+                'soDuHienTai' => 0,
+                'tongGiaTriDauTu' => 0,
+                'soGiaoDichDauTu' => 0,
+                'tongTienTietKiem' => 0,
+                'soGoiTietKiem' => 0,
+                'tongTaiSan' => 0
             ]);
         }
     }

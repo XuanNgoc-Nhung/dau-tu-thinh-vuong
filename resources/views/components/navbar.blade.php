@@ -1,7 +1,7 @@
 <!-- Navbar Component -->
 <nav class="navbar navbar-expand-lg sticky-top shadow-sm navbar-dark bg-primary">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="#">{{ config('app.name') }}</a>
+        <a class="navbar-brand fw-bold" href="{{ route('home') }}">{{ config('app.name') }}</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -29,14 +29,14 @@
                 <li class="nav-item me-3">
                     <a class="nav-link text-white {{ request()->routeIs('dashboard.rut-tien') ? 'active' : '' }}" href="{{ route('dashboard.rut-tien') }}">Rút tiền</a>
                 </li>
-                <li class="nav-item me-3">
+                {{-- <li class="nav-item me-3">
                     <a class="nav-link text-white {{ request()->routeIs('dashboard.du-an-cua-toi') ? 'active' : '' }}" href="{{ route('dashboard.du-an-cua-toi') }}">Gói tiết kiệm</a>
-                </li>
+                </li> --}}
                 @else
                 {{-- Menu hiển thị khi không ở dashboard --}}
-                <li class="nav-item me-3">
+                {{-- <li class="nav-item me-3">
                     <a class="nav-link text-white {{ request()->routeIs('dashboard.tiet-kiem') ? 'active' : '' }}" href="{{ route('dashboard.tiet-kiem') }}">Gói tiết kiệm</a>
-                </li>
+                </li> --}}
                 @endif
                 @if(auth()->check())    
                 <li class="nav-item me-3">

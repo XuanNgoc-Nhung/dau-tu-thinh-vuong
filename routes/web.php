@@ -68,7 +68,7 @@ Route::post('/register', [UserController::class, 'postRegister'])->name('post-re
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
-    Route::get('/', [UserDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/', [UserDashboardController::class, 'taiSan'])->name('dashboard');
     Route::get('/profile', [UserDashboardController::class, 'profile'])->name('dashboard.profile');
     // bao mat
     Route::get('/bao-mat', [UserDashboardController::class, 'baoMat'])->name('dashboard.bao-mat');
@@ -82,6 +82,9 @@ Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
     Route::get('/ngan-hang', [UserDashboardController::class, 'nganHang'])->name('dashboard.ngan-hang');
     Route::put('/ngan-hang/update', [UserDashboardController::class, 'updateBankInfo'])->name('user.bank.update');
     // end Ngân hàng
+    // Tài sản
+    Route::get('/tai-san', [UserDashboardController::class, 'taiSan'])->name('dashboard.tai-san');
+    
     // Nạp tiền
     Route::get('/nap-tien', [UserDashboardController::class, 'napTien'])->name('dashboard.nap-tien');
     Route::post('/nap-tien', [UserDashboardController::class, 'createNapTienRequest'])->name('dashboard.nap-tien.create');
