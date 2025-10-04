@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use App\Helpers\TimeHelper;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +28,11 @@ class AppServiceProvider extends ServiceProvider
         // Create global alias for TimeHelper
         if (!class_exists('TimeHelper')) {
             class_alias(TimeHelper::class, 'TimeHelper');
+        }
+        
+        // Create global alias for Carbon
+        if (!class_exists('Carbon')) {
+            class_alias(Carbon::class, 'Carbon');
         }
     }
 }

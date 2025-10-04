@@ -96,12 +96,21 @@ Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
     // Thông báo
     Route::get('/thong-bao', [UserDashboardController::class, 'thongBao'])->name('dashboard.thong-bao');
     // end Thông báo
+    // Tiết kiệm
+    Route::get('/tiet-kiem', [UserDashboardController::class, 'tietKiem'])->name('dashboard.tiet-kiem');
+    Route::get('/chi-tiet-tiet-kiem/{slug}', [UserDashboardController::class, 'chiTietTietKiem'])->name('dashboard.chi-tiet-tiet-kiem');
+    Route::post('/tiet-kiem', [UserDashboardController::class, 'createTietKiem'])->name('dashboard.tiet-kiem.create');
+    Route::get('/du-an-cua-toi', [UserDashboardController::class, 'duAnTietKiemCuaToi'])->name('dashboard.du-an-cua-toi');
+    // end Tiết kiệm
     // Đầu tư
-    Route::get('/tiet-kiem', [UserDashboardController::class, 'dauTu'])->name('dashboard.tiet-kiem');
-    Route::get('/chi-tiet-tiet-kiem/{slug}', [UserDashboardController::class, 'chiTietDauTu'])->name('dashboard.chi-tiet-tiet-kiem');
-    Route::post('/tiet-kiem', [UserDashboardController::class, 'createDauTu'])->name('dashboard.tiet-kiem.create');
+    Route::get('/dau-tu', [UserDashboardController::class, 'dauTu'])->name('dashboard.dau-tu');
+    Route::get('/chi-tiet-dau-tu/{slug}', [UserDashboardController::class, 'chiTietDauTu'])->name('dashboard.chi-tiet-dau-tu');
+    Route::post('/dau-tu', [UserDashboardController::class, 'createDauTu'])->name('dashboard.dau-tu.create');
+    Route::get('/du-an-dau-tu-cua-toi', [UserDashboardController::class, 'duAnDauTuCuaToi'])->name('dashboard.du-an-dau-tu-cua-toi');
+    // API cho giá vàng
+    Route::get('/api/gia-vang-data', [UserDashboardController::class, 'getGiaVangData'])->name('dashboard.api.gia-vang-data');
+    Route::get('/api/gia-vang/current', [UserDashboardController::class, 'getCurrentGoldPrice'])->name('dashboard.api.gia-vang.current');
+    Route::post('/api/vang-dau-tu', [UserDashboardController::class, 'createVangDauTu'])->name('dashboard.api.vang-dau-tu.create');
+    Route::post('/api/vang-dau-tu/sell', [UserDashboardController::class, 'sellGold'])->name('dashboard.api.vang-dau-tu.sell');
     // end Đầu tư
-    // Dự án của tôi
-    Route::get('/du-an-cua-toi', [UserDashboardController::class, 'duAnCuaToi'])->name('dashboard.du-an-cua-toi');
-    // end Dự án của tôi
 });

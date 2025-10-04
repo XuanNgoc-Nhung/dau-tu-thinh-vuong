@@ -1,150 +1,236 @@
 @extends('user.layouts.dashboard')
 
+@section('title', 'Đầu tư vàng')
+
 @section('content-dashboard')
 <div class="container-fluid">
-    <div class="card">
-        <div class="card-header">
-            <h4 class="card-title">
-                <i class="fas fa-coins mr-2"></i>
-                Sản phẩm đầu tư
-            </h4>
-        </div>
-        <div class="card-body">
-    <form method="GET" action="{{ route('dashboard.dau-tu') }}" class="mb-3">
-        <div class="row align-items-center g-2">
-            <div class="col-sm-8 col-md-6 col-lg-4">
-                <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="Tìm theo tên sản phẩm...">
-            </div>
-            <div class="col-sm-4 col-md-6 col-lg-4">
-                <button type="submit" class="btn btn-primary mr-2"><i class="fas fa-search mr-1"></i>Tìm kiếm</button>
-                <a href="{{ route('dashboard.dau-tu') }}" class="btn btn-secondary">Reset</a>
-            </div>
-        </div>
-    </form>
-    <div class="row g-3">
-        @forelse($sanPhamDauTu as $sp)
-        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-            <div class="card h-100 shadow-sm position-relative product-card product-bg-{{ $loop->index % 5 }}">
-                @if(!empty($sp->nhan_dan))
-                <span class="badge position-absolute product-label" style="top: 16px; right: 16px; z-index: 2;">{{ $sp->nhan_dan }}</span>
-                @endif
-                @if(!empty($sp->hinh_anh))
-                <img src="{{ asset($sp->hinh_anh) }}" class="card-img-top product-card-img" alt="{{ $sp->ten }}">
-                @endif
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title mb-2">{{ $sp->ten }}</h5>
-                    <ul class="list-unstyled mb-3">
-                        <li>Vốn: <strong>
-                            @php($min = $sp->von_toi_thieu)
-                            @php($max = $sp->von_toi_da)
-                            @if($min !== null && $max !== null)
-                                {{ number_format($min) }} - {{ number_format($max) }}
-                            @elseif($min !== null)
-                                ≥ {{ number_format($min) }}
-                            @elseif($max !== null)
-                                ≤ {{ number_format($max) }}
-                            @else
-                                —
-                            @endif
-                        </strong></li>
-                        <li>Lãi suất: <strong>{{ rtrim(rtrim(number_format($sp->lai_suat, 2), '0'), '.') }}%</strong></li>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Bảng giá vàng đầu tư</h4>
+                    <p class="text-muted mb-0">Cập nhật giá vàng mới nhất</p>
+                </div>
+                <div class="card-body">
+                    @if(count($giaVang) > 0)
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th width="5%">#</th>
+                                        <th width="20%">Tên sản phẩm</th>
+                                        <th width="15%">Mã sản phẩm</th>
+                                        <th width="15%">Giá mua (VNĐ)</th>
+                                        <th width="15%">Giá bán (VNĐ)</th>
+                                        <th width="15%">Thời gian</th>
+                                        <th width="15%">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($giaVang as $index => $item)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>
+                                            <strong class="text-primary">{{ $item['san_pham']->ma_vang }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ $item['san_pham']->ten_vang }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-success fw-bold">{{ number_format($item['gia_mua'], 0, ',', '.') }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-danger fw-bold">{{ number_format($item['gia_ban'], 0, ',', '.') }}</span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">{{ \Carbon\Carbon::parse($item['thoi_gian'])->format('d/m/Y H:i') }}</small>
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('dashboard.chi-tiet-dau-tu', $item['san_pham']->ten_vang) }}" class="btn btn-primary btn-sm">
+                                                <i class="mdi mdi-gold"></i> Đầu tư ngay
+                                            </a>   
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                         
-                        <li>Thời gian/chu kỳ: <strong>{{ TimeHelper::formatTimeFromHours($sp->thoi_gian_mot_chu_ky) }}</strong></li>
-                    </ul>
-                    <div class="mt-auto">
-                        <a href="{{ route('dashboard.chi-tiet-dau-tu', $sp->slug) }}" class="btn btn-primary w-100">Đầu tư ngay</a>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <h5 class="alert-heading">Thông tin quan trọng:</h5>
+                                    <ul class="mb-0">
+                                        <li>Giá vàng được cập nhật liên tục theo thị trường</li>
+                                        <li>Giá mua là giá bạn mua vàng từ hệ thống</li>
+                                        <li>Giá bán là giá bạn bán vàng cho hệ thống</li>
+                                        <li>Chênh lệch giá là cơ hội đầu tư của bạn</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="text-center py-5">
+                            <div class="mb-3">
+                                <i class="mdi mdi-gold" style="font-size: 4rem; color: #f39c12;"></i>
+                            </div>
+                            <h4 class="text-muted">Chưa có dữ liệu giá vàng</h4>
+                            <p class="text-muted">Hiện tại chưa có sản phẩm vàng nào được cập nhật giá.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thống kê nhanh -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ count($giaVang) }}</h4>
+                            <p class="mb-0">Sản phẩm vàng</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="mdi mdi-gold" style="font-size: 2rem;"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        @empty
-        <div class="col-12">
-            <div class="alert alert-info">Hiện chưa có sản phẩm đầu tư nào.</div>
-        </div>
-        @endforelse
-    </div>
-    <div class="row mt-4">
-        <div class="col-12 col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-book-open mr-2"></i>Hướng dẫn đầu tư</h5>
-                </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
                 <div class="card-body">
-                    <ol class="mb-0 pl-3">
-                        <li>Chọn sản phẩm phù hợp và bấm "Đầu tư ngay".</li>
-                        <li>Đọc kỹ thông tin: vốn tối thiểu/tối đa, lãi suất và chu kỳ.</li>
-                        <li>Nhập số tiền muốn đầu tư trong khoảng hợp lệ.</li>
-                        <li>Chọn số chu kỳ mong muốn rồi xác nhận.</li>
-                        <li>Theo dõi lợi nhuận trong mục "Dự án của tôi".</li>
-                    </ol>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">
+                                @if(count($giaVang) > 0)
+                                    {{ number_format(collect($giaVang)->avg('gia_mua'), 0, ',', '.') }}
+                                @else
+                                    0
+                                @endif
+                            </h4>
+                            <p class="mb-0">Giá mua TB (VNĐ)</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="mdi mdi-trending-up" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-lg-4 mt-3 mt-lg-0">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle mr-2"></i>Lưu ý quan trọng</h5>
-                </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
                 <div class="card-body">
-                    <ul class="mb-0 pl-3">
-                        <li>Lãi suất hiển thị là theo chu kỳ; tổng lợi nhuận phụ thuộc số chu kỳ.</li>
-                        <li>Vui lòng hoàn tất KYC để rút lợi nhuận an toàn.</li>
-                        <li>Nên đa dạng hóa danh mục thay vì dồn toàn bộ vốn vào 1 sản phẩm.</li>
-                        <li>Kiểm tra lại số tiền trước khi xác nhận để tránh sai sót.</li>
-                    </ul>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">
+                                @if(count($giaVang) > 0)
+                                    {{ number_format(collect($giaVang)->avg('gia_ban'), 0, ',', '.') }}
+                                @else
+                                    0
+                                @endif
+                            </h4>
+                            <p class="mb-0">Giá bán TB (VNĐ)</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="mdi mdi-trending-down" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">
+                                @if(count($giaVang) > 0)
+                                    {{ number_format(collect($giaVang)->avg('gia_ban') - collect($giaVang)->avg('gia_mua'), 0, ',', '.') }}
+                                @else
+                                    0
+                                @endif
+                            </h4>
+                            <p class="mb-0">Chênh lệch TB (VNĐ)</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="mdi mdi-chart-line" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-        </div>
-    </div>
-    </div>
-@endsection
-
-@push('styles')
+</div>
 <style>
-    .product-card-img {
-        width: calc(100% - 16px);
-        height: 180px; /* thu gọn một chút */
-        object-fit: cover; /* giữ tỉ lệ, cắt phần thừa để lắp khung */
-        margin: 8px; /* tạo khoảng cách xung quanh ảnh */
-        border-radius: .5rem; /* bo góc nhẹ cho đẹp */
-    }
+.table th {
+    background-color: #343a40 !important;
+    color: white !important;
+    border: none !important;
+}
 
-    /* Nền rực rỡ (gradient) cho từng sản phẩm, luân phiên theo chỉ số */
-    .product-card { border: 1px solid transparent; overflow: hidden; }
-    .product-bg-0 { background: linear-gradient(135deg, #a8e6ff 0%, #2ec5ff 50%, #0084ff 100%); }
-    .product-bg-1 { background: linear-gradient(135deg, #ffd1dc 0%, #ff7ca3 50%, #ff3d71 100%); }
-    .product-bg-2 { background: linear-gradient(135deg, #c8ffb5 0%, #78e08f 50%, #20bf55 100%); }
-    .product-bg-3 { background: linear-gradient(135deg, #ffe3a3 0%, #ffb347 50%, #ff8c00 100%); }
-    .product-bg-4 { background: linear-gradient(135deg, #e2d4ff 0%, #b084ff 50%, #7a37ff 100%); }
+.table td {
+    vertical-align: middle;
+}
 
-    /* Tăng khả năng đọc nội dung bên trong */
-    .product-card .card-body {
-        background-color: rgba(255, 255, 255, 0.92);
-        backdrop-filter: saturate(120%) blur(1px);
-        margin: 8px; /* tạo khoảng cách với viền card */
-        padding: 14px 16px; /* tăng đệm trong để nội dung thoáng hơn */
-        border-radius: .5rem; /* bo đều 4 góc cho khối nội dung */
-    }
+.badge {
+    font-size: 0.8rem;
+}
 
-    /* Nhãn dán rực rỡ + bo góc + hiệu ứng chuyển động nền */
-    .product-label {
-        background: linear-gradient(90deg, #ff7ca3, #ffb347, #2ec5ff, #7a37ff);
-        background-size: 300% 300%;
-        animation: productLabelGlow 6s ease infinite;
-        color: #fff;
-        border-radius: 999px;
-        padding: 0.35rem 0.6rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        font-weight: 600;
-        letter-spacing: .2px;
-    }
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
 
-    @keyframes productLabelGlow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+}
+
+.alert-info .alert-heading {
+    color: #0c5460;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
     }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 0.25rem;
+}
 </style>
-@endpush
+@endsection

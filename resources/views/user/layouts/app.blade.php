@@ -231,11 +231,6 @@
             margin-bottom: 2rem;
             border:1px solid #cdc4c4
         }
-
-        .menu-section {
-            margin-bottom: 2rem;
-        }
-
         .menu-section:last-child {
             margin-bottom: 0;
         }

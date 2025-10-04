@@ -1,736 +1,720 @@
-@extends('user.layouts.dashboard')
+@extends('user.layouts.app')
 
-@section('content-dashboard')
-<div class="container-fluid">
-    <div class="card">
-        <div class="card-header">
-            <h4 class="card-title">
-                <i class="fas fa-coins mr-2"></i>
-                <code>#{{ $sanPhamDauTu->ten }}</code>
-            </h4>
+@section('title', 'Chi tiết đầu tư vàng')
+
+@section('content')
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar Menu -->
+        <div class="col-lg-3 col-md-4 content-sidebar">
+            @include('user.layouts.menu-dashboard')
         </div>
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-12 col-lg-7">
-                    <div class="card h-100">
+
+        <!-- Main Content -->
+        <div class="col-lg-9 col-md-8">
+            <div class="row">
+                <!-- Product Info Card -->
+                <div class="col-12 mb-4">
+                    <div class="card dashboard-card">
                         <div class="card-header">
-                            <h6 class="mb-0">Thông tin sản phẩm</h6>
-                        </div>
-                        <div class="card-body position-relative d-flex flex-column">
-                            @if(!empty($sanPhamDauTu->nhan_dan))
-                            <span class="product-label position-absolute" style="top: 20px; right: 12px; z-index: 3;">{{ $sanPhamDauTu->nhan_dan }}</span>
-                            @endif
-                            @if(!empty($sanPhamDauTu->hinh_anh))
-                            <img src="{{ asset($sanPhamDauTu->hinh_anh) }}" alt="{{ $sanPhamDauTu->ten }}" class="img-fluid rounded mb-3" style="max-height: 260px; object-fit: cover;">
-                            @endif
-                            <h5 class="mb-3 text-primary">{{ $sanPhamDauTu->ten }}</h5>
-                            
-                            <!-- Thông tin chính -->
-                            <div class="row g-3 mb-4">
-                                <div class="col-6">
-                                    <div class="info-card">
-                                        <div class="info-icon">
-                                            <i class="bi bi-coin"></i>
-                                        </div>
-                                        <div class="info-content">
-                                            <div class="info-label">Vốn đầu tư</div>
-                                            <div class="info-value">
-                                                @php($min = $sanPhamDauTu->von_toi_thieu)
-                                                @php($max = $sanPhamDauTu->von_toi_da)
-                                                @if($min !== null && $max !== null)
-                                                    {{ number_format($min) }} - {{ number_format($max) }} VNĐ
-                                                @elseif($min !== null)
-                                                    ≥ {{ number_format($min) }} VNĐ
-                                                @elseif($max !== null)
-                                                    ≤ {{ number_format($max) }} VNĐ
-                                                @else
-                                                    Không giới hạn
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="info-card">
-                                        <div class="info-icon">
-                                            <i class="bi bi-percent"></i>
-                                        </div>
-                                        <div class="info-content">
-                                            <div class="info-label">Lãi suất/chu kỳ</div>
-                                            <div class="info-value">{{ rtrim(rtrim(number_format($sanPhamDauTu->lai_suat, 2), '0'), '.') }}%</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="info-card">
-                                        <div class="info-icon">
-                                            <i class="bi bi-clock"></i>
-                                        </div>
-                                        <div class="info-content">
-                                            <div class="info-label">Thời gian/chu kỳ</div>
-                                            <div class="info-value">{{ TimeHelper::formatTimeFromHours($sanPhamDauTu->thoi_gian_mot_chu_ky) }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="info-card">
-                                        <div class="info-icon">
-                                            <i class="bi bi-calendar-date"></i>
-                                        </div>
-                                        <div class="info-content">
-                                            <div class="info-label">Ngày triển khai</div>
-                                            <div class="info-value">{{ \Carbon\Carbon::parse($sanPhamDauTu->created_at)->format('d/m/Y') }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @if(!empty($sanPhamDauTu->mo_ta))
-                            <div class="description-card">
-                                <div class="description-header">
-                                    <i class="bi bi-info-circle-fill"></i>
-                                    <h6 class="mb-0">Mô tả sản phẩm</h6>
-                                </div>
-                                <div class="description-content">
-                                    {!! nl2br(e($sanPhamDauTu->mo_ta)) !!}
-                                </div>
-                            </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-5">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h6 class="mb-0">@if($hasWithdrawalPassword) Đầu tư ngay @else Bổ sung thông tin cần thiết @endif</h6>
+                            <h5 class="mb-0">
+                                <i class="bi bi-gem me-2"></i>
+                                Thông tin sản phẩm vàng
+                            </h5>
                         </div>
                         <div class="card-body">
-                            @if($hasWithdrawalPassword)
-                            <form id="investment-form" class="investment-form">
-                                @csrf
-                                <input type="hidden" name="san_pham_id" value="{{ $sanPhamDauTu->id }}">
-                                <div class="form-group">
-                                    <label for="so_du">Số dư hiện tại</label>
-                                    <input type="text" id="so_du" class="form-control" value="{{ number_format($profile->so_du ?? 0) }}" disabled>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4 class="text-primary mb-3">{{ $sanPhamVang->ten_vang ?? 'Vàng SJC' }}</h4>
+                                    <p class="text-muted mb-2">
+                                        <i class="bi bi-tag me-2"></i>
+                                        Mã sản phẩm: <strong>{{ $sanPhamVang->ma_vang ?? 'SJC-001' }}</strong>
+                                    </p>
+                                    <p class="text-muted mb-2">
+                                        <i class="bi bi-shield-check me-2"></i>
+                                        Trạng thái: <span class="badge bg-success">Hoạt động</span>
+                                    </p>
                                 </div>
-                                <div class="form-group">
-                                    <label for="ngay_bat_dau">Ngày bắt đầu đầu tư</label>
-                                    <input type="date" name="ngay_bat_dau" readonly disabled id="ngay_bat_dau" class="form-control" required>
+                                <div class="col-md-6">
+                                    <div class="text-end">
+                                        <div class="mb-2">
+                                            <small class="text-muted">Giá mua từ hệ thống</small>
+                                            <div class="h4 text-success mb-0" id="currentBuyPrice">
+                                                {{ number_format($giaHienTai->gia_ban ?? 0) }} VNĐ
+                                            </div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Giá bán cho hệ thống</small>
+                                            <div class="h4 text-danger mb-0" id="currentSellPrice">
+                                                {{ number_format($giaHienTai->gia_mua ?? 0) }} VNĐ
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock me-1"></i>
+                                            Cập nhật: {{ $giaHienTai->thoi_gian ?? 'N/A' }}
+                                        </small>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="ngay_thanh_toan">Ngày thanh toán</label>
-                                    <input type="date" name="ngay_thanh_toan" id="ngay_thanh_toan" class="form-control" readonly style="background-color: #f8f9fa;">
-                                    <small class="form-text text-muted">Tự động tính toán dựa trên thời gian hiện tại và chu kỳ đầu tư</small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="so_tien">Số tiền đầu tư</label>
-                                    <input type="number" name="so_tien" id="so_tien" class="form-control" placeholder="Nhập số tiền"
-                                           @if(!is_null($sanPhamDauTu->von_toi_thieu)) min="{{ (int) $sanPhamDauTu->von_toi_thieu }}" @endif
-                                           @if(!is_null($sanPhamDauTu->von_toi_da)) max="{{ (int) $sanPhamDauTu->von_toi_da }}" @endif required>
-                                    <small class="form-text text-muted">
-                                        @php($min = $sanPhamDauTu->von_toi_thieu)
-                                        @php($max = $sanPhamDauTu->von_toi_da)
-                                        @if($min !== null && $max !== null)
-                                            Khoảng vốn hợp lệ: {{ number_format($min) }} - {{ number_format($max) }}
-                                        @elseif($min !== null)
-                                            Vốn tối thiểu: {{ number_format($min) }}
-                                        @elseif($max !== null)
-                                            Vốn tối đa: {{ number_format($max) }}
-                                        @else
-                                            Không giới hạn cụ thể
-                                        @endif
-                                    </small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="so_tien_thuc_nhan">Số tiền thực nhận sau khi kết thúc</label>
-                                    <input type="text" id="so_tien_thuc_nhan" class="form-control" readonly style="background-color: #f8f9fa; color: #28a745;" placeholder="Nhập số tiền để tính">
-                                    <small class="form-text text-muted">Bao gồm: Vốn gốc + Lãi suất (tự động tính toán)</small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="mat_khau_rut_tien">Mật khẩu rút tiền</label>
-                                    <input type="password" name="mat_khau_rut_tien" id="mat_khau_rut_tien" class="form-control" placeholder="Nhập mật khẩu rút tiền để xác nhận" required>
-                                    <input type="hidden" name="id_san_pham" id="id_san_pham" value="{{ $sanPhamDauTu->id }}">
-                                </div>
-                                <button type="submit" id="submit-btn" class="btn btn-primary btn-block">
-                                    <span class="btn-text">Xác nhận đầu tư</span>
-                                    <span class="btn-loading d-none">
-                                        <i class="fas fa-spinner fa-spin"></i> Đang xử lý...
-                                    </span>
-                                </button>
-                            </form>
-                            @else
-                            <div class="text-center">
-                                <div class="mb-4">
-                                    <i class="bi bi-shield-exclamation text-warning" style="font-size: 4rem;"></i>
-                                </div>
-                                <h5 class="text-warning mb-3">Thiếu thông tin bảo mật</h5>
-                                <p class="text-muted mb-4">
-                                    Để có thể đầu tư, bạn cần thiết lập mật khẩu rút tiền trước. 
-                                    Điều này giúp bảo vệ tài khoản của bạn.
-                                </p>
-                                <a href="{{ route('dashboard.bao-mat') }}" class="btn btn-warning btn-lg">
-                                    <i class="bi bi-shield-check me-2"></i>
-                                    Bổ sung thông tin cần thiết
-                                </a>
                             </div>
-                            @endif
                         </div>
                     </div>
                 </div>
-            </div>
-            <hr class="my-3">
-            <div>
-                <h6 class="mb-2"><i class="fas fa-book-open mr-2"></i>Hướng dẫn nhanh</h6>
-                <ol class="mb-2 pl-3">
-                    <li>Nhập số tiền trong khoảng hợp lệ ở trên.</li>
-                    <li>Kiểm tra thông tin chu kỳ đầu tư (cố định).</li>
-                    <li>Kiểm tra lại thông tin và bấm xác nhận.</li>
-                </ol>
-                <div class="alert alert-warning mb-0 p-2"><i class="fas fa-info-circle mr-1"></i>Lãi suất hiển thị là theo chu kỳ cố định. Chu kỳ đầu tư được xác định dựa trên thời gian một chu kỳ của sản phẩm.</div>
+
+                <!-- Price Chart -->
+                <div class="col-lg-8 mb-4">
+                    <div class="card dashboard-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-graph-up me-2"></i>
+                                Biểu đồ giá vàng 7 ngày qua
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-outline-primary btn-sm active" data-period="7d">7 ngày</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-period="30d">30 ngày</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-period="90d">90 ngày</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <small class="text-muted">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Dữ liệu được cập nhật mỗi 15 phút
+                                    </small>
+                                </div>
+                            </div>
+                            <div style="height: 400px; position: relative;">
+                                <canvas id="priceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buy Form -->
+                <div class="col-lg-4 mb-4">
+                    <div class="card dashboard-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-cart-plus me-2"></i>
+                                Mua vàng
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="buyGoldForm">
+                                @csrf
+                                <input type="hidden" name="san_pham_id" value="{{ $sanPhamVang->id ?? 1 }}">
+                                
+                                <!-- Current Price Display -->
+                                <div class="alert alert-info mb-3">
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Giá mua từ hệ thống</small>
+                                            <strong class="text-success" id="formBuyPrice">{{ number_format($giaHienTai->gia_ban ?? 0) }} VNĐ</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Giá bán cho hệ thống</small>
+                                            <strong class="text-danger" id="formSellPrice">{{ number_format($giaHienTai->gia_mua ?? 0) }} VNĐ</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- User Balance and Gold Holdings -->
+                                <div class="alert alert-light mb-3">
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">
+                                                <i class="bi bi-wallet2 me-1"></i>
+                                                Số dư hiện tại
+                                            </small>
+                                            <strong class="text-primary" id="currentBalance">
+                                                {{ number_format($profile->so_du ?? 0, 0, ',', '.') }} VNĐ
+                                            </strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">
+                                                <i class="bi bi-gem me-1"></i>
+                                                Số vàng hiện có
+                                            </small>
+                                            <strong class="text-warning" id="currentGold">
+                                                {{ number_format($soVangHienCo, 2, ',', '.') }} chỉ
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quantity Input -->
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">
+                                        <i class="bi bi-scale me-1"></i>
+                                        Số lượng (chỉ)
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="quantity" 
+                                               name="quantity" 
+                                               min="0.5" 
+                                               step="0.5" 
+                                               value="1"
+                                               required>
+                                        <span class="input-group-text">chỉ</span>
+                                    </div>
+                                    <div class="form-text">Tối thiểu: 0.5 chỉ</div>
+                                </div>
+
+                                <!-- Transaction Type -->
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="bi bi-arrow-repeat me-1"></i>
+                                        Loại giao dịch
+                                    </label>
+                                    <div class="btn-group w-100" role="group">
+                                        <input type="radio" class="btn-check" name="transaction_type" id="buy" value="buy" checked>
+                                        <label class="btn btn-outline-success" for="buy">
+                                            <i class="bi bi-arrow-down-circle me-1"></i>
+                                            Mua vào
+                                        </label>
+                                        
+                                        <input type="radio" class="btn-check" name="transaction_type" id="sell" value="sell">
+                                        <label class="btn btn-outline-danger" for="sell">
+                                            <a style="text-decoration: none; color: inherit;" href="{{ route('dashboard.du-an-dau-tu-cua-toi') }}">
+                                                <i class="bi bi-arrow-up-circle me-1"></i>
+                                            Bán ra</a>   
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Total Amount -->
+                                <div class="mb-3">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <small class="text-muted d-block">Tổng tiền</small>
+                                            <h4 class="text-primary mb-0" id="totalAmount">
+                                                {{ number_format($giaHienTai->gia_ban, 0, ',', '.') ?? 0 }} VNĐ
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Withdrawal Password -->
+                                <div class="mb-3">
+                                    <label for="withdrawal_password" class="form-label">
+                                        <i class="bi bi-lock me-1"></i>
+                                        Mật khẩu rút tiền
+                                    </label>
+                                        <input type="password" 
+                                        style="width: 100%;"
+                                        placeholder="Nhập mật khẩu rút tiền"
+                                               class="form-control" 
+                                               id="withdrawal_password" 
+                                               name="withdrawal_password" 
+                                               required
+                                               data-no-toggle>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Xác nhận giao dịch
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price History Table -->
+                <div class="col-12">
+                    <div class="card dashboard-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-table me-2"></i>
+                                Lịch sử giá vàng
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Thời gian</th>
+                                            <th class="text-end">Giá mua từ hệ thống</th>
+                                            <th class="text-end">Giá bán cho hệ thống</th>
+                                            <th class="text-end">Chênh lệch</th>
+                                            <th>Ghi chú</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="priceHistoryTable">
+                                        @forelse($lichSuGia as $gia)
+                                        <tr>
+                                            <td>{{ \Carbon\Carbon::parse($gia->thoi_gian)->format('d/m/Y H:i') }}</td>
+                                            <td class="text-end text-success">{{ number_format($gia->gia_ban) }} VNĐ</td>
+                                            <td class="text-end text-danger">{{ number_format($gia->gia_mua) }} VNĐ</td>
+                                            <td class="text-end">
+                                                @php
+                                                    // Chênh lệch = Giá mua từ hệ thống - Giá bán cho hệ thống
+                                                    $chenhLech = $gia->gia_ban - $gia->gia_mua;
+                                                    $chenhLechPercent = ($chenhLech / $gia->gia_mua) * 100;
+                                                @endphp
+                                                <span class="badge bg-info">
+                                                    {{ number_format($chenhLech) }} VNĐ
+                                                    ({{ number_format($chenhLechPercent, 2) }}%)
+                                                </span>
+                                            </td>
+                                            <td>{{ $gia->ghi_chu ?? '-' }}</td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">Chưa có dữ liệu</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 @endsection
+
 @push('styles')
 <style>
-    .product-label {
-        display: inline-block;
-        color: #fff;
-        font-weight: 700;
-        letter-spacing: .2px;
-        padding: 8px 14px;
-        border-radius: 999px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.18);
-        background: linear-gradient(90deg, #ff7ca3, #ffb347, #2ec5ff, #7a37ff);
-        background-size: 300% 300%;
-        animation: productLabelGlow 4.5s ease infinite;
-        text-transform: uppercase;
-        font-size: 0.95rem;
-    }
-
-    @keyframes productLabelGlow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-
-    /* Tăng khoảng cách giữa các input trong form đầu tư */
-    .investment-form .form-group {
-        margin-bottom: 1rem;
-    }
-
-    .investment-form .form-group:last-child {
-        margin-bottom: 0;
-    }
-
-    .investment-form .form-control {
-        margin-top: 0.5rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
+    .card.dashboard-card {
         transition: all 0.3s ease;
     }
-
-    .investment-form .form-control:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        outline: none;
-    }
-
-    .investment-form .form-control:hover:not(:focus) {
-        border-color: #cbd5e1;
-    }
-
-    .investment-form .form-text {
-        margin-top: 0.5rem;
-    }
-
-    /* Info cards styling */
-    .info-card {
-        background: linear-gradient(135deg, #f8f9fa, #ffffff);
-        border: 2px solid #e3f2fd;
-        border-radius: 16px;
-        padding: 1rem;
-        height: 100%;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06),
-            0 0 0 1px rgba(59, 130, 246, 0.05);
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        position: relative;
-        overflow: hidden;
-        cursor: pointer;
-    }
-
-
-    .info-card:hover {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 
-            0 20px 25px -5px rgba(0, 0, 0, 0.1),
-            0 10px 10px -5px rgba(0, 0, 0, 0.04),
-            0 0 0 1px rgba(59, 130, 246, 0.1);
-        border-color: #3b82f6;
-    }
-
-    .info-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 16px;
-        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.4rem;
-        flex-shrink: 0;
-        color: #1f2937;
-        box-shadow: 
-            0 8px 16px rgba(209, 250, 229, 0.2),
-            0 4px 8px rgba(209, 250, 229, 0.1);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .info-icon::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
-        border-radius: 16px;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .info-icon:hover {
-        transform: translateY(-2px) scale(1.05);
-        box-shadow: 
-            0 12px 24px rgba(209, 250, 229, 0.3),
-            0 6px 12px rgba(209, 250, 229, 0.2);
-    }
-
-    .info-icon:hover::before {
-        opacity: 1;
-    }
-
-    /* Icon specific colors */
-    .info-icon .bi-coin {
-        color: #dc2626;
-    }
-
-    .info-icon .bi-percent {
-        color: #2563eb;
-    }
-
-    .info-icon .bi-clock {
-        color: #059669;
-    }
-
-    .info-icon .bi-calendar-date {
-        color: #7c3aed;
-    }
-
-    .info-content {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .info-label {
-        font-size: 0.8rem;
-        color: #6c757d;
-        font-weight: 500;
-        margin-bottom: 0.25rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .info-value {
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: #2c3e50;
-        line-height: 1.3;
-        word-break: break-word;
-    }
-
-    /* Description card styling */
-    .description-card {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        border: 2px solid #e3f2fd;
-        border-radius: 16px;
-        margin-top: 1.5rem;
-        overflow: hidden;
-        box-shadow: 
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .description-card:hover {
+    
+    .card.dashboard-card:hover {
         transform: translateY(-2px);
-        box-shadow: 
-            0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        border-color: #3b82f6;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     }
-
-    .description-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 1rem 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        position: relative;
+    
+    .btn-group .btn-check:checked + .btn {
+        box-shadow: 0 0 0 0.2rem rgba(22, 163, 74, 0.25);
     }
-
-    .description-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-        opacity: 0;
-        transition: opacity 0.3s ease;
+    
+    .form-control:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.2rem rgba(22, 163, 74, 0.25);
     }
-
-    .description-card:hover .description-header::before {
-        opacity: 1;
+    
+    .alert-info {
+        background: linear-gradient(135deg, rgba(13, 202, 240, 0.1), rgba(13, 202, 240, 0.05));
+        border: 1px solid rgba(13, 202, 240, 0.2);
     }
-
-    .description-header i {
-        font-size: 1.2rem;
-        color: #ffffff;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-    }
-
-    .description-header h6 {
-        color: #ffffff;
+    
+    .table th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
         font-weight: 600;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        position: relative;
-        z-index: 1;
     }
-
-    .description-content {
-        padding: 1rem;
-        color: #4a5568;
-        line-height: 1.7;
-        font-size: 0.95rem;
-        white-space: pre-line;
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-        position: relative;
-        text-align: justify;
-    }
-
-    .description-content::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 576px) {
-        .info-card {
-            padding: 0.75rem;
-            gap: 0.5rem;
-        }
-        
-        .info-icon {
-            width: 42px;
-            height: 42px;
-            font-size: 1.2rem;
-        }
-        
-        .info-label {
-            font-size: 0.75rem;
-        }
-        
-        .info-value {
-            font-size: 0.85rem;
-        }
-
-        .description-header {
-            padding: 0.75rem 1rem;
-        }
-
-        .description-header i {
-            font-size: 1rem;
-        }
-
-        .description-header h6 {
-            font-size: 0.9rem;
-        }
-
-        .description-content {
-            padding: 0.75rem;
-            font-size: 0.9rem;
-        }
+    
+    .badge {
+        font-size: 0.75rem;
     }
 </style>
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const investmentForm = document.getElementById('investment-form');
+    // Function to check if required elements exist
+    function checkRequiredElements() {
+        const requiredElements = [
+            'priceChart',
+            'buyGoldForm', 
+            'quantity',
+            'totalAmount',
+            'submitBtn',
+            'withdrawal_password'
+        ];
+        
+        const missingElements = [];
+        
+        requiredElements.forEach(id => {
+            if (!document.getElementById(id)) {
+                missingElements.push(id);
+            }
+        });
+        
+        if (missingElements.length > 0) {
+            console.error('Missing required elements:', missingElements);
+            return false;
+        }
+        
+        return true;
+    }
     
-    // Chỉ chạy JavaScript nếu form đầu tư tồn tại (user đã có mật khẩu rút tiền)
-    if (!investmentForm) {
+    // Check if all required elements exist
+    if (!checkRequiredElements()) {
+        console.error('Some required elements are missing. Please check the HTML structure.');
         return;
     }
     
-    const soTienInput = document.getElementById('so_tien');
-    const soTienThucNhanInput = document.getElementById('so_tien_thuc_nhan');
-    const ngayBatDauInput = document.getElementById('ngay_bat_dau');
-    const ngayThanhToanInput = document.getElementById('ngay_thanh_toan');
-    const submitBtn = document.getElementById('submit-btn');
-    const btnText = submitBtn.querySelector('.btn-text');
-    const btnLoading = submitBtn.querySelector('.btn-loading');
+    // Chart configuration
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    let priceChart;
     
-    const laiSuat = {{ $sanPhamDauTu->lai_suat }};
-    const soChuKy = 1; // Chu kỳ cố định là 1
-    const thoiGianMotChuKy = {{ $sanPhamDauTu->thoi_gian_mot_chu_ky }}; // Thời gian một chu kỳ (giờ)
-
-    // Thiết lập ngày hôm nay làm ngày mặc định
-    const today = new Date();
-    const todayString = today.toISOString().split('T')[0];
-    ngayBatDauInput.value = todayString;
-
-    function calculatePaymentDate() {
-        // Tính ngày thanh toán = thời gian hiện tại + số giờ của chu kỳ
-        const soGio = thoiGianMotChuKy;
-        const ngayThanhToan = new Date(); // Sử dụng thời gian hiện tại
-        ngayThanhToan.setHours(ngayThanhToan.getHours() + soGio);
-        
-        // Định dạng ngày thanh toán
-        const ngayThanhToanString = ngayThanhToan.toISOString().split('T')[0];
-        ngayThanhToanInput.value = ngayThanhToanString;
-    }
-
-    function calculateTotalAmount() {
-        const soTien = parseFloat(soTienInput.value) || 0;
-        
-        if (soTien > 0) {
-            // Tính lãi suất cho 1 chu kỳ
-            const laiSuatTong = laiSuat * soChuKy;
-            
-            // Tính số tiền lãi
-            const soTienLai = (soTien * laiSuatTong) / 100;
-            
-            // Tính tổng số tiền thực nhận (vốn + lãi)
-            const tongTien = soTien + soTienLai;
-            
-            // Hiển thị kết quả với định dạng số
-            soTienThucNhanInput.value = new Intl.NumberFormat('vi-VN').format(Math.round(tongTien));
-        } else {
-            soTienThucNhanInput.value = '';
-        }
-    }
-
-    function showLoading() {
-        submitBtn.disabled = true;
-        btnText.classList.add('d-none');
-        btnLoading.classList.remove('d-none');
-    }
-
-    function hideLoading() {
-        submitBtn.disabled = false;
-        btnText.classList.remove('d-none');
-        btnLoading.classList.add('d-none');
-    }
-
-    function showToast(message, type = 'success') {
-        // Tạo toast notification
-        const toast = document.createElement('div');
-        toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-        toast.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        
-        document.body.appendChild(toast);
-        
-        // Tự động ẩn sau 5 giây
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 5000);
-    }
-
-    // Xử lý submit form
-    investmentForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Validation cơ bản
-        const soTien = parseFloat(soTienInput.value) || 0;
-        const matKhauRutTien = document.getElementById('mat_khau_rut_tien').value;
-        
-        if (soTien <= 0) {
-            showToast('Vui lòng nhập số tiền đầu tư hợp lệ', 'error');
-            return;
-        }
-        
-        if (!matKhauRutTien) {
-            showToast('Vui lòng nhập mật khẩu rút tiền', 'error');
-            return;
-        }
-
-        showLoading();
-
-        // Chuẩn bị dữ liệu gửi
-        const formData = new FormData(investmentForm);
-        //thêm thông tin hoa hồng
-        formData.append('hoa_hong', laiSuat * soTien / 100);
-        
-        // Gửi request bằng axios
-        axios.post('{{ route("dashboard.dau-tu.create") }}', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(function(response) {
-            hideLoading();
-            
-            if (response.data.success) {
-                showToast(response.data.message, 'success');
-                
-                // Cập nhật số dư hiển thị
-                const soDuElement = document.getElementById('so_du');
-                const soDuConLai = response.data.data.so_du_con_lai;
-                soDuElement.value = new Intl.NumberFormat('vi-VN').format(soDuConLai);
-                
-                // Reset form
-                investmentForm.reset();
-                ngayBatDauInput.value = todayString;
-                calculatePaymentDate();
-                calculateTotalAmount();
-                
-                // Redirect sau 2 giây
-                setTimeout(() => {
-                    window.location.href = '{{ route("dashboard.du-an-cua-toi") }}';
-                }, 2000);
-            } else {
-                showToast(response.data.message || 'Có lỗi xảy ra', 'error');
-            }
-        })
-        .catch(function(error) {
-            hideLoading();
-            
-            if (error.response && error.response.data) {
-                const responseData = error.response.data;
-                const errorCode = responseData.error_code;
-                
-                // Xử lý lỗi số dư không đủ
-                if (errorCode === 'INSUFFICIENT_BALANCE') {
-                    const data = responseData.data;
-                    document.getElementById('currentBalance').textContent = new Intl.NumberFormat('vi-VN').format(data.current_balance) + ' VNĐ';
-                    document.getElementById('requiredAmount').textContent = new Intl.NumberFormat('vi-VN').format(data.required_amount) + ' VNĐ';
-                    document.getElementById('shortageAmount').textContent = new Intl.NumberFormat('vi-VN').format(data.shortage) + ' VNĐ';
-                    
-                    // Hiển thị modal
-                    const modal = new bootstrap.Modal(document.getElementById('insufficientBalanceModal'));
-                    modal.show();
-                    return;
-                }
-                
-                // Xử lý các lỗi khác
-                const errors = responseData.errors;
-                if (errors) {
-                    // Hiển thị lỗi validation
-                    let errorMessage = '';
-                    for (const field in errors) {
-                        errorMessage += errors[field][0] + '<br>';
+    // Sample data - replace with real data from API
+    const chartData = {
+        labels: @json($chartLabels ?? []),
+        datasets: [{
+            label: 'Giá mua',
+            data: @json($chartBuyPrices ?? []),
+            borderColor: '#198754',
+            backgroundColor: 'rgba(25, 135, 84, 0.1)',
+            tension: 0.4,
+            fill: true
+        }, {
+            label: 'Giá bán',
+            data: @json($chartSellPrices ?? []),
+            borderColor: '#dc3545',
+            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    };
+    
+    const chartConfig = {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + 
+                                   new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' VNĐ';
+                        }
                     }
-                    showToast(errorMessage, 'error');
-                } else {
-                    showToast(responseData.message || 'Có lỗi xảy ra', 'error');
                 }
-            } else {
-                showToast('Có lỗi xảy ra khi kết nối đến server', 'error');
+            },
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Thời gian'
+                    }
+                },
+                y: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Giá (VNĐ)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return new Intl.NumberFormat('vi-VN').format(value);
+                        }
+                    }
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
             }
+        }
+    };
+    
+    // Initialize chart
+    priceChart = new Chart(ctx, chartConfig);
+    
+    // Period buttons
+    document.querySelectorAll('[data-period]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active class from all buttons
+            document.querySelectorAll('[data-period]').forEach(b => b.classList.remove('active'));
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            // Fetch new data based on period
+            const period = this.dataset.period;
+            loadChartData(period);
         });
     });
     
-    // Tính toán khi thay đổi số tiền đầu tư
-    soTienInput.addEventListener('input', calculateTotalAmount);
-    
-    // Tính toán ban đầu
-    calculatePaymentDate();
-    calculateTotalAmount();
-    
-    // Xử lý nút "Nạp tiền ngay" trong modal
-    document.getElementById('goToDepositBtn').addEventListener('click', function() {
-        // Đóng modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('insufficientBalanceModal'));
-        modal.hide();
+    // Function to load chart data
+    function loadChartData(period = '7d') {
+        const sanPhamId = {{ $sanPhamVang->id ?? 1 }};
         
-        // Chuyển hướng đến trang nạp tiền
-        window.location.href = '{{ route("dashboard.nap-tien") }}';
+        fetch(`{{ route('dashboard.api.gia-vang-data') }}?san_pham_id=${sanPhamId}&period=${period}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update chart data
+                    priceChart.data.labels = data.data.labels;
+                    priceChart.data.datasets[0].data = data.data.buyPrices;
+                    priceChart.data.datasets[1].data = data.data.sellPrices;
+                    priceChart.update();
+                } else {
+                    console.error('Error loading chart data:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching chart data:', error);
+            });
+    }
+    
+    // Form handling
+    const form = document.getElementById('buyGoldForm');
+    const quantityInput = document.getElementById('quantity');
+    const transactionTypeInputs = document.querySelectorAll('input[name="transaction_type"]');
+    const totalAmountDisplay = document.getElementById('totalAmount');
+    const formBuyPrice = document.getElementById('formBuyPrice');
+    const formSellPrice = document.getElementById('formSellPrice');
+    
+    // Current prices from server
+    // currentBuyPrice: giá mua từ hệ thống (gia_ban của hệ thống)
+    // currentSellPrice: giá bán cho hệ thống (gia_mua của hệ thống)
+    const currentBuyPrice = {{ $giaHienTai->gia_ban ?? 0 }};
+    const currentSellPrice = {{ $giaHienTai->gia_mua ?? 0 }};
+    
+    function updateTotalAmount() {
+        const quantity = parseFloat(quantityInput.value) || 0;
+        const isBuy = document.getElementById('buy').checked;
+        // Khi mua: sử dụng giá bán của hệ thống (người dùng mua từ hệ thống)
+        // Khi bán: sử dụng giá mua của hệ thống (người dùng bán cho hệ thống)
+        const price = isBuy ? currentBuyPrice : currentSellPrice;
+        const total = quantity * price;
+        
+        totalAmountDisplay.textContent = new Intl.NumberFormat('vi-VN').format(total) + ' VNĐ';
+    }
+    
+    // Event listeners
+    quantityInput.addEventListener('input', updateTotalAmount);
+    transactionTypeInputs.forEach(input => {
+        input.addEventListener('change', updateTotalAmount);
     });
+    
+    // Password toggle (only if toggle button exists)
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    if (togglePasswordBtn) {
+        togglePasswordBtn.addEventListener('click', function() {
+            const passwordInput = document.getElementById('withdrawal_password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+    }
+    
+    // Form submission with improved axios handling
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        const originalText = submitBtn.innerHTML;
+        
+        // Disable button and show loading
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Đang xử lý...';
+        
+        // Get form data
+        const transactionType = document.querySelector('input[name="transaction_type"]:checked').value;
+        const quantity = parseFloat(quantityInput.value);
+        const withdrawalPassword = document.getElementById('withdrawal_password').value;
+        
+        // Validation
+        if (quantity <= 0) {
+            showToast('error', 'Lỗi', 'Số lượng phải lớn hơn 0');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            return;
+        }
+        
+        if (!withdrawalPassword.trim()) {
+            showToast('error', 'Lỗi', 'Vui lòng nhập mật khẩu rút tiền');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            return;
+        }
+        
+        // Prepare data for axios request
+        const transactionData = {
+            san_pham_id: {{ $sanPhamVang->id ?? 1 }}, // id_vang (id sản phẩm vàng)
+            quantity: quantity, // Số lượng mua (chỉ)
+            transaction_type: transactionType,
+            withdrawal_password: withdrawalPassword,
+            _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        };
+        
+        // Get current price for logging
+        const currentPrice = transactionType === 'buy' ? currentBuyPrice : currentSellPrice;
+        
+        console.log('Gửi dữ liệu giao dịch:', {
+            id_vang: transactionData.san_pham_id,
+            so_luong: transactionData.quantity,
+            gia_mua: currentPrice,
+            loai_giao_dich: transactionType
+        });
+        
+        // Make API call using axios (if available) or fetch
+        const apiUrl = '{{ route("dashboard.api.vang-dau-tu.create") }}';
+        
+        // Try to use axios if available, otherwise use fetch
+        if (typeof axios !== 'undefined') {
+            // Using axios
+            axios.post(apiUrl, transactionData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                handleTransactionResponse(response.data, submitBtn, originalText);
+            })
+            .catch(error => {
+                handleTransactionError(error, submitBtn, originalText);
+            });
+        } else {
+            // Using fetch as fallback
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': transactionData._token
+                },
+                body: JSON.stringify(transactionData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                handleTransactionResponse(data, submitBtn, originalText);
+            })
+            .catch(error => {
+                handleTransactionError(error, submitBtn, originalText);
+            });
+        }
+    });
+    
+    // Handle successful transaction response
+    function handleTransactionResponse(data, submitBtn, originalText) {
+        if (data.success) {
+            showToast('success', 'Thành công', data.message);
+            
+            // Update balance and gold holdings display
+            if (data.data && data.data.new_balance !== undefined) {
+                const balanceElement = document.getElementById('currentBalance');
+                if (balanceElement) {
+                    balanceElement.textContent = new Intl.NumberFormat('vi-VN').format(data.data.new_balance) + ' VNĐ';
+                }
+            }
+            
+            // Reset form
+            form.reset();
+            quantityInput.value = 1;
+            document.getElementById('buy').checked = true;
+            updateTotalAmount();
+            
+            // Refresh page to update balance
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            // Handle specific error cases
+            let errorMessage = data.message || 'Có lỗi xảy ra khi xử lý giao dịch';
+            
+            if (data.error_code === 'INSUFFICIENT_BALANCE') {
+                errorMessage = 'Số dư không đủ để thực hiện giao dịch';
+            } else if (data.error_code === 'INVALID_WITHDRAWAL_PASSWORD') {
+                errorMessage = 'Mật khẩu rút tiền không đúng';
+            } else if (data.error_code === 'NO_PRICE_DATA') {
+                errorMessage = 'Không có dữ liệu giá vàng hiện tại';
+            } else if (data.error_code === 'PRODUCT_NOT_AVAILABLE') {
+                errorMessage = 'Sản phẩm vàng không khả dụng';
+            }
+            
+            showToast('error', 'Lỗi', errorMessage);
+        }
+        
+        // Re-enable button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    }
+    
+    // Handle transaction error
+    function handleTransactionError(error, submitBtn, originalText) {
+        console.error('Transaction Error:', error);
+        
+        let errorMessage = 'Có lỗi xảy ra khi kết nối đến server';
+        
+        if (error.response) {
+            // Server responded with error status
+            if (error.response.status === 422) {
+                errorMessage = 'Dữ liệu không hợp lệ';
+            } else if (error.response.status === 500) {
+                errorMessage = 'Lỗi hệ thống, vui lòng thử lại sau';
+            }
+        } else if (error.request) {
+            // Network error
+            errorMessage = 'Không thể kết nối đến server';
+        }
+        
+        showToast('error', 'Lỗi', errorMessage);
+        
+        // Re-enable button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    }
+    
+    // Initialize total amount
+    updateTotalAmount();
+    
+    // Auto-refresh prices every 5 minutes
+    setInterval(function() {
+        // Here you would fetch updated prices
+        console.log('Refreshing prices...');
+    }, 300000); // 5 minutes
 });
-</script>
 
-<!-- Modal thông báo số dư không đủ -->
-<div class="modal fade" id="insufficientBalanceModal" tabindex="-1" aria-labelledby="insufficientBalanceModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-warning text-dark">
-                <h5 class="modal-title" id="insufficientBalanceModalLabel">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    Số dư không đủ
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+// Toast function (if not already defined)
+function showToast(type, title, message) {
+    const toastContainer = document.getElementById('toastContainer');
+    const toastId = 'toast-' + Date.now();
+    
+    const toastHtml = `
+        <div class="toast ${type}" id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header ${type}">
+                <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                <strong class="toast-title">${title}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div class="text-center mb-3">
-                    <i class="fas fa-wallet text-warning" style="font-size: 3rem;"></i>
-                </div>
-                <p class="text-center mb-3">Số dư hiện tại của bạn không đủ để thực hiện giao dịch này.</p>
-                
-                <div class="alert alert-info">
-                    <div class="row">
-                        <div class="col-6">
-                            <strong>Số dư hiện tại:</strong><br>
-                            <span id="currentBalance" class="text-primary"></span>
-                        </div>
-                        <div class="col-6">
-                            <strong>Số tiền cần:</strong><br>
-                            <span id="requiredAmount" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-12">
-                            <strong>Thiếu:</strong> <span id="shortageAmount" class="text-warning"></span>
-                        </div>
-                    </div>
-                </div>
-                
-                <p class="text-center mb-0">Bạn có muốn nạp thêm tiền để sử dụng dịch vụ không?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-1"></i>
-                    Hủy
-                </button>
-                <button type="button" class="btn btn-primary" id="goToDepositBtn">
-                    <i class="fas fa-plus-circle me-1"></i>
-                    Nạp tiền ngay
-                </button>
+            <div class="toast-body">
+                ${message}
             </div>
         </div>
-    </div>
-</div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+    
+    // Remove toast element after it's hidden
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        toastElement.remove();
+    });
+}
+</script>
 @endpush

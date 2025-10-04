@@ -66,7 +66,7 @@ function showToast(type, message, options = {}) {
     if (!toastContainer) {
         // Create toast container if it doesn't exist
         const containerHtml = `
-            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
                 <div id="toastContainer"></div>
             </div>
         `;

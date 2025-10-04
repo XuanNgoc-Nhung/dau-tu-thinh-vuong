@@ -107,7 +107,7 @@
                         <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                         <h5 class="text-muted">Chưa có dự án nào</h5>
                         <p class="text-muted">Bạn chưa tham gia dự án đầu tư nào.</p>
-                        <a href="{{ route('dashboard.dau-tu') }}" class="btn btn-primary">
+                        <a href="{{ route('dashboard.tiet-kiem') }}" class="btn btn-primary">
                             <i class="fas fa-plus mr-1"></i>Đầu tư ngay
                         </a>
                     </div>

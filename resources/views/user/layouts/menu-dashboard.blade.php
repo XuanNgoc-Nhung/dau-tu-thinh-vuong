@@ -22,19 +22,19 @@
     </div>
 
     <div class="menu-section">
+        <h6 class="menu-title">Đầu tư</h6>
+        <ul class="menu-list">
+            <li class="{{ request()->routeIs('dashboard.dau-tu') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.dau-tu') }}" class="menu-item"><i class="bi bi-gem me-2"></i>Vàng đầu tư</a>
+            </li>
+            <li class="{{ request()->routeIs('dashboard.du-an-dau-tu-cua-toi') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.du-an-dau-tu-cua-toi') }}" class="menu-item"><i class="bi bi-pie-chart me-2"></i>Đầu tư của tôi</a></li>
+        </ul>
+    </div>
+    <div class="menu-section">
         <h6 class="menu-title">Tiết kiệm</h6>
         <ul class="menu-list">
             <li class="{{ request()->routeIs('dashboard.tiet-kiem') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.tiet-kiem') }}" class="menu-item"><i class="bi bi-graph-up-arrow me-2"></i>Gói tiết kiệm</a>
             </li>
             <li class="{{ request()->routeIs('dashboard.du-an-cua-toi') ? 'menu-item active' : '' }}"><a href="{{ route('dashboard.du-an-cua-toi') }}" class="menu-item"><i class="bi bi-pie-chart me-2"></i>Tiết kiệm của tôi</a></li>
-        </ul>
-    </div>
-    <div class="menu-section">
-        <h6 class="menu-title">Báo cáo</h6>
-        <ul class="menu-list">
-            <li><a href="#" class="menu-item"><i class="bi bi-file-earmark-text me-2"></i>Báo cáo thuế</a>
-            </li>
-            <li><a href="#" class="menu-item"><i class="bi bi-download me-2"></i>Xuất dữ liệu</a></li>
         </ul>
     </div>
 
