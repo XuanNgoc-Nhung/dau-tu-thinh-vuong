@@ -920,7 +920,9 @@ class UserDashboardController extends Controller
             'user_id' => Auth::id(),
             'user_email' => Auth::user()->email ?? 'N/A'
         ]);
-        return view('user.dashboard.du-an-cua-toi');
+        $user = Auth::user();
+        $duAns = DauTu::where('user_id', $user->id)->orderByDesc('id')->paginate(10);
+        return view('user.dashboard.du-an-cua-toi', compact('duAns'));
     }
     public function chiTietDauTu($slug){
         Log::info('UserDashboardController@chiTietDauTu: Bắt đầu hiển thị trang chi tiết dự án', [
@@ -1049,17 +1051,16 @@ class UserDashboardController extends Controller
                 ], 422);
             }
 
-            // Tạo đầu tư
             $dauTu = DauTu::create([
                 'user_id' => $user->id,
                 'san_pham_id' => $request->san_pham_id,
-                'so_chu_ky' => 1, // Chu kỳ cố định là 1
+                'so_chu_ky' => $sanPham->thoi_gian_mot_chu_ky,
                 'so_tien' => $request->so_tien,
-                'hoa_hong' => $request->hoa_hong, // Chưa có hoa hồng
+                'hoa_hong' => $request->hoa_hong,
                 'trang_thai' => 1, // Trạng thái đang đầu tư
                 'ngay_bat_dau' => now(),
-                'ngay_ket_thuc' => $request->ngay_thanh_toan,
-                'ghi_chu' => 'Đầu tư tự động'
+                'ngay_ket_thuc' => now()->addMonths($sanPham->thoi_gian_mot_chu_ky),
+                'ghi_chu' => $request->ghi_chu??''
             ]);
 
             // Trừ số dư
