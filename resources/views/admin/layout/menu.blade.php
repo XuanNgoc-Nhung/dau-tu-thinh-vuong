@@ -10,7 +10,7 @@
       <i class="bi bi-people"></i> <span class="label">Người dùng</span>
     </a>
     <a class="nav-link @yield('nav.san-pham-dau-tu_active')" href="{{ route('admin.san-pham-dau-tu') }}" title="Sản phẩm đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
-      <i class="bi bi-cash-coin"></i> <span class="label">Sản phẩm đầu tư</span>
+      <i class="bi bi-cash-coin"></i> <span class="label">Sản phẩm tiết kiệm</span>
     </a>
     <a class="nav-link @yield('nav.vang-dau-tu_active')" href="{{ route('admin.vang-dau-tu') }}" title="Vàng đầu tư" data-bs-toggle="tooltip" data-bs-placement="right">
       <i class="bi bi-cash-coin"></i> <span class="label">Vàng đầu tư</span>

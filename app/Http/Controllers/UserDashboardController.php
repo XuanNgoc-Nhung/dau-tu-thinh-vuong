@@ -11,6 +11,7 @@ use App\Models\NganHangNapTien;
 use App\Models\ThongBao;
 use App\Models\NapRut;
 use App\Models\SanPhamDauTu;
+use App\Models\DauTu;
 
 class UserDashboardController extends Controller
 {
@@ -936,6 +937,165 @@ class UserDashboardController extends Controller
         }
         $user = Auth::user();
         $profile = $user ? $user->profile : null;
-        return view('user.dashboard.chi-tiet-dau-tu', compact('sanPhamDauTu', 'user', 'profile'));
+        
+        // Kiểm tra xem user đã có mật khẩu rút tiền chưa
+        $hasWithdrawalPassword = $profile && !empty($profile->mat_khau_rut_tien);
+        
+        return view('user.dashboard.chi-tiet-dau-tu', compact('sanPhamDauTu', 'user', 'profile', 'hasWithdrawalPassword'));
+    }
+
+    public function createDauTu(Request $request)
+    {
+        Log::info('UserDashboardController@createDauTu: Bắt đầu xử lý đầu tư', [
+            'user_id' => Auth::id(),
+            'user_email' => Auth::user()->email ?? 'N/A',
+            'input_data' => $request->except(['mat_khau_rut_tien'])
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'san_pham_id' => 'required|exists:san_pham_dau_tu,id',
+            'so_tien' => 'required|numeric|min:1',
+            'ngay_thanh_toan' => 'required|date|after:ngay_bat_dau',
+            'mat_khau_rut_tien' => 'required'
+        ], [
+            'san_pham_id.required' => 'Sản phẩm đầu tư không được để trống',
+            'san_pham_id.exists' => 'Sản phẩm đầu tư không tồn tại',
+            'so_tien.required' => 'Số tiền đầu tư không được để trống',
+            'so_tien.numeric' => 'Số tiền đầu tư phải là số',
+            'so_tien.min' => 'Số tiền đầu tư phải lớn hơn 0',
+            'ngay_thanh_toan.required' => 'Ngày thanh toán không được để trống',
+            'ngay_thanh_toan.date' => 'Ngày thanh toán không hợp lệ',
+            'ngay_thanh_toan.after' => 'Ngày thanh toán phải sau ngày bắt đầu',
+            'mat_khau_rut_tien.required' => 'Mật khẩu rút tiền không được để trống'
+        ]);
+
+        if ($validator->fails()) {
+            Log::warning('UserDashboardController@createDauTu: Validation thất bại', [
+                'user_id' => Auth::id(),
+                'errors' => $validator->errors()->toArray()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'error_code' => 'VALIDATION_ERROR',
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $user = Auth::user();
+            $profile = $user->profile;
+            
+            // Kiểm tra mật khẩu rút tiền
+            if ($request->mat_khau_rut_tien != $profile->mat_khau_rut_tien) {
+                Log::warning('UserDashboardController@createDauTu: Mật khẩu rút tiền không đúng', [
+                    'user_id' => $user->id
+                ]);
+                
+                return response()->json([
+                    'success' => false,
+                    'error_code' => 'INVALID_WITHDRAWAL_PASSWORD',
+                    'message' => 'Mật khẩu rút tiền không đúng'
+                ], 422);
+            }
+
+            // Lấy thông tin sản phẩm đầu tư
+            $sanPham = SanPhamDauTu::find($request->san_pham_id);
+            if (!$sanPham || $sanPham->trang_thai != 1) {
+                return response()->json([
+                    'success' => false,
+                    'error_code' => 'PRODUCT_NOT_AVAILABLE',
+                    'message' => 'Sản phẩm đầu tư không khả dụng'
+                ], 422);
+            }
+
+            // Kiểm tra số dư
+            if ($profile->so_du < $request->so_tien) {
+                return response()->json([
+                    'success' => false,
+                    'error_code' => 'INSUFFICIENT_BALANCE',
+                    'message' => 'Số dư không đủ để đầu tư',
+                    'data' => [
+                        'current_balance' => $profile->so_du,
+                        'required_amount' => $request->so_tien,
+                        'shortage' => $request->so_tien - $profile->so_du
+                    ]
+                ], 422);
+            }
+
+            // Kiểm tra giới hạn vốn
+            if ($sanPham->von_toi_thieu && $request->so_tien < $sanPham->von_toi_thieu) {
+                return response()->json([
+                    'success' => false,
+                    'error_code' => 'MINIMUM_AMOUNT_NOT_MET',
+                    'message' => 'Số tiền đầu tư phải tối thiểu ' . number_format($sanPham->von_toi_thieu) . ' VNĐ',
+                    'data' => [
+                        'minimum_amount' => $sanPham->von_toi_thieu,
+                        'entered_amount' => $request->so_tien
+                    ]
+                ], 422);
+            }
+
+            if ($sanPham->von_toi_da && $request->so_tien > $sanPham->von_toi_da) {
+                return response()->json([
+                    'success' => false,
+                    'error_code' => 'MAXIMUM_AMOUNT_EXCEEDED',
+                    'message' => 'Số tiền đầu tư không được vượt quá ' . number_format($sanPham->von_toi_da) . ' VNĐ',
+                    'data' => [
+                        'maximum_amount' => $sanPham->von_toi_da,
+                        'entered_amount' => $request->so_tien
+                    ]
+                ], 422);
+            }
+
+            // Tạo đầu tư
+            $dauTu = DauTu::create([
+                'user_id' => $user->id,
+                'san_pham_id' => $request->san_pham_id,
+                'so_chu_ky' => 1, // Chu kỳ cố định là 1
+                'so_tien' => $request->so_tien,
+                'hoa_hong' => $request->hoa_hong, // Chưa có hoa hồng
+                'trang_thai' => 1, // Trạng thái đang đầu tư
+                'ngay_bat_dau' => now(),
+                'ngay_ket_thuc' => $request->ngay_thanh_toan,
+                'ghi_chu' => 'Đầu tư tự động'
+            ]);
+
+            // Trừ số dư
+            $profile->so_du -= $request->so_tien;
+            $profile->save();
+
+            Log::info('UserDashboardController@createDauTu: Đầu tư thành công', [
+                'user_id' => $user->id,
+                'dau_tu_id' => $dauTu->id,
+                'so_tien' => $request->so_tien,
+                'so_du_con_lai' => $profile->so_du
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đầu tư thành công!',
+                'data' => [
+                    'dau_tu_id' => $dauTu->id,
+                    'so_tien' => $request->so_tien,
+                    'hoa_hong' => $request->hoa_hong,
+                    'so_du_con_lai' => $profile->so_du
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('UserDashboardController@createDauTu: Lỗi khi tạo đầu tư', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error_code' => 'SYSTEM_ERROR',
+                'message' => 'Có lỗi xảy ra khi xử lý đầu tư. Vui lòng thử lại.'
+            ], 500);
+        }
     }
 }

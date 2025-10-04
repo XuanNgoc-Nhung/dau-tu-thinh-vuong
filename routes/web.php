@@ -97,6 +97,7 @@ Route::group(['middleware' => 'auth','prefix' => 'dashboard'], function () {
     // Đầu tư
     Route::get('/dau-tu', [UserDashboardController::class, 'dauTu'])->name('dashboard.dau-tu');
     Route::get('/chi-tiet-dau-tu/{slug}', [UserDashboardController::class, 'chiTietDauTu'])->name('dashboard.chi-tiet-dau-tu');
+    Route::post('/dau-tu', [UserDashboardController::class, 'createDauTu'])->name('dashboard.dau-tu.create');
     // end Đầu tư
     // Dự án của tôi
     Route::get('/du-an-cua-toi', [UserDashboardController::class, 'duAnCuaToi'])->name('dashboard.du-an-cua-toi');

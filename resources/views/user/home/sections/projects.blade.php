@@ -55,7 +55,7 @@
                                 <div class="border rounded-3 text-center bg-light">
                                     <small class="text-muted d-block mb-1 fw-bold">Thời gian</small>
                                     <div class="fw-bold text-dark">
-                                        {{ \App\Helpers\TimeHelper::formatTimeFromHours($sanPham->thoi_gian_mot_chu_ky) }}
+                                        {{ TimeHelper::formatTimeFromHours($sanPham->thoi_gian_mot_chu_ky) }}
                                     </div>
                                 </div>
                             </div>
@@ -70,36 +70,56 @@
                         </div>
 
                         <!-- Thời gian mở bán một mình một hàng -->
-                        <div class="row g-2 mb-3">
+                        {{-- <div class="row g-2 mb-3">
                             <div class="col-12">
                                 <div class="border rounded-3 text-center bg-light">
                                     <small class="text-muted d-block mb-1 fw-bold">Mở bán</small>
                                     <div class="fw-bold text-info">
-                                        {{ \Carbon\Carbon::parse($sanPham->created_at)->format('d/m/Y H:i') }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Button đầu tư ngay -->
-                        <div class="d-grid">
-                            <button class="btn btn-primary btn-sm fw-semibold">
-                                <i class="bi bi-cash-coin me-1"></i>Đầu tư ngay
-                            </button>
-                        </div>
+                                        {{ \Carbon\Carbon::parse($sanPham->created_at)->format('d/m/Y H:i') }}
                     </div>
                 </div>
             </div>
-            @empty
-            <div class="col-12">
-                <div class="text-center py-5">
-                    <i class="bi bi-inbox display-1 text-muted"></i>
-                    <h4 class="text-muted mt-3">Chưa có dự án nào</h4>
-                    <p class="text-muted">Hiện tại chưa có dự án đầu tư nào được hiển thị.</p>
-                </div>
-            </div>
-            @endforelse
+        </div> --}}
+
+        <!-- Button đầu tư ngay -->
+        <div class="d-grid">
+            @auth
+                <a href="{{ route('dashboard.chi-tiet-dau-tu', $sanPham->slug) }}" class="btn btn-primary btn-sm fw-semibold">
+                    <i class="bi bi-cash-coin me-1"></i>Đầu tư ngay
+                </a>
+            @else
+            <button class="btn btn-primary btn-sm fw-semibold" onclick="showModalInvestNow('{{ $sanPham->slug }}')">
+                <i class="bi bi-cash-coin me-1"></i>Đầu tư ngay
+            </button>
+            @endauth
         </div>
+    </div>
+    </div>
+    </div>
+    @empty
+    <div class="col-12">
+        <div class="text-center py-5">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <h4 class="text-muted mt-3">Chưa có dự án nào</h4>
+            <p class="text-muted">Hiện tại chưa có dự án đầu tư nào được hiển thị.</p>
+        </div>
+    </div>
+    @endforelse
+    </div>
     </div>
 </section>
 
+<script>
+    // Function xử lý khi click button "Đầu tư ngay"
+    function showModalInvestNow(productSlug = '') {
+        // Nếu chưa đăng nhập, hiển thị modal Bootstrap yêu cầu đăng nhập
+        if (window.bootstrap && document.getElementById('loginRequiredModal')) {
+            var modal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+            modal.show();
+        } else {
+            alert('Bạn chưa đăng nhập. Vui lòng đăng nhập để sử dụng dịch vụ.');
+            window.location.href = '/login';
+        }
+    }
 
+</script>

@@ -7,9 +7,9 @@
 
 @include('user.home.sections.hero')
 
-@include('user.home.sections.projects')
-
 @include('user.home.sections.gold-price')
+
+@include('user.home.sections.projects')
 
 @include('user.home.sections.testimonials')
 
@@ -27,16 +27,27 @@
     <div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="loginRequiredModalLabel">Cần đăng nhập</h5>
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 2rem;"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title mb-0" id="loginRequiredModalLabel">Cần đăng nhập</h5>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    Bạn chưa đăng nhập. Vui lòng đăng nhập để sử dụng dịch vụ.
+                <div class="modal-body pt-3">
+                    <p class="mb-0">Bạn chưa đăng nhập. Vui lòng đăng nhập để sử dụng dịch vụ đầu tư.</p>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <a href="/login" class="btn btn-primary">Đăng nhập</a>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Hủy
+                    </button>
+                    <a href="/login" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập
+                    </a>
                 </div>
             </div>
         </div>
@@ -435,17 +446,6 @@
         this.reset();
     });
 
-    // Function xử lý khi click button "Đầu tư ngay"
-    function investNow(productId) {
-        // Kiểm tra xem user đã đăng nhập chưa
-        @auth
-        // Nếu đã đăng nhập, chuyển đến trang đầu tư
-        window.location.href = '/dau-tu/' + productId;
-        @else
-        // Nếu chưa đăng nhập, chuyển đến trang đăng nhập
-        window.location.href = '/login?redirect=/dau-tu/' + productId;
-        @endauth
-    }
 
     // Function làm mới dữ liệu giá vàng
     function refreshGiaVang() {

@@ -49,7 +49,7 @@
                         </strong></li>
                         <li>Lãi suất: <strong>{{ rtrim(rtrim(number_format($sp->lai_suat, 2), '0'), '.') }}%</strong></li>
                         
-                        <li>Thời gian/chu kỳ: <strong>{{ \App\Helpers\TimeHelper::formatTimeFromHours($sp->thoi_gian_mot_chu_ky) }}</strong></li>
+                        <li>Thời gian/chu kỳ: <strong>{{ TimeHelper::formatTimeFromHours($sp->thoi_gian_mot_chu_ky) }}</strong></li>
                     </ul>
                     <div class="mt-auto">
                         <a href="{{ route('dashboard.chi-tiet-dau-tu', $sp->slug) }}" class="btn btn-primary w-100">Đầu tư ngay</a>

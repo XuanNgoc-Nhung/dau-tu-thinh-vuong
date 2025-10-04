@@ -1,10 +1,10 @@
 @extends('admin.layout.app')
 
-@section('title', 'Sản phẩm đầu tư')
+@section('title', 'Gói tiết kiệm')
 @section('nav.san-pham-dau-tu_active', 'active')
 
 @section('breadcrumb')
-<span class="text-secondary">Admin</span> / <span class="text-dark">Sản phẩm đầu tư</span>
+<span class="text-secondary">Admin</span> / <span class="text-dark">Gói tiết kiệm</span>
 @endsection
 @section('content')
 <div class="mb-3">
@@ -15,7 +15,7 @@
         <div class="card-body">
             <form method="GET" action="{{ route('admin.san-pham-dau-tu') }}" class="row g-2 align-items-center" role="search">
                 <div class="col-12 col-md-6 col-lg-4">
-                    <input type="text" name="q" value="{{ request('q') }}" class="form-control form-control-sm" placeholder="Nhập tên sản phẩm">
+                    <input type="text" name="q" value="{{ request('q') }}" class="form-control form-control-sm" placeholder="Nhập tên Gói">
                 </div>
                 <div class="col-12 col-md-auto d-flex gap-2">
                     <button class="btn btn-sm btn-primary" type="submit">Tìm kiếm</button>
@@ -30,7 +30,7 @@
     </div>
 <div class="card border-0 shadow-sm">
 	<div class="card-header bg-white d-flex justify-content-between align-items-center">
-		<strong class="text-success">Danh sách sản phẩm đầu tư</strong>
+		<strong class="text-success">Danh sách Gói tiết kiệm</strong>
 		<div class="d-flex align-items-center gap-2">
 			<div class="text-muted small me-2">Tổng: {{ $sanPhamDauTu->total() }}</div>
 			<button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalCreateProduct">
@@ -106,7 +106,7 @@
                                 —
                             @endif
                         </td>
-                        <td>{{ $sp->thoi_gian_mot_chu_ky ? \App\Helpers\TimeHelper::formatTimeFromHours($sp->thoi_gian_mot_chu_ky) : '—' }}</td>
+                        <td>{{ $sp->thoi_gian_mot_chu_ky ? TimeHelper::formatTimeFromMonths($sp->thoi_gian_mot_chu_ky) : '—' }}</td>
                         <td>{{ $sp->lai_suat !== null ? rtrim(rtrim(number_format((float)$sp->lai_suat, 2, '.', ''), '0'), '.') . '%' : '—' }}</td>
                         <td>{{ $sp->nhan_dan ?? '—' }}</td>
                         <td>
@@ -152,7 +152,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="10" class="text-center text-muted py-4">Không có sản phẩm đầu tư nào.</td>
+                        <td colspan="10" class="text-center text-muted py-4">Không có Gói tiết kiệm nào.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -160,7 +160,7 @@
         </div>
     </div>
     <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-        <div class="small text-muted">Hiển thị {{ $sanPhamDauTu->firstItem() ?? 0 }}–{{ $sanPhamDauTu->lastItem() ?? 0 }} / {{ $sanPhamDauTu->total() }} sản phẩm</div>
+        <div class="small text-muted">Hiển thị {{ $sanPhamDauTu->firstItem() ?? 0 }}–{{ $sanPhamDauTu->lastItem() ?? 0 }} / {{ $sanPhamDauTu->total() }} Gói</div>
         <div>
             {{ $sanPhamDauTu->withQueryString()->links('vendor.pagination.admin') }}
         </div>
@@ -171,7 +171,7 @@
 	<div class="modal-dialog modal-xl modal-dialog-scrollable">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="modalCreateProductLabel">Thêm sản phẩm đầu tư</h5>
+				<h5 class="modal-title" id="modalCreateProductLabel">Thêm Gói tiết kiệm</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -195,7 +195,7 @@
 					<div class="row g-3">
 						<div class="col-12 col-md-6 col-lg-3">
 							<label class="form-label">Tên</label>
-						<input type="text" name="ten" id="createTen" class="form-control" placeholder="Nhập tên sản phẩm" required>
+						<input type="text" name="ten" id="createTen" class="form-control" placeholder="Nhập tên Gói" required>
 						</div>
 
 						
@@ -209,8 +209,16 @@
 						</div>
 
 						<div class="col-12 col-md-6 col-lg-3">
-							<label class="form-label">Thời gian 1 chu kỳ (giờ)</label>
-						<input type="number" name="thoi_gian_mot_chu_ky" class="form-control" placeholder="ví dụ: 24" required>
+							<label class="form-label">Thời gian 1 chu kỳ</label>
+							<select name="thoi_gian_mot_chu_ky" class="form-select" required>
+								<option value="">Chọn thời gian</option>
+								<option value="1">1 tháng</option>
+								<option value="2">2 tháng</option>
+								<option value="3">3 tháng</option>
+								<option value="6">6 tháng</option>
+								<option value="12">12 tháng</option>
+								<option value="24">24 tháng</option>
+							</select>
 						</div>
 						<div class="col-12 col-md-6 col-lg-3">
 							<label class="form-label">Lãi suất (%)</label>
@@ -229,7 +237,7 @@
 						</div>
 						<div class="col-12">
 							<label class="form-label">Mô tả</label>
-						<textarea name="mo_ta" class="form-control" rows="3" placeholder="Mô tả ngắn về sản phẩm" required></textarea>
+						<textarea name="mo_ta" class="form-control" rows="3" placeholder="Mô tả ngắn về Gói" required></textarea>
 						</div>
 					</div>
 				</form>
@@ -246,7 +254,7 @@
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalEditProductLabel">Sửa sản phẩm đầu tư</h5>
+                <h5 class="modal-title" id="modalEditProductLabel">Sửa Gói tiết kiệm</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -280,8 +288,16 @@
                         </div>
 
                         <div class="col-12 col-md-6 col-lg-3">
-                            <label class="form-label">Thời gian 1 chu kỳ (giờ)</label>
-                            <input type="number" name="thoi_gian_mot_chu_ky" id="editThoiGianMotChuKy" class="form-control" required>
+                            <label class="form-label">Thời gian 1 chu kỳ</label>
+                            <select name="thoi_gian_mot_chu_ky" id="editThoiGianMotChuKy" class="form-select" required>
+                                <option value="">Chọn thời gian</option>
+                                <option value="1">1 tháng</option>
+                                <option value="2">2 tháng</option>
+                                <option value="3">3 tháng</option>
+                                <option value="6">6 tháng</option>
+                                <option value="12">12 tháng</option>
+                                <option value="24">24 tháng</option>
+                            </select>
                         </div>
                         <div class="col-12 col-md-6 col-lg-3">
                             <label class="form-label">Lãi suất (%)</label>
@@ -433,15 +449,15 @@ document.addEventListener('DOMContentLoaded', function () {
             axios.post("{{ route('admin.san-pham-dau-tu.store') }}", fd, { headers: { 'Content-Type': 'multipart/form-data' } })
                 .then(function(res){
                     if (res.data && res.data.success) {
-                        if (window.showToast) window.showToast('success', 'Thành công', res.data.message || 'Đã tạo sản phẩm');
+                        if (window.showToast) window.showToast('success', 'Thành công', res.data.message || 'Đã tạo Gói');
                         // Reload to show new item after 1s
                         setTimeout(function(){ window.location.reload(); }, 1000);
                     } else {
-                        if (window.showToast) window.showToast('error', 'Lỗi', (res.data && res.data.message) || 'Không thể tạo sản phẩm');
+                        if (window.showToast) window.showToast('error', 'Lỗi', (res.data && res.data.message) || 'Không thể tạo Gói');
                     }
                 })
                 .catch(function(err){
-                    var msg = 'Không thể tạo sản phẩm';
+                    var msg = 'Không thể tạo Gói';
                     if (err.response && err.response.data && err.response.data.message) msg = err.response.data.message;
                     if (err.response && err.response.data && err.response.data.errors) {
                         // Try to show the first validation error
@@ -505,7 +521,11 @@ document.addEventListener('DOMContentLoaded', function () {
             if (editVonToiThieu) editVonToiThieu.value = d.von_toi_thieu || '';
             if (editVonToiDa) editVonToiDa.value = d.von_toi_da || '';
             
-            if (editThoiGianMotChuKy) editThoiGianMotChuKy.value = d.thoi_gian_mot_chu_ky || '';
+            if (editThoiGianMotChuKy) {
+                // Set the selected option for time period dropdown
+                var timeValue = d.thoi_gian_mot_chu_ky || '';
+                editThoiGianMotChuKy.value = timeValue;
+            }
             if (editLaiSuat) editLaiSuat.value = d.lai_suat || '';
             if (editNhanDan) editNhanDan.value = d.nhan_dan || '';
             if (editTrangThai) editTrangThai.value = typeof d.trang_thai !== 'undefined' ? d.trang_thai : '1';
@@ -591,14 +611,14 @@ document.addEventListener('DOMContentLoaded', function () {
             axios.post("{{ route('admin.san-pham-dau-tu.update') }}", fd, { headers: { 'Content-Type': 'multipart/form-data' } })
                 .then(function(res){
                     if (res.data && res.data.success) {
-                        if (window.showToast) window.showToast('success', 'Thành công', res.data.message || 'Đã cập nhật sản phẩm');
+                        if (window.showToast) window.showToast('success', 'Thành công', res.data.message || 'Đã cập nhật Gói');
                         window.location.reload();
                     } else {
-                        if (window.showToast) window.showToast('error', 'Lỗi', (res.data && res.data.message) || 'Không thể cập nhật sản phẩm');
+                        if (window.showToast) window.showToast('error', 'Lỗi', (res.data && res.data.message) || 'Không thể cập nhật Gói');
                     }
                 })
                 .catch(function(err){
-                    var msg = 'Không thể cập nhật sản phẩm';
+                    var msg = 'Không thể cập nhật Gói';
                     if (err.response && err.response.data && err.response.data.message) msg = err.response.data.message;
                     if (err.response && err.response.data && err.response.data.errors) {
                         var firstKey = Object.keys(err.response.data.errors)[0];
@@ -618,27 +638,27 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!id) return;
             if (window.showConfirm) {
                 window.showConfirm({
-                    title: 'Xoá sản phẩm',
-                    message: 'Bạn có chắc chắn muốn xoá sản phẩm này? Hành động không thể hoàn tác.',
+                    title: 'Xoá Gói',
+                    message: 'Bạn có chắc chắn muốn xoá Gói này? Hành động không thể hoàn tác.',
                     confirmText: 'Xoá',
                     onConfirm: function(){
                         axios.post("{{ route('admin.san-pham-dau-tu.destroy') }}", { id: id })
                             .then(function(res){
                                 if (res.data && res.data.success) {
-                                    if (window.showToast) window.showToast('success', 'Đã xoá', res.data.message || 'Đã xoá sản phẩm');
+                                    if (window.showToast) window.showToast('success', 'Đã xoá', res.data.message || 'Đã xoá Gói');
                                     setTimeout(function(){ window.location.reload(); }, 2000);
                                 } else {
-                                    if (window.showToast) window.showToast('error', 'Lỗi', (res.data && res.data.message) || 'Không thể xoá sản phẩm');
+                                    if (window.showToast) window.showToast('error', 'Lỗi', (res.data && res.data.message) || 'Không thể xoá Gói');
                                 }
                             })
                             .catch(function(err){
-                                var msg = 'Không thể xoá sản phẩm';
+                                var msg = 'Không thể xoá Gói';
                                 if (err.response && err.response.data && err.response.data.message) msg = err.response.data.message;
                                 if (window.showToast) window.showToast('error', 'Lỗi', msg);
                             });
                     }
                 });
-            } else if (window.confirm('Bạn có chắc chắn muốn xoá sản phẩm này?')) {
+            } else if (window.confirm('Bạn có chắc chắn muốn xoá Gói này?')) {
                 axios.post("{{ route('admin.san-pham-dau-tu.destroy') }}", { id: id })
                     .then(function(){ window.location.reload(); })
                     .catch(function(){});

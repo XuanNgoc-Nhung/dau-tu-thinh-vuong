@@ -68,7 +68,7 @@
                                         </div>
                                         <div class="info-content">
                                             <div class="info-label">Thời gian/chu kỳ</div>
-                                            <div class="info-value">{{ \App\Helpers\TimeHelper::formatTimeFromHours($sanPhamDauTu->thoi_gian_mot_chu_ky) }}</div>
+                                            <div class="info-value">{{ TimeHelper::formatTimeFromHours($sanPhamDauTu->thoi_gian_mot_chu_ky) }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -78,7 +78,7 @@
                                             <i class="bi bi-calendar-date"></i>
                                         </div>
                                         <div class="info-content">
-                                            <div class="info-label">Ngày mở bán</div>
+                                            <div class="info-label">Ngày triển khai</div>
                                             <div class="info-value">{{ \Carbon\Carbon::parse($sanPhamDauTu->created_at)->format('d/m/Y') }}</div>
                                         </div>
                                     </div>
@@ -101,14 +101,25 @@
                 <div class="col-12 col-lg-5">
                     <div class="card h-100">
                         <div class="card-header">
-                            <h6 class="mb-0">Đầu tư ngay</h6>
+                            <h6 class="mb-0">@if($hasWithdrawalPassword) Đầu tư ngay @else Bổ sung thông tin cần thiết @endif</h6>
                         </div>
                         <div class="card-body">
-                            <form action="#" method="POST" class="investment-form">
+                            @if($hasWithdrawalPassword)
+                            <form id="investment-form" class="investment-form">
                                 @csrf
+                                <input type="hidden" name="san_pham_id" value="{{ $sanPhamDauTu->id }}">
                                 <div class="form-group">
                                     <label for="so_du">Số dư hiện tại</label>
                                     <input type="text" id="so_du" class="form-control" value="{{ number_format($profile->so_du ?? 0) }}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ngay_bat_dau">Ngày bắt đầu đầu tư</label>
+                                    <input type="date" name="ngay_bat_dau" readonly disabled id="ngay_bat_dau" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ngay_thanh_toan">Ngày thanh toán</label>
+                                    <input type="date" name="ngay_thanh_toan" id="ngay_thanh_toan" class="form-control" readonly style="background-color: #f8f9fa;">
+                                    <small class="form-text text-muted">Tự động tính toán dựa trên thời gian hiện tại và chu kỳ đầu tư</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="so_tien">Số tiền đầu tư</label>
@@ -130,26 +141,38 @@
                                     </small>
                                 </div>
                                 <div class="form-group">
-                                    <label for="so_chu_ky">Chọn số chu kỳ</label>
-                                    <select name="so_chu_ky" id="so_chu_ky" class="form-control" required>
-                                        <option value="1">1 chu kỳ ({{ \App\Helpers\TimeHelper::formatTimeFromHours($sanPhamDauTu->thoi_gian_mot_chu_ky) }})</option>
-                                        <option value="3">3 chu kỳ ({{ \App\Helpers\TimeHelper::formatTotalTimeForCycles($sanPhamDauTu->thoi_gian_mot_chu_ky, 3) }})</option>
-                                        <option value="6">6 chu kỳ ({{ \App\Helpers\TimeHelper::formatTotalTimeForCycles($sanPhamDauTu->thoi_gian_mot_chu_ky, 6) }})</option>
-                                        <option value="12">12 chu kỳ ({{ \App\Helpers\TimeHelper::formatTotalTimeForCycles($sanPhamDauTu->thoi_gian_mot_chu_ky, 12) }})</option>
-                                    </select>
-                                    <small class="form-text text-muted">Lãi suất mỗi chu kỳ: {{ rtrim(rtrim(number_format($sanPhamDauTu->lai_suat, 2), '0'), '.') }}%</small>
-                                </div>
-                                <div class="form-group">
                                     <label for="so_tien_thuc_nhan">Số tiền thực nhận sau khi kết thúc</label>
-                                    <input type="text" id="so_tien_thuc_nhan" class="form-control" readonly style="background-color: #f8f9fa; color: #28a745;" placeholder="Nhập số tiền và chọn chu kỳ để tính">
+                                    <input type="text" id="so_tien_thuc_nhan" class="form-control" readonly style="background-color: #f8f9fa; color: #28a745;" placeholder="Nhập số tiền để tính">
                                     <small class="form-text text-muted">Bao gồm: Vốn gốc + Lãi suất (tự động tính toán)</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="mat_khau_rut_tien">Mật khẩu rút tiền</label>
                                     <input type="password" name="mat_khau_rut_tien" id="mat_khau_rut_tien" class="form-control" placeholder="Nhập mật khẩu rút tiền để xác nhận" required>
+                                    <input type="hidden" name="id_san_pham" id="id_san_pham" value="{{ $sanPhamDauTu->id }}">
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-block">Xác nhận đầu tư</button>
+                                <button type="submit" id="submit-btn" class="btn btn-primary btn-block">
+                                    <span class="btn-text">Xác nhận đầu tư</span>
+                                    <span class="btn-loading d-none">
+                                        <i class="fas fa-spinner fa-spin"></i> Đang xử lý...
+                                    </span>
+                                </button>
                             </form>
+                            @else
+                            <div class="text-center">
+                                <div class="mb-4">
+                                    <i class="bi bi-shield-exclamation text-warning" style="font-size: 4rem;"></i>
+                                </div>
+                                <h5 class="text-warning mb-3">Thiếu thông tin bảo mật</h5>
+                                <p class="text-muted mb-4">
+                                    Để có thể đầu tư, bạn cần thiết lập mật khẩu rút tiền trước. 
+                                    Điều này giúp bảo vệ tài khoản của bạn.
+                                </p>
+                                <a href="{{ route('dashboard.bao-mat') }}" class="btn btn-warning btn-lg">
+                                    <i class="bi bi-shield-check me-2"></i>
+                                    Bổ sung thông tin cần thiết
+                                </a>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -159,10 +182,10 @@
                 <h6 class="mb-2"><i class="fas fa-book-open mr-2"></i>Hướng dẫn nhanh</h6>
                 <ol class="mb-2 pl-3">
                     <li>Nhập số tiền trong khoảng hợp lệ ở trên.</li>
-                    <li>Chọn số chu kỳ mong muốn.</li>
+                    <li>Kiểm tra thông tin chu kỳ đầu tư (cố định).</li>
                     <li>Kiểm tra lại thông tin và bấm xác nhận.</li>
                 </ol>
-                <div class="alert alert-warning mb-0 p-2"><i class="fas fa-info-circle mr-1"></i>Lãi suất hiển thị là theo chu kỳ. Tổng lợi nhuận phụ thuộc vào số chu kỳ đã chọn.</div>
+                <div class="alert alert-warning mb-0 p-2"><i class="fas fa-info-circle mr-1"></i>Lãi suất hiển thị là theo chu kỳ cố định. Chu kỳ đầu tư được xác định dựa trên thời gian một chu kỳ của sản phẩm.</div>
             </div>
         </div>
     </div>
@@ -459,17 +482,46 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const investmentForm = document.getElementById('investment-form');
+    
+    // Chỉ chạy JavaScript nếu form đầu tư tồn tại (user đã có mật khẩu rút tiền)
+    if (!investmentForm) {
+        return;
+    }
+    
     const soTienInput = document.getElementById('so_tien');
-    const soChuKySelect = document.getElementById('so_chu_ky');
     const soTienThucNhanInput = document.getElementById('so_tien_thuc_nhan');
+    const ngayBatDauInput = document.getElementById('ngay_bat_dau');
+    const ngayThanhToanInput = document.getElementById('ngay_thanh_toan');
+    const submitBtn = document.getElementById('submit-btn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoading = submitBtn.querySelector('.btn-loading');
+    
     const laiSuat = {{ $sanPhamDauTu->lai_suat }};
+    const soChuKy = 1; // Chu kỳ cố định là 1
+    const thoiGianMotChuKy = {{ $sanPhamDauTu->thoi_gian_mot_chu_ky }}; // Thời gian một chu kỳ (giờ)
+
+    // Thiết lập ngày hôm nay làm ngày mặc định
+    const today = new Date();
+    const todayString = today.toISOString().split('T')[0];
+    ngayBatDauInput.value = todayString;
+
+    function calculatePaymentDate() {
+        // Tính ngày thanh toán = thời gian hiện tại + số giờ của chu kỳ
+        const soGio = thoiGianMotChuKy;
+        const ngayThanhToan = new Date(); // Sử dụng thời gian hiện tại
+        ngayThanhToan.setHours(ngayThanhToan.getHours() + soGio);
+        
+        // Định dạng ngày thanh toán
+        const ngayThanhToanString = ngayThanhToan.toISOString().split('T')[0];
+        ngayThanhToanInput.value = ngayThanhToanString;
+    }
 
     function calculateTotalAmount() {
         const soTien = parseFloat(soTienInput.value) || 0;
-        const soChuKy = parseInt(soChuKySelect.value) || 1;
         
         if (soTien > 0) {
-            // Tính lãi suất tổng cộng cho tất cả chu kỳ
+            // Tính lãi suất cho 1 chu kỳ
             const laiSuatTong = laiSuat * soChuKy;
             
             // Tính số tiền lãi
@@ -485,14 +537,200 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function showLoading() {
+        submitBtn.disabled = true;
+        btnText.classList.add('d-none');
+        btnLoading.classList.remove('d-none');
+    }
+
+    function hideLoading() {
+        submitBtn.disabled = false;
+        btnText.classList.remove('d-none');
+        btnLoading.classList.add('d-none');
+    }
+
+    function showToast(message, type = 'success') {
+        // Tạo toast notification
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        toast.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Tự động ẩn sau 5 giây
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 5000);
+    }
+
+    // Xử lý submit form
+    investmentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validation cơ bản
+        const soTien = parseFloat(soTienInput.value) || 0;
+        const matKhauRutTien = document.getElementById('mat_khau_rut_tien').value;
+        
+        if (soTien <= 0) {
+            showToast('Vui lòng nhập số tiền đầu tư hợp lệ', 'error');
+            return;
+        }
+        
+        if (!matKhauRutTien) {
+            showToast('Vui lòng nhập mật khẩu rút tiền', 'error');
+            return;
+        }
+
+        showLoading();
+
+        // Chuẩn bị dữ liệu gửi
+        const formData = new FormData(investmentForm);
+        //thêm thông tin hoa hồng
+        formData.append('hoa_hong', laiSuat * soTien / 100);
+        
+        // Gửi request bằng axios
+        axios.post('{{ route("dashboard.dau-tu.create") }}', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(function(response) {
+            hideLoading();
+            
+            if (response.data.success) {
+                showToast(response.data.message, 'success');
+                
+                // Cập nhật số dư hiển thị
+                const soDuElement = document.getElementById('so_du');
+                const soDuConLai = response.data.data.so_du_con_lai;
+                soDuElement.value = new Intl.NumberFormat('vi-VN').format(soDuConLai);
+                
+                // Reset form
+                investmentForm.reset();
+                ngayBatDauInput.value = todayString;
+                calculatePaymentDate();
+                calculateTotalAmount();
+                
+                // Redirect sau 2 giây
+                setTimeout(() => {
+                    window.location.href = '{{ route("dashboard.du-an-cua-toi") }}';
+                }, 2000);
+            } else {
+                showToast(response.data.message || 'Có lỗi xảy ra', 'error');
+            }
+        })
+        .catch(function(error) {
+            hideLoading();
+            
+            if (error.response && error.response.data) {
+                const responseData = error.response.data;
+                const errorCode = responseData.error_code;
+                
+                // Xử lý lỗi số dư không đủ
+                if (errorCode === 'INSUFFICIENT_BALANCE') {
+                    const data = responseData.data;
+                    document.getElementById('currentBalance').textContent = new Intl.NumberFormat('vi-VN').format(data.current_balance) + ' VNĐ';
+                    document.getElementById('requiredAmount').textContent = new Intl.NumberFormat('vi-VN').format(data.required_amount) + ' VNĐ';
+                    document.getElementById('shortageAmount').textContent = new Intl.NumberFormat('vi-VN').format(data.shortage) + ' VNĐ';
+                    
+                    // Hiển thị modal
+                    const modal = new bootstrap.Modal(document.getElementById('insufficientBalanceModal'));
+                    modal.show();
+                    return;
+                }
+                
+                // Xử lý các lỗi khác
+                const errors = responseData.errors;
+                if (errors) {
+                    // Hiển thị lỗi validation
+                    let errorMessage = '';
+                    for (const field in errors) {
+                        errorMessage += errors[field][0] + '<br>';
+                    }
+                    showToast(errorMessage, 'error');
+                } else {
+                    showToast(responseData.message || 'Có lỗi xảy ra', 'error');
+                }
+            } else {
+                showToast('Có lỗi xảy ra khi kết nối đến server', 'error');
+            }
+        });
+    });
+    
     // Tính toán khi thay đổi số tiền đầu tư
     soTienInput.addEventListener('input', calculateTotalAmount);
     
-    // Tính toán khi thay đổi số chu kỳ
-    soChuKySelect.addEventListener('change', calculateTotalAmount);
-    
-    // Tính toán ban đầu nếu có giá trị
+    // Tính toán ban đầu
+    calculatePaymentDate();
     calculateTotalAmount();
+    
+    // Xử lý nút "Nạp tiền ngay" trong modal
+    document.getElementById('goToDepositBtn').addEventListener('click', function() {
+        // Đóng modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('insufficientBalanceModal'));
+        modal.hide();
+        
+        // Chuyển hướng đến trang nạp tiền
+        window.location.href = '{{ route("dashboard.nap-tien") }}';
+    });
 });
 </script>
+
+<!-- Modal thông báo số dư không đủ -->
+<div class="modal fade" id="insufficientBalanceModal" tabindex="-1" aria-labelledby="insufficientBalanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="insufficientBalanceModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Số dư không đủ
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-wallet text-warning" style="font-size: 3rem;"></i>
+                </div>
+                <p class="text-center mb-3">Số dư hiện tại của bạn không đủ để thực hiện giao dịch này.</p>
+                
+                <div class="alert alert-info">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Số dư hiện tại:</strong><br>
+                            <span id="currentBalance" class="text-primary"></span>
+                        </div>
+                        <div class="col-6">
+                            <strong>Số tiền cần:</strong><br>
+                            <span id="requiredAmount" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <strong>Thiếu:</strong> <span id="shortageAmount" class="text-warning"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="text-center mb-0">Bạn có muốn nạp thêm tiền để sử dụng dịch vụ không?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>
+                    Hủy
+                </button>
+                <button type="button" class="btn btn-primary" id="goToDepositBtn">
+                    <i class="fas fa-plus-circle me-1"></i>
+                    Nạp tiền ngay
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endpush
